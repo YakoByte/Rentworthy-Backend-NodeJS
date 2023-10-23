@@ -1,0 +1,19 @@
+# Node Modules
+/main/node_modules
+/user/node_modules
+
+# Package.lock
+/main/package-lock.json
+/user/package-lock.json
+
+# Dist
+/main/dist
+/user/dist
+
+# Build
+/main/build
+/user/build
+
+# Env
+/main/.env
+/user/.env
