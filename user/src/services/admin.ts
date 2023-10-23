@@ -7,6 +7,7 @@ import {
     ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
+import { userRequest } from '../interface/admin';
 
 // All Business logic will be here
 class AdminService {
@@ -43,21 +44,17 @@ class AdminService {
         }
     }
 
-    async SignUp(userInputs: { email: string, userName: string, password: string, phoneNo: string }) {
-        const { email, userName, password, phoneNo } = userInputs;
+    async SignUp(userInputs: userRequest) {
         try {
             let salt = await GenerateSalt();
-            let userPassword = await GeneratePassword(password, salt);
+            let userPassword = await GeneratePassword(userInputs.password, salt);
 
-            const existingAdmin: any = await this.repository.CreateUser({
-                email,
-                userName,
-                password: userPassword,
-                phoneNo,
-            });
+            const existingAdmin: any = await this.repository.CreateUser(
+                userInputs
+            );
 
             const token = await GenerateSignature({
-                email: email,
+                email: userInputs.email,
                 _id: existingAdmin._id,
             });
 
@@ -67,21 +64,18 @@ class AdminService {
         }
     }
 
-    async CreateUser(userInputs: { email: string, userName: string, password: string, phoneNo: string }) {
-        const { email, userName, password, phoneNo } = userInputs;
+    async CreateUser(userInputs: userRequest) {
+        // const { email, userName, password, phoneNo } = userInputs;
         try {
             let salt = await GenerateSalt();
-            let userPassword = await GeneratePassword(password, salt);
+            let userPassword = await GeneratePassword(userInputs.password, salt);
 
-            const existingAdmin: any = await this.repository.CreateUser({
-                email,
-                userName,
-                password: userPassword,
-                phoneNo,
-            });
+            const existingAdmin: any = await this.repository.CreateUser(
+                userInputs
+            );
 
             const token = await GenerateSignature({
-                email: email,
+                email: userInputs.email,
                 _id: existingAdmin._id,
             });
 

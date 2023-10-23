@@ -1,19 +1,14 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/admin';
 import UserAuth from '../middlewares/auth';
-import { AuthenticatedRequest, userRequest } from './interface';
-// interface AuthenticatedRequest extends Request {
-//   user?: {
-//     _id: string;
-//   };
-// }
+import { AuthenticatedRequest, userRequest } from '../interface/admin';
+import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
   const service = new AdminService();
 
-  app.post('/admin/signup', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/signup', validateCreateAdmin, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, userName, password, phoneNo } = req.body;
       const { data } = await service.SignUp(req.body);
       return res.json(data);
     } catch (err) {
@@ -23,8 +18,8 @@ export default (app: Express) => {
 
   app.post('/admin/create-user', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, userName, password, phoneNo } = req.body;
-      const { data } = await service.SignUp({ email, userName, password, phoneNo });
+      const user: userRequest = req.body;
+      const { data } = await service.SignUp(user);
       return res.json(data);
     } catch (err) {
       next(err);

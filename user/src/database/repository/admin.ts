@@ -11,14 +11,14 @@ import {
   BadRequestError,
   STATUS_CODES,
 } from "../../utils/app-error";
-
+import { userRequest } from "../../interface/admin";
 class AdminRepository {
-  async CreateUser({ email, userName, password, phoneNo }: { email: string; userName: string; password: string; phoneNo: string }) {
+  async CreateUser(userInputs: userRequest) {
     try {
-      const findUser = await userModel.findOne({ $or: [{ email }, { phoneNo }] });
+      const findUser = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs.phoneNo }] });
       if (findUser) {
         const validPassword = await ValidatePassword(
-          password,
+          userInputs.password,
           findUser.password
         );
         if (validPassword) {
@@ -34,10 +34,7 @@ class AdminRepository {
 
 
       const user = new userModel({
-        userName: userName,
-        email: email,
-        password: password,
-        phoneNo: phoneNo,
+        userInputs
       });
       const userResult = await user.save();
 
@@ -46,7 +43,7 @@ class AdminRepository {
         log: [
           {
             objectId: userResult._id,
-            action: `Username = ${userName} created`,
+            action: `Username = ${userInputs.userName} created`,
             date: new Date().toISOString(),
             time: Date.now(),
           },
