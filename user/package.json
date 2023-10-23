@@ -3,8 +3,7 @@
     "typescript": "^5.2.2"
   },
   "scripts": {
-    "build": "npx tsc",
-    "start": "tsc && node dist/index.js",
+    "start": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -20,6 +19,14 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
     "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
     "winston": "^3.11.0"
-  }
+  },
+  "name": "user",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

@@ -70,4 +70,13 @@ export default (app: Express) => {
       next(err);
     }
   });
+  app.get('/admin', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      return res.json({
+        data: "Admin is Working"
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
 };
