@@ -13,10 +13,18 @@ gateway.on('error', (err: Error, req: IncomingMessage, res: ServerResponse) => {
 });
 
 const userMicroservice: string = 'http://localhost:5001';
+const categoryMicroservice: string = 'http://localhost:5002';
 
+// user microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
   console.log('Routing to user microservice', req.url);
   gateway.web(req, res, { target: userMicroservice });
 };
 
-export { user };
+// category microservice
+const category = (req: IncomingMessage, res: ServerResponse) => {
+  console.log('Routing to category microservice', req.url);
+  gateway.web(req, res, { target: categoryMicroservice });
+};
+
+export { user, category };

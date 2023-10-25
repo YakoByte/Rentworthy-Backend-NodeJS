@@ -1,35 +1,44 @@
 # Node Modules
 /main/node_modules
 /user/node_modules
+/category/node_modules
 
 # Package.lock
 /main/package-lock.json
 /user/package-lock.json
+/category/package-lock.json
 
 # Dist
 /main/dist
 /user/dist
+/category/dist
 
 # Build
 /main/build
 /user/build
+/category/build
 
 # Env
 /main/.env 
 /user/.env
+/category/.env
 
 # Log
 /main/log
 /user/log
+/category/log
 
 # Temp
 /main/temp
 /user/temp
+/category/temp
 
 # Cache
 /main/cache
 /user/cache
+/category/cache
 
 # Error Log
 /main/app_error.log
 /user/app_error.log
+/category/app_error.log

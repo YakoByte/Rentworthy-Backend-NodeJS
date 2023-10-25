@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import { PORT } from './config';
 import { user } from './gateway';
+import { category} from './gateway';
 
 const StartServer = async (): Promise<void> => {
   const app: Express = express();
@@ -11,6 +12,7 @@ const StartServer = async (): Promise<void> => {
 
   // Use the reverse proxy server defined in the gateway module
   app.use('/user',user);
+  app.use('/category',category);
   // app.use('/product', gateway.product);
 
   app.listen(PORT, () => {

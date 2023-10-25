@@ -100,13 +100,13 @@ export default (app: Express) => {
   });
 
   // API = sending password link
-  app.post('/send-password-link', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      console.log("req.body", req.body)
-      const { data } = await adminService.SendPasswordLink(req.body);
-      return res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
+  // app.post('/send-password-link', async (req: Request, res: Response, next: NextFunction) => {
+  //   try {
+  //     console.log("req.body", req.body)
+  //     const { data } = await adminService.SendPasswordLink(req.body);
+  //     return res.json(data);
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // });
 };

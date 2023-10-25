@@ -144,7 +144,7 @@ class AdminRepository {
   async FindMe(userInputs: userLoginRequest) {
     try {
 
-      const userResult: any = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs?.phoneNo }] });
+      const userResult: any = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs?.phoneNo }] }).populate("roleId");
       // check role 
       // let role: any = await roleModel.findOne({ _id: userResult?.roleId });
       // if (role || role?.name === userInputs.roleName) {

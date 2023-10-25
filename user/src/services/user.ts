@@ -41,6 +41,8 @@ class AdminService {
                     const token = await GenerateSignature({
                         email: existingAdmin.email,
                         _id: existingAdmin._id,
+                        userName: existingAdmin.userName,
+                        roleName: existingAdmin.roleId.name,
                     });
 
                     return FormateData({ id: existingAdmin._id, token });
