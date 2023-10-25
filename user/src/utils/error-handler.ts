@@ -46,7 +46,7 @@ const ErrorHandler = async (err: Error, req: Request, res: Response, next: NextF
     errorLogger.logError(error);
     if (errorLogger.isTrustError(error as AppError)) {
       // process exit // need restart
-    }
+    } 
   });
 
   if (err) {

@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SECRET_KEY } from "../config/index";
+import e from "express";
 let secret_key: string = "YAKOBYTE";
 // Utility functions
 export const GenerateSalt = async (): Promise<string> => {
@@ -12,6 +13,7 @@ export const GeneratePassword = async (password: string, salt: string): Promise<
 };
 
 export const ValidatePassword = async (enteredPassword: string, savedPassword: string): Promise<boolean> => {
+    // console.log(enteredPassword, savedPassword)
     return await bcrypt.compare(enteredPassword, savedPassword);
 };
 

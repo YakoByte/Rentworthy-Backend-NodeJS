@@ -3,7 +3,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
-import Admin from './api/admin.ts';
+import Admin from './api/user.ts';
+import Role from './api/role.ts';
 
 export const configureExpress = async (app: Express) => {
   app.use(express.json({ limit: '1mb' }));
@@ -12,6 +13,7 @@ export const configureExpress = async (app: Express) => {
 
   // API
   Admin(app);
+  Role(app);
 
   // Error handling
   app.use(HandleErrors);

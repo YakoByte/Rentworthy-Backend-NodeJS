@@ -15,5 +15,21 @@
 /user/build
 
 # Env
-/main/.env
+/main/.env 
 /user/.env
+
+# Log
+/main/log
+/user/log
+
+# Temp
+/main/temp
+/user/temp
+
+# Cache
+/main/cache
+/user/cache
+
+# Error Log
+/main/app_error.log
+/user/app_error.log

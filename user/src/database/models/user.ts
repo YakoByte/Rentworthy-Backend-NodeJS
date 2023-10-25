@@ -1,26 +1,8 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-interface IUser extends Document {
-  userName: string;
-  phoneNo?: number;
-  phoneCode?: string;
-  email?: string;
-  password: string;
-  stripe?: string;
-  roleId: Types.ObjectId;
-  appleId?: string;
-  location?: string;
-  address: Types.ObjectId[];
-  isGuest?: boolean;
-  isAuthenticated?: boolean;
-  isActive?: boolean;
-  isBlocked?: boolean;
-  isReported?: boolean;
-  profileImage?: string;
-  isDeleted?: boolean;
-}
+import { User } from "../../interface/user";
 
-const userSchema: Schema = new Schema<IUser>(
+const userSchema: Schema = new Schema<User>(
   {
     userName: {
       type: String,
@@ -79,7 +61,7 @@ const userSchema: Schema = new Schema<IUser>(
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     isBlocked: {
       type: Boolean,
@@ -100,6 +82,6 @@ const userSchema: Schema = new Schema<IUser>(
   { timestamps: true }
 );
 
-const Users = mongoose.model<IUser>("User", userSchema);
+const Users = mongoose.model<User>("User", userSchema);
 
 export default Users;
