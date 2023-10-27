@@ -32,6 +32,10 @@ class AdminService {
             if (checkRole.data.message === "Invalid Role") {
                 return FormateData({ message: "Invalid Role" });
             }
+            //check bussiness type
+            if (userInputs.bussinessType && existingAdmin.bussinessType !== userInputs.bussinessType) {
+                return FormateData({ message: "Invalid Bussiness Type" });
+            }
             if (existingAdmin) {
                 const validPassword = await ValidatePassword(
                     userInputs.password,

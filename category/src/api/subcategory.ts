@@ -3,14 +3,16 @@ import SubCategoryService from '../services/subCategory';
 import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest } from '../interface/category';
+
 // import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new SubCategoryService();
 
     // API = create new subCategory
-    app.post('/create-subcategory', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-subcategory', UserAuth, isAdmin,  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            // console.log("req.file", req.file)
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.body)

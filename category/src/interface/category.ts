@@ -6,6 +6,7 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    file?: any;
 }
 
 export interface Category extends Document {

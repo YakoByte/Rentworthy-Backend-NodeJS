@@ -12,6 +12,7 @@ export interface User extends Document {
     phoneNo?: number;
     phoneCode?: string;
     email?: string;
+    bussinessType?: string;
     password: string;
     stripe?: string;
     roleId: Types.ObjectId;
@@ -30,6 +31,7 @@ export interface userSignRequest {
     userName: string;
     phoneNo?: number;
     phoneCode?: string;
+    bussinessType?: string;
     email?: string;
     password: string;
     stripe?: string;
@@ -48,13 +50,7 @@ export interface userLoginRequest {
     email?: string;
     phoneNo?: string;
     password: string;
-    roleName: string;
-}
-
-export interface userLoginRequest {
-    email?: string;
-    phoneNo?: string;
-    password: string;
+    bussinessType?: string;
     roleName: string;
 }
 

@@ -14,6 +14,7 @@ gateway.on('error', (err: Error, req: IncomingMessage, res: ServerResponse) => {
 
 const userMicroservice: string = 'http://localhost:5001';
 const categoryMicroservice: string = 'http://localhost:5002';
+const uploadMicroservice: string = 'http://localhost:5003';
 
 // user microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -27,4 +28,9 @@ const category = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: categoryMicroservice });
 };
 
-export { user, category };
+const upload = (req: IncomingMessage, res: ServerResponse) => {
+  console.log('Routing to upload microservice', req.url);
+  gateway.web(req, res, { target: uploadMicroservice });
+};
+
+export { user, category, upload };

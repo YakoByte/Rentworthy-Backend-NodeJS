@@ -34,6 +34,11 @@ const userSchema: Schema = new Schema<User>(
       ref: "Role",
       required: true,
     },
+    bussinessType: {
+      type: String,
+      enum: ["individual", "company"],
+      default: "individual",
+    },
     appleId: {
       type: String,
     },

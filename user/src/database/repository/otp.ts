@@ -123,8 +123,12 @@ class OTPRepository {
                     { $set: { isUsed: true } }
                 );
                 console.log("otpResult", otpResult)
+                const token = await GenerateSignature({
+                    user: otpInputs.email ? existingOTP.email : existingOTP.phoneNo,
+                    _id: existingOTP._id,
+                });
+                return FormateData({ message: "otp is varified", token: token });
 
-                return FormateData({ message: "otp is varified" });
             }
             else {
                 return FormateData({ message: "otp is not varified" });

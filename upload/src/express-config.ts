@@ -3,8 +3,7 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
-import category from './api/category.ts';
-import subcategory from './api/subcategory.ts';
+import imageUpload from './api/imageUpload.ts';
 // import Admin from './api/user.ts';
 // import Role from './api/role.ts';
 
@@ -14,8 +13,7 @@ export const configureExpress = async (app: Express) => {
   app.use(cors());
 
   // API
-  subcategory(app);
-  category(app);
+  imageUpload(app);
 
   // Error handling
   app.use(HandleErrors);

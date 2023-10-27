@@ -1,7 +1,7 @@
 
 export = {
     databaseConnection: require('./connection').default,
-    AdminRepository: require('./repository/admin').default,
-    RoleRepository: require('./repository/role').default,
+    CategoryRepository: require('./repository/category').default,
+    SubCategoryRepository: require('./repository/subcategory').default,
 };
 
