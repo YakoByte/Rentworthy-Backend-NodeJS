@@ -15,8 +15,22 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.imageDetail = req.file;
-            console.log("req.body", req.body)
+            // console.log("req.body", req.body)
             const { data } = await service.CreateImage(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/image-uploads', UserAuth, upload.array("image", 20), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
+            console.log("req.body", req.files)
+            req.body.imageDetails = req.files;
+            // console.log("req.body", req.body)
+            const { data } = await service.CreateImages(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

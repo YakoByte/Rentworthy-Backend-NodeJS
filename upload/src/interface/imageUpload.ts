@@ -28,6 +28,19 @@ export interface imageRequest {
     userId: Types.ObjectId;
 }
 
+// multiple image upload
+
+export interface imageRequests {
+    imageDetails: Array<{
+        filename: string;
+        mimetype: string;
+        path: string;
+        size: number;
+    }>
+    userId: Types.ObjectId;
+}
+
+
 export interface imageDetail {
     imageName?: string;
     mimetype: string;

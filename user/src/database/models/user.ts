@@ -42,20 +42,6 @@ const userSchema: Schema = new Schema<User>(
     appleId: {
       type: String,
     },
-    location: {
-      type: String,
-      coordinate: {
-        type: [Number],
-        index: "2dsphere",
-      },
-    },
-    address: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Address",
-        required: true,
-      },
-    ],
     isGuest: {
       type: Boolean,
       default: false,
@@ -68,20 +54,9 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: true,
     },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
-    isReported: {
-      type: Boolean,
-      default: false,
-    },
     isDeleted: {
       type: Boolean,
       default: false,
-    },
-    profileImage: {
-      type: String,
     },
   },
   { timestamps: true }

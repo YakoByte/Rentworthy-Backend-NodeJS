@@ -17,14 +17,9 @@ export interface User extends Document {
     stripe?: string;
     roleId: Types.ObjectId;
     appleId?: string;
-    location?: string;
-    address?: Types.ObjectId[];
     isGuest?: boolean;
     isAuthenticated?: boolean;
     isActive?: boolean;
-    isBlocked?: boolean;
-    isReported?: boolean;
-    profileImage?: string;
     isDeleted?: boolean;
 }
 export interface userSignRequest {
@@ -41,8 +36,6 @@ export interface userSignRequest {
     isGuest?: boolean;
     isAuthenticated?: boolean;
     isActive?: boolean;
-    isBlocked?: boolean;
-    isReported?: boolean;
     isDeleted?: boolean;
     roleName?: string;
 }

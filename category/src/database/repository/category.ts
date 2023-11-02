@@ -60,12 +60,12 @@ class CategoryRepository {
     }
     //get all category
     async getAllCategory({ skip, limit }: { skip: number, limit: number }) {
-        const findCategory = await categoryModel.find({ isDeleted: false, isActive: true }).skip(skip).limit(limit);
+        const findCategory = await categoryModel.find({ isDeleted: false, isActive: true }).populate("userId").skip(skip).limit(limit);
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);
         }
-    }
+    } 
     // get category by name and search using regex
     async getCategoryByName(categoryInputs: { name: string }) {
         const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });

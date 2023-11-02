@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { imageRequest, } from '../interface/imageUpload';
+import { imageRequest, imageRequests } from '../interface/imageUpload';
 
 // All Business logic will be here
 class imageService {
@@ -26,7 +26,7 @@ class imageService {
                 mimetype: imageInputs.imageDetail.mimetype,
                 size: imageInputs.imageDetail.size,
                 path: imageInputs.imageDetail.path,
-            });
+            }); 
 
             return FormateData({ existingImage });
         } catch (err: any) {
@@ -34,7 +34,15 @@ class imageService {
         }
     }
 
+    async CreateImages(imageInputs: imageRequests) {
+        try {
+            const existingImage: any = await this.repository.CreateImages(imageInputs);
 
+            return FormateData({ existingImage });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
 }
 
 export = imageService;

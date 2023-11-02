@@ -3,54 +3,63 @@
 /user/node_modules
 /category/node_modules
 /upload/node_modules
+/product/node_modules
 
 # Package.lock
 /main/package-lock.json
 /user/package-lock.json
 /category/package-lock.json
 /upload/package-lock.json
+/product/package-lock.json
 
 # Dist
 /main/dist
 /user/dist
 /category/dist
 /upload/dist
+/product/dist
 
 # Build
 /main/build
 /user/build
 /category/build
 /upload/build
+/product/build
 
 # Env
 /main/.env 
 /user/.env
 /category/.env
 /upload/.env
+/product/.env
 
 # Log
 /main/log
 /user/log
 /category/log
 /upload/log
+/product/log
 
 # Temp
 /main/temp
 /user/temp
 /category/temp
 /upload/temp
+/product/temp
 
 # Cache
 /main/cache
 /user/cache
 /category/cache
 /upload/cache
+/product/cache
 
 # Error Log
 /main/app_error.log
 /user/app_error.log
 /category/app_error.log
 /upload/app_error.log
+/product/app_error.log
 
 # upload
-/upload/uploads
+/public/images

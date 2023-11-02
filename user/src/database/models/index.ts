@@ -1,10 +1,12 @@
 
-// import addressModel from './address';
+// First, import each model:
 import userModel from './user';
 import historyModel from './history';
 import roleModel from './role';
 import otpModel from './otp';
-// ... repeat for each model
+import profileModel from './profile';
+import locationModel from './location';
+import addressModel from './address';
 
 // Then, export them:
 export {
@@ -12,4 +14,7 @@ export {
     historyModel,
     roleModel,
     otpModel,
+    profileModel,
+    locationModel,
+    addressModel,
 };

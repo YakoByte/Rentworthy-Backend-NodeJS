@@ -5,6 +5,9 @@ import cors from 'cors';
 import HandleErrors from './utils/error-handler';
 import Admin from './api/user.ts';
 import Role from './api/role.ts';
+import profile from './api/profile.ts';
+import location from './api/location.ts';
+import address from './api/address.ts';
 
 
 export const configureExpress = async (app: Express) => {
@@ -15,6 +18,9 @@ export const configureExpress = async (app: Express) => {
   // API
   Admin(app);
   Role(app);
+  profile(app);
+  location(app);
+  address(app);
 
   // Error handling
   app.use(HandleErrors);

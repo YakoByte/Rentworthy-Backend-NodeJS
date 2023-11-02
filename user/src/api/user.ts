@@ -2,7 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/user';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest, userSignRequest, userLoginRequest } from '../interface/user';
-import { validateCreateAdmin, validateLoginUser } from './userValidation';
+// import { validateCreateAdmin, validateLoginUser } from './userValidation';
 import RoleService from '../services/role';
 import OTPService from '../services/otp';
 // import { isAdmin } from '../middlewares/checkRole';
@@ -38,7 +38,7 @@ export default (app: Express) => {
   });
 
   // API = login admin
-  app.post('/admin/login', validateLoginUser, async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "admin";
@@ -51,7 +51,7 @@ export default (app: Express) => {
   });
 
   // API = login user
-  app.post('/login', validateLoginUser, async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "user";
