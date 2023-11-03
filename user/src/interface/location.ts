@@ -6,7 +6,10 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
-    file?: any;
+    query: {
+        _id?: string;
+        userId?: string;
+    };
 }
 export interface Location extends Document {
     userId: Types.ObjectId;
@@ -20,10 +23,9 @@ export interface Location extends Document {
 
 export interface locationRequest {
     _id?: string;
-    userId: string;
-    location: {
+    userId?: string;
+    location?: {
         type: string;
         coordinates: number[];
-
     };
 }

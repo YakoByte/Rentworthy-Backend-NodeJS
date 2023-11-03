@@ -13,6 +13,7 @@ const locationSchema: Schema = new Schema<Location>(
             type: {
                 type: String,
                 enum: ["Point"],
+                default: "Point",
                 required: true,
             },
             coordinates: {

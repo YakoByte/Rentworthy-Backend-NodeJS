@@ -65,7 +65,10 @@ const categorySchema: Schema = new Schema<Product>(
             enum: ["hour", "day", "week", "month"],
             default: "day",
         },
-
+        rentingDate: {
+            startDate: Date,
+            endDate: Date,
+        },
     },
     { timestamps: true }
 );

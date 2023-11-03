@@ -23,6 +23,11 @@ export interface Product extends Document {
     rentedType: string;
     quantity: number;
     price: number;
+    rentingDate: {
+        startDate: Date;
+        endDate: Date;
+    };
+
 }
 
 export interface productRequest {

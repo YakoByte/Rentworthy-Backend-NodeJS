@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { addressRequest } from '../interface/address';
+import { addressRequest, getAddressRequest } from '../interface/address';
 
 // All Business logic will be here
 class AddressService {
@@ -31,26 +31,35 @@ class AddressService {
     }
 
     //get address by user id
-    async getAddressByUserId(addressInputs: addressRequest) {
-        try {
-            const existingAddress: any = await this.repository.getAddressByUserId(
-                addressInputs
-            );
+    // async getAddressByUserId(addressInputs: getAddressRequest) {
+    //     try {
+    //         const existingAddress: any = await this.repository.getAddressByUserId(
+    //             addressInputs
+    //         );
 
-            return FormateData({ existingAddress });
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
-    }
+    //         return FormateData({ existingAddress });
+    //     } catch (err: any) {
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
 
     //get address by id
-    async getAddressById(addressInputs: addressRequest) {
+    async getAddressById(addressInputs: getAddressRequest) {
         try {
-            const existingAddress: any = await this.repository.getAddressById(
-                addressInputs
-            );
+            let existingAddress: any
+            if (addressInputs.userId) {
+                existingAddress = await this.repository.getAddressByUserId(
+                    addressInputs
+                );
+                // return FormateData({ existingAddress });
+            } else if (addressInputs._id) {
+                existingAddress = await this.repository.getAddressById(
+                    addressInputs
+                );
+                // return FormateData({ existingAddress });
+            }
 
-            return FormateData({ existingAddress });
+            return existingAddress;
         } catch (err: any) {
             throw new APIError("Data Not found", err);
         }
@@ -78,7 +87,7 @@ class AddressService {
 
             return FormateData({ existingAddress });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            throw new APIError("Data Not found", err);  
         }
     }
 

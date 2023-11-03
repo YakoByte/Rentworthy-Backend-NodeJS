@@ -50,7 +50,7 @@ class profileRepository {
     //get all profile active or inactive blocked or unblocked
     async getAllProfile(profileInputs: getProfileRequest) {
         const findProfile = await profileModel.find(profileInputs)
-            .populate({ path: "userId", select: "userName email phoneNo bussinessType" });
+            .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
         console.log("findProfile", findProfile)
         if (findProfile) {
             return findProfile;
@@ -59,7 +59,7 @@ class profileRepository {
 
     async getProfileById(profileInputs: profileRequest) {
         const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false, })
-            .populate({ path: "userId", select: "userName email phoneNo bussinessType" });
+            .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
         console.log("findProfile", findProfile)
         if (findProfile) {
             return findProfile;

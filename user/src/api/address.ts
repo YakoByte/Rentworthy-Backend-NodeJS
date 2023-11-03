@@ -8,12 +8,12 @@ import { AuthenticatedRequest } from '../interface/address';
 export default (app: Express) => {
     const service = new AddressService();
     // API = create new address
-    app.post('/address/create-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        req.body.image = `http://localhost:4000/images/${req.file.filename}`;
+        // req.body.image = `http://localhost:4000/images/${req.file.filename}`;
         console.log("req.body", req.body)
         try {
             const { data } = await service.CreateAddress(req.body);
@@ -24,13 +24,13 @@ export default (app: Express) => {
     });
 
     // API = get address by id
-    app.post('/address/get-address', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/get-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
-        req.body._id = req.query._id
-        console.log("req.body", req.body)
+        // req.body._id = req.query._id
+        console.log("req.body", req.query)
         try {
-            const { data } = await service.getAddressById(req.body);
+            const data = await service.getAddressById(req.query);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -38,14 +38,12 @@ export default (app: Express) => {
     });
 
     // API = update address by id
-    app.post('/address/update-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         let authUser: any = req.user
+        req.body._id = req.query._id
         req.body.userId = authUser._id;
-        if (req.file) {
-            req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-        }
         console.log("req.body", req.body)
         try {
             const { data } = await service.updateAddressById(req.body);
@@ -56,11 +54,12 @@ export default (app: Express) => {
     });
 
     // API = delete address by id
-    app.post('/address/delete-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
+        req.body._id = req.query._id
 
         console.log("req.body", req.body)
         try {

@@ -11,7 +11,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { addressRequest } from "../../interface/address";
+import { addressRequest, getAddressRequest } from "../../interface/address";
 class addressRepository {
     async CreateAddress(addressInputs: addressRequest) {
         // try {
@@ -42,8 +42,8 @@ class addressRepository {
         // }
     }
 
-    async getAddressByUserId(addressInputs: addressRequest) {
-        const findAddress = await addressModel.find({ userId: addressInputs.userId, isDeleted: false, isBlocked: false, });
+    async getAddressByUserId(addressInputs: getAddressRequest) {
+        const findAddress = await addressModel.find({ userId: addressInputs.userId, isDeleted: false });
         console.log("findAddress", findAddress)
         if (findAddress) {
             return FormateData(findAddress);
@@ -51,8 +51,8 @@ class addressRepository {
     }
 
     //get address by id
-    async getAddressById(addressInputs: addressRequest) {
-        const findAddress = await addressModel.findOne({ _id: addressInputs._id, isDeleted: false, isBlocked: false, });
+    async getAddressById(addressInputs: getAddressRequest) {
+        const findAddress = await addressModel.findOne({ _id: addressInputs._id, isDeleted: false });
         console.log("findAddress", findAddress)
         if (findAddress) {
             return FormateData(findAddress);
@@ -61,16 +61,14 @@ class addressRepository {
 
     //update address
     async updateAddressById(addressInputs: addressRequest) {
-        const findAddress = await addressModel.findOne({ _id: addressInputs._id, isDeleted: false, isBlocked: false });
+        const findAddress = await addressModel.findOne({ _id: addressInputs._id, userId: addressInputs.userId, isDeleted: false });
         console.log("findAddress", findAddress)
         //if address exist
         if (findAddress) {
             const address = await addressModel
                 .findOneAndUpdate(
                     {
-                        _id: addressInputs._id,
-                        isDeleted: false,
-                        isBlocked: false
+                        _id: addressInputs._id, userId: addressInputs.userId, isDeleted: false
                     },
                     addressInputs,
                     { new: true }
@@ -81,7 +79,7 @@ class addressRepository {
 
     //delete address
     async deleteAddressById(addressInputs: addressRequest) {
-        const findAddress = await addressModel.findOne({ _id: addressInputs._id, isDeleted: false, isBlocked: false });
+        const findAddress = await addressModel.findOne({ _id: addressInputs._id, userId: addressInputs.userId, isDeleted: false });
         console.log("findAddress", findAddress)
         //if address exist
         if (findAddress) {
@@ -89,13 +87,20 @@ class addressRepository {
                 .findOneAndUpdate(
                     {
                         _id: addressInputs._id,
-                        isDeleted: false,
-                        isBlocked: false
+                        userId: addressInputs.userId,
+                        isDeleted: false
                     },
                     { isDeleted: true },
                     { new: true }
                 );
-            return FormateData({ message: "address deleted successfully" });
+            if (address) {
+
+                return FormateData({ message: "address deleted successfully" });
+            } else {
+                return FormateData({ message: "address not found" });
+            }
+        } else {
+            return FormateData({ message: "address not found" });
         }
     }
 

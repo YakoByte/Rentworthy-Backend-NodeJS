@@ -28,6 +28,11 @@ const userSchema: Schema = new Schema<Profile>(
     profileImage: {
       type: String,
     },
+    locationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Location",
+      required: true,
+    },
   },
   { timestamps: true }
 );

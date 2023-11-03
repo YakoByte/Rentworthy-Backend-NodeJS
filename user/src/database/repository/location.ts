@@ -1,4 +1,4 @@
-import { locationModel, historyModel } from "../models";
+import { locationModel, historyModel, profileModel } from "../models";
 import {
     FormateData,
     GeneratePassword,
@@ -18,7 +18,17 @@ class locationRepository {
 
         const location = new locationModel(locationInputs);
         const locationResult = await location.save();
-
+        let findProfile = await profileModel.findOne({ userId: locationInputs.userId });
+        if (findProfile) {
+            await profileModel.findOneAndUpdate({ userId: locationInputs.userId }, { $set: { locationId: locationResult._id } })
+        }
+        else {
+            const profile = new profileModel({
+                userId: locationInputs.userId,
+                locationId: locationResult._id
+            });
+            await profile.save();
+        }
         const history = new historyModel({
             locationId: locationResult._id,
             log: [
@@ -43,7 +53,7 @@ class locationRepository {
     }
 
     async getLocationByUserId(locationInputs: locationRequest) {
-        const findLocation = await locationModel.find({ userId: locationInputs.userId, isDeleted: false, isBlocked: false, });
+        const findLocation = await locationModel.find({ userId: locationInputs.userId, });
         console.log("findLocation", findLocation)
         if (findLocation) {
             return FormateData(findLocation);
@@ -52,7 +62,7 @@ class locationRepository {
 
     //get location by id
     async getLocationById(locationInputs: locationRequest) {
-        const findLocation = await locationModel.findOne({ _id: locationInputs._id, isDeleted: false, isBlocked: false, });
+        const findLocation = await locationModel.findOne({ _id: locationInputs._id, });
         console.log("findLocation", findLocation)
         if (findLocation) {
             return FormateData(findLocation);

@@ -5,7 +5,10 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
-    file?: any;
+    query: {
+        _id?: string;
+        userId?: string;
+    };
 }
 export interface Address extends Document {
     userId: Types.ObjectId;
@@ -30,5 +33,11 @@ export interface addressRequest {
     fullAddress: string;
     unitNumber: string;
     typeOfAddress: string;
-    isdefault: boolean;
-} 
+    isdefault?: boolean;
+}
+
+export interface getAddressRequest {
+    _id?: string;
+    userId?: string;
+
+}

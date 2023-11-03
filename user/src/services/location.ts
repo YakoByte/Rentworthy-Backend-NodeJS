@@ -23,7 +23,6 @@ class LocationService {
             const existingLocation: any = await this.repository.CreateLocation(
                 locationInputs
             );
-
             return FormateData({ existingLocation });
         } catch (err: any) {
             throw new APIError("Data Not found", err);
@@ -45,15 +44,24 @@ class LocationService {
 
     //get location by id
     async getLocationById(locationInputs: locationRequest) {
-        try {
-            const existingLocation: any = await this.repository.getLocationById(
+        // try {
+        let existingLocation: any
+        if (locationInputs.userId) {
+            existingLocation = await this.repository.getLocationByUserId(
                 locationInputs
             );
 
-            return FormateData({ existingLocation });
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
+
+        } else if (locationInputs._id) {
+            existingLocation = await this.repository.getLocationById(
+                locationInputs
+            );
+
         }
+        return existingLocation;
+        // } catch (err: any) {
+        //     throw new APIError("Data Not found", err);
+        // }
     }
 
     //update location
