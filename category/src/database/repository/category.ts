@@ -15,40 +15,42 @@ import { categoryRequest, categoryDeleteRequest, categoryUpdateRequest, category
 class CategoryRepository {
     //create category
     async CreateCategory(categoryInputs: categoryRequest) {
-        // try {
-        const findCategory = await categoryModel.findOne({ name: categoryInputs.name });
-        console.log("findCategory", findCategory)
-        if (findCategory) {
-            return FormateData({ id: findCategory._id, name: findCategory.name });
-        }
+        try {
+            const findCategory = await categoryModel.findOne({ name: categoryInputs.name });
+            console.log("findCategory", findCategory)
+            if (findCategory) {
+                return FormateData({ id: findCategory._id, name: findCategory.name });
+            }
 
-        const category = new categoryModel(categoryInputs);
-        const categoryResult = await category.save();
-
-        const history = new historyModel({
-            categoryId: categoryResult._id,
-            log: [
-                {
-                    objectId: categoryResult._id,
-                    data: {
-                        userId: categoryInputs.userId,
+            const category = new categoryModel(categoryInputs);
+            const categoryResult = await category.save();
+            console.log("categoryResult", categoryResult)
+            const history = new historyModel({
+                categoryId: categoryResult._id,
+                log: [
+                    {
+                        objectId: categoryResult._id,
+                        data: {
+                            userId: categoryInputs.userId,
+                        },
+                        action: `categoryName = ${categoryInputs.name} created`,
+                        date: new Date().toISOString(),
+                        time: Date.now(),
                     },
-                    action: `categoryName = ${categoryInputs.name} created`,
-                    date: new Date().toISOString(),
-                    time: Date.now(),
-                },
-            ],
-        });
-        await history.save();
+                ],
+            });
+            await history.save();
+            console.log("history", history)
 
-        return categoryResult;
-        // } catch (err) {
-        //     throw new APIError(
-        //         "API Error",
-        //         STATUS_CODES.INTERNAL_ERROR,
-        //         "Unable to Create User"
-        //     );
-        // }
+            return categoryResult;
+        } catch (err) {
+            console.log("err", err)
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to Create User"
+            );
+        }
     }
     //get category by id
     async getCategoryById(categoryInputs: { _id: string }) {
@@ -60,12 +62,13 @@ class CategoryRepository {
     }
     //get all category
     async getAllCategory({ skip, limit }: { skip: number, limit: number }) {
-        const findCategory = await categoryModel.find({ isDeleted: false, isActive: true }).populate("userId").skip(skip).limit(limit);
+        const findCategory = await categoryModel.aggregate([
+            { $match: { isDeleted: false, isActive: true } }, { $skip: skip }, { $limit: limit }])
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);
         }
-    } 
+    }
     // get category by name and search using regex
     async getCategoryByName(categoryInputs: { name: string }) {
         const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });

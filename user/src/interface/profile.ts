@@ -16,7 +16,7 @@ export interface Profile extends Document {
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage: string;
-    locationId: Types.ObjectId;
+    locationId?: Types.ObjectId;
 }
 
 export interface profileRequest {
@@ -27,7 +27,7 @@ export interface profileRequest {
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage: string;
-    locationId: Types.ObjectId;
+    locationId?: Types.ObjectId;
 }
 
 //get profiles

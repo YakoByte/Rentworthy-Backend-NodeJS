@@ -18,7 +18,8 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-            console.log("req.body", req.body.image)
+            // console.log("req.body", req.body)
+            console.log("req.body", req.body)
             const { data } = await service.CreateCategory(req.body);
             return res.json(data);
         } catch (err) {

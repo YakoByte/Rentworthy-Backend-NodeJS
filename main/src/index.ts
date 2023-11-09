@@ -1,8 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import { PORT } from './config';
-import { product, user } from './gateway';
-import { category } from './gateway';
-import { upload } from './gateway';
+import { product, user, category, upload, renting, chat } from './gateway';
 import path from 'path';
 
 const StartServer = async (): Promise<void> => {
@@ -21,6 +19,11 @@ const StartServer = async (): Promise<void> => {
   app.use('/app/api/v1/upload', upload)
   app.use('/web/api/v1/product', product)
   app.use('/app/api/v1/product', product)
+  app.use('/web/api/v1/renting', renting)
+  app.use('/app/api/v1/renting', renting)
+  // app.use('/web/api/v1/chat', chat)
+  // app.use('/app/api/v1/chat', chat)
+
 
   // 10mb limit for file upload
   app.use(express.json({ limit: '10mb' }));

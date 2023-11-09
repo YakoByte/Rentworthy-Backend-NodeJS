@@ -4,7 +4,7 @@ import UserAuth from '../middlewares/auth';
 import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest, getProfileRequest } from '../interface/profile';
 // import { validateCreateAdmin } from './adminValidation';
-
+    
 export default (app: Express) => {
     const service = new ProfileService();
     // API = create new profile
@@ -13,6 +13,7 @@ export default (app: Express) => {
         // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
+        console.log("req.file", req.file)
         req.body.profileImage = `http://localhost:4000/images/${req.file.filename}`;
         console.log("req.body", req.body)
         try {
@@ -65,7 +66,7 @@ export default (app: Express) => {
     });
 
     // API = delete profile by id
-    app.post('/delete-profile', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-profile', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         let authUser: any = req.user

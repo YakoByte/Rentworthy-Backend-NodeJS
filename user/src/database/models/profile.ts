@@ -31,7 +31,7 @@ const userSchema: Schema = new Schema<Profile>(
     locationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Location",
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

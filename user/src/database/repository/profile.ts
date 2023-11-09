@@ -18,7 +18,17 @@ class profileRepository {
         const findProfile = await profileModel.findOne({ userId: profileInputs.userId });
         console.log("findProfile", findProfile)
         if (findProfile) {
-            return FormateData(findProfile);
+            const profile = await profileModel
+                .findOneAndUpdate(
+                    {
+                        userId: profileInputs.userId,
+                        isDeleted: false,
+                        isBlocked: false
+                    },
+                    profileInputs,
+                    { new: true }
+                );
+            return FormateData(profile);
         }
 
         const profile = new profileModel(profileInputs);
@@ -84,6 +94,7 @@ class profileRepository {
                 );
             return FormateData({ message: "profile updated successfully" });
         }
+
     }
 
     //delete profile

@@ -66,6 +66,7 @@ export default (app: Express) => {
         try {
             console.log("req.body", req.body)
             req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            console.log("req.body.images", req.body.images)
             const { data } = await service.updateProduct({ ...req.body, userId: req.user._id, _id: req.query._id });
             return res.json(data);
         } catch (err) {

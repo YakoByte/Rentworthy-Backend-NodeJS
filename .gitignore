@@ -4,6 +4,8 @@
 /category/node_modules
 /upload/node_modules
 /product/node_modules
+/renting/node_modules
+/chat/node_modules
 
 # Package.lock
 /main/package-lock.json
@@ -11,6 +13,8 @@
 /category/package-lock.json
 /upload/package-lock.json
 /product/package-lock.json
+/renting/package-lock.json
+/chat/package-lock.json
 
 # Dist
 /main/dist
@@ -18,6 +22,8 @@
 /category/dist
 /upload/dist
 /product/dist
+/renting/dist
+/chat/dist
 
 # Build
 /main/build
@@ -25,6 +31,8 @@
 /category/build
 /upload/build
 /product/build
+/renting/build
+/chat/build
 
 # Env
 /main/.env 
@@ -32,6 +40,8 @@
 /category/.env
 /upload/.env
 /product/.env
+/renting/.env
+/chat/.env
 
 # Log
 /main/log
@@ -39,6 +49,8 @@
 /category/log
 /upload/log
 /product/log
+/renting/log
+/chat/log
 
 # Temp
 /main/temp
@@ -46,6 +58,8 @@
 /category/temp
 /upload/temp
 /product/temp
+/renting/temp
+/chat/temp
 
 # Cache
 /main/cache
@@ -53,6 +67,8 @@
 /category/cache
 /upload/cache
 /product/cache
+/renting/cache
+/chat/cache
 
 # Error Log
 /main/app_error.log
@@ -60,6 +76,8 @@
 /category/app_error.log
 /upload/app_error.log
 /product/app_error.log
+/renting/app_error.log
+/chat/app_error.log
 
 # upload
 /public/images
