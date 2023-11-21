@@ -23,7 +23,6 @@ export interface Product extends Document {
     rentedType: string;
     quantity: number;
     price: number;
-    cancellationPolicyIds: Types.ObjectId[];
     rentingDate: {
         startDate: Date;
         endDate: Date;

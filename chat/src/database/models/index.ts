@@ -1,11 +1,13 @@
 
 // import addressModel from './address';
 import historyModel from './history';
-import imageModel from  './image';
+import roomModel from './room';
+import messageModel from './messages';
 // ... repeat for each model
 
 // Then, export them:
 export {
     historyModel,
-    imageModel
+    roomModel,
+    messageModel
 };

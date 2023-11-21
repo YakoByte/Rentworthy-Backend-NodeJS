@@ -13,11 +13,13 @@ class AdminRepository {
   async CreateUser(userInputs: userSignRequest) {
     try {
       // check signup role
-      let role = await roleModel.findOne({ _id: userInputs.roleId });
-      console.log("role", role)
-      if (!role || role?.name !== userInputs.roleName) {
-        return FormateData({ message: "Invalid Role" });
-      }
+      console.log("userInputs", userInputs.roleName)
+      let roleId = await roleModel.findOne({ name: userInputs.roleName }).distinct('_id');
+      console.log("roleId", roleId)
+      // console.log("role", role)
+      // if (!role || role?.name !== userInputs.roleName) {
+      //   return FormateData({ message: "Invalid Role" });
+      // }
       // check if user already exist
       const findUser = await userModel.findOne(
         {
@@ -37,8 +39,9 @@ class AdminRepository {
 
       // create user
       const user = new userModel(
-        userInputs
+        { ...userInputs, roleId: roleId[0] }
       );
+      console.log("user", user)
       const userResult = await user.save();
       console.log("userInputs", userInputs)
 
@@ -48,7 +51,7 @@ class AdminRepository {
         log: [
           {
             objectId: userResult._id,
-            action: `Username = ${userInputs.userName} created`,
+            action: `email = ${userInputs.email} created`,
             date: new Date().toISOString(),
             time: Date.now(),
           },

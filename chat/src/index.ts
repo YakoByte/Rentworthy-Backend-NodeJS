@@ -2,22 +2,18 @@
 
 import express, { Express, Request, Response } from 'express';
 import { PORT } from './config';
-import { configureExpress } from './express-config.ts'; // Import the module
-import databaseConnection from './database/connection.ts';
+import { configureExpress } from './express-config'; // Removed ".ts" extension
+import databaseConnection from './database/connection'; // Removed ".ts" extension
 
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server as SocketIOServer } from 'socket.io'; // Renamed to prevent naming collision with http.Server
 import { setupSocketServer } from './api/chat';
 
-const StartServer = async (): Promise<void> => {
+const startServer = async (): Promise<void> => {
     const app: Express = express();
     // socket setup
-    const server = http.createServer(app);
-    const io = new Server(server, {
-        cors: {
-            origin: '*',
-        }
-    });
+
+
     // Connect to the database
     try {
         await databaseConnection(); // Assuming this function returns a promise
@@ -27,27 +23,33 @@ const StartServer = async (): Promise<void> => {
         process.exit(1);
     }
 
-    // Configure Express app using the module
-    await configureExpress(app);
+    // Configure Express app
+    configureExpress(app); // This should not be async unless the function actually returns a promise
 
-    // Define a simple root route
-    console.log("Called")
+    // Setup socket server
 
-
+    const server = http.createServer(app);
+    const io = new SocketIOServer(server, {
+        cors: {
+            origin: '*', // Be cautious with this in production
+        }
+    });
     setupSocketServer(io);
 
+    // Define a simple root route
     app.get('/', (req: Request, res: Response) => {
-        console.log("Called");
-        res.status(200).send({ message: 'Chat microservices called........' });
+        res.status(200).send({ message: 'Chat microservice is running...' });
     });
 
     // Start the Express server
     server.listen(PORT, () => {
-        console.log(`Listening to port ${PORT}`);
+        console.log(`Server listening on port ${PORT}`);
     }).on('error', (err: NodeJS.ErrnoException) => {
         console.error('Server error:', err);
         process.exit(1);
     });
 };
 
-StartServer();
+startServer().catch(error => {
+    console.error('Failed to start the server:', error);
+});

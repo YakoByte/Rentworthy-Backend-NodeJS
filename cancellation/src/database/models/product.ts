@@ -60,10 +60,6 @@ const categorySchema: Schema = new Schema<Product>(
             type: Boolean,
             default: false,
         },
-        cancellationPolicyIds: [{
-            type: Schema.Types.ObjectId,
-            ref: "cancellationPlan",
-        }],
         rentedType: {
             type: String,
             enum: ["hour", "day", "week", "month"],

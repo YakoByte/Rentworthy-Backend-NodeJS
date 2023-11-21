@@ -8,7 +8,7 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 export interface User extends Document {
-    userName: string;
+    // userName: string;
     phoneNo?: number;
     phoneCode?: string;
     email?: string;
@@ -18,19 +18,19 @@ export interface User extends Document {
     roleId: Types.ObjectId;
     appleId?: string;
     isGuest?: boolean;
-    isAuthenticated?: boolean;
+    isAuthenticated?: boolean;  
     isActive?: boolean;
     isDeleted?: boolean;
 }
 export interface userSignRequest {
-    userName: string;
+    // userName: string;
     phoneNo?: number;
     phoneCode?: string;
     bussinessType?: string;
     email?: string;
     password: string;
     stripe?: string;
-    roleId: string;
+    // roleId: string;
     appleId?: string;
     location?: string;
     isGuest?: boolean;
