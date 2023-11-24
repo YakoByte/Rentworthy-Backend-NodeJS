@@ -73,6 +73,17 @@ const categorySchema: Schema = new Schema<Product>(
             startDate: Date,
             endDate: Date,
         },
+        thumbnail: {
+            type: Schema.Types.ObjectId,
+            ref: "image"
+        },
+        address: {
+            type: String
+        },
+        location: {
+            type: "Point",
+            coordinate: [Number]
+        }
     },
     { timestamps: true }
 );

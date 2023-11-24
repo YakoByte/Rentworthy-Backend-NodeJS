@@ -23,6 +23,13 @@ export interface Product extends Document {
     rentedType: string;
     quantity: number;
     price: number;
+    thumbnail: Types.ObjectId
+    address: string
+    location: {
+        type: string;
+        coordinate: number[];
+    }
+    link: string
     cancellationPolicyIds: Types.ObjectId[];
     rentingDate: {
         startDate: Date;
@@ -40,6 +47,13 @@ export interface productRequest {
     userId: string;
     quantity: number;
     price: number;
+    thumbnail: Types.ObjectId
+    address: string
+    location: {
+        type: string;
+        coordinate: number[];
+    }
+    link: string
 }
 export interface productUpdateRequest {
     _id: string
@@ -52,6 +66,13 @@ export interface productUpdateRequest {
     approvedBy?: string;
     quantity?: number;
     price?: number;
+    thumbnail?: Types.ObjectId
+    address?: string
+    location?: {
+        type?: string;
+        coordinate?: number[];
+    }
+    link?: string
 }
 
 // for approve Product

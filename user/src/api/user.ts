@@ -1,7 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/user';
 import UserAuth from '../middlewares/auth';
-import { AuthenticatedRequest, userSignRequest, userLoginRequest } from '../interface/user';
+import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLoginRequest } from '../interface/user';
 // import { validateCreateAdmin, validateLoginUser } from './userValidation';
 import RoleService from '../services/role';
 import OTPService from '../services/otp';
@@ -110,4 +110,30 @@ export default (app: Express) => {
   //     next(err);
   //   }
   // });
+
+  // API = social signUp
+  app.post('/social-signup', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      console.log("req.body", req.body)
+      req.body.roleName = "user";
+      req.body.otp = req.user;
+      const { data } = await adminService.SocialSignUp(req.body);
+      return res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // API = social logIn
+  app.post('/social-login', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userDetail: socialUserLoginRequest = req.body;
+      req.body.roleName = "user";
+      const { data } = await adminService.SocialSignIn(userDetail);
+      console.log("data", data)
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
 };

@@ -9,7 +9,7 @@ import {
     ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
-import { userSignRequest, userLoginRequest, userSetPasswordRequest } from '../interface/user';
+import { userSignRequest, userLoginRequest, userSetPasswordRequest, socialUserSignRequest, socialUserLoginRequest } from '../interface/user';
 import { roleRequest } from '../interface/role';
 import e from 'express';
 
@@ -114,6 +114,51 @@ class AdminService {
         }
     }
     // sending password link
+
+    async SocialSignUp(userInputs: socialUserSignRequest) {
+        try {
+            const newUser: any = await this.repository.SocialCreateUser(
+                userInputs
+            );
+            return FormateData(newUser);
+        } catch (err: any) {
+            console.log("err", err)
+            throw new APIError("Data Not found", err);
+        }
+    }
+
+    async SocialSignIn(userInputs: socialUserLoginRequest) {
+        // const { email, password } = userInputs;
+        try {
+            const existingAdmin = await this.repository.FindMe(userInputs);
+            // check role
+            const checkRole: any = await this.repository.checkRole(userInputs.roleName, existingAdmin.roleId);
+            console.log("checkRole", checkRole)
+            if (checkRole.data.message === "Invalid Role") {
+                return FormateData({ message: "Invalid Role" });
+            }
+
+            //check bussiness type
+            if (userInputs.bussinessType && existingAdmin.bussinessType !== userInputs.bussinessType) {
+                return FormateData({ message: "Invalid Bussiness Type" });
+            }
+            if (userInputs.loginType && existingAdmin.loginType === userInputs.loginType) {
+                const token = await GenerateSignature({
+                    email: existingAdmin.email,
+                    _id: existingAdmin._id,
+                    userName: existingAdmin.userName,
+                    roleName: existingAdmin.roleId.name,
+                });
+
+                return FormateData({ id: existingAdmin._id, token });
+            }
+
+            return FormateData({ message: "Invalid Credentials" });
+
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
 }
 
 export = AdminService;

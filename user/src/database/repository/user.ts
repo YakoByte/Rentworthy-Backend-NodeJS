@@ -1,7 +1,7 @@
 import { userModel, roleModel, historyModel } from "../models";
 import { FormateData, GeneratePassword, GenerateSalt, GenerateSignature, ValidatePassword, } from '../../utils';
 import { APIError, BadRequestError, STATUS_CODES, } from "../../utils/app-error";
-import { userSignRequest, userLoginRequest } from "../../interface/user";
+import { userSignRequest, userLoginRequest, socialUserSignRequest, findMe } from "../../interface/user";
 import { roleRequest } from "../../interface/role";
 
 
@@ -144,10 +144,10 @@ class AdminRepository {
   //   }
   // }
 
-  async FindMe(userInputs: userLoginRequest) {
+  async FindMe(userInputs: findMe) {
     try {
 
-      const userResult: any = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs?.phoneNo }] }).populate("roleId");
+      const userResult: any = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs.phoneNo }] }).populate("roleId");
       // check role 
       // let role: any = await roleModel.findOne({ _id: userResult?.roleId });
       // if (role || role?.name === userInputs.roleName) {
@@ -211,6 +211,63 @@ class AdminRepository {
         STATUS_CODES.INTERNAL_ERROR,
         "Error on Update User"
       );
+    }
+  }
+
+  async SocialCreateUser(userInputs: socialUserSignRequest) {
+    try {
+      // check signup role
+      console.log("userInputs", userInputs.roleName)
+      let roleId = await roleModel.findOne({ name: userInputs.roleName }).distinct('_id');
+      console.log("roleId", roleId)
+      // console.log("role", role)
+      // if (!role || role?.name !== userInputs.roleName) {
+      //   return FormateData({ message: "Invalid Role" });
+      // }
+      // check if user already exist
+      const findUser = await userModel.findOne(
+        {
+          $or: [
+            { email: userInputs.email },
+            { phoneNo: userInputs.phoneNo },
+          ]
+        });
+      if (findUser) {
+        return FormateData({ message: "User already exist" });
+      }
+      // generate salt and password
+      // let salt = await GenerateSalt();
+      // let userPassword = await GeneratePassword(userInputs.password, salt);
+      // console.log("userPassword", userPassword)
+      // userInputs.password = userPassword;
+
+      // create user
+      const user = new userModel(
+        { ...userInputs, roleId: roleId[0] }
+      );
+      console.log("user", user)
+      const userResult = await user.save();
+      console.log("userInputs", userInputs)
+
+      // create history
+      const history = new historyModel({
+        userId: userResult._id,
+        log: [
+          {
+            objectId: userResult._id,
+            action: `email = ${userInputs.email} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
+          },
+        ],
+      });
+      await history.save();
+      console.log("userResult", userResult)
+
+      // return userResult;
+      return userResult;
+    } catch (err) {
+      console.log("err", err)
     }
   }
 }

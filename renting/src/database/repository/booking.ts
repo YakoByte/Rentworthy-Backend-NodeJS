@@ -1,4 +1,6 @@
 import { bookingModel, productModel, historyModel } from "../models";
+import axios from 'axios';
+
 import {
     FormateData,
     GeneratePassword,
@@ -11,10 +13,10 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { bookingRequest, bookingGetRequest, bookingUpdateRequest } from "../../interface/booking";
+import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from "../../interface/booking";
 class BookingRepository {
     //create booking
-    async CreateBooking(bookingInputs: bookingRequest) {
+    async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
         let bookingResult
         try {
             //check product's date already booked or product is exist in booking
@@ -63,6 +65,16 @@ class BookingRepository {
 
             const booking = new bookingModel(bookingInputs);
             bookingResult = await booking.save();
+            let tempBody = {
+                productId: bookingInputs.productId,
+                startDate: bookingInputs.startDate,
+                endDate: bookingInputs.endDate,
+            }
+            await axios.post("http://localhost:5004/app/api/v1/product/update-productreservation", tempBody, {
+                headers: {
+                    Authorization: req.headers.token
+                }
+            })
             return bookingResult;
         } catch (err) {
             console.log("err", err)
@@ -157,7 +169,7 @@ class BookingRepository {
         }
     }
     // reject booking by product owner
-    async rejectBooking(bookingInputs: bookingUpdateRequest) {
+    async rejectBooking(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
         //check booking is exist or not
         let booking = await bookingModel.findOne(
             {
@@ -182,6 +194,16 @@ class BookingRepository {
             { isAccepted: false, acceptedBy: bookingInputs.acceptedBy },
             { new: true });
         if (bookingResult) {
+            let tempBody = {
+                productId: bookingResult.productId,
+                startDate: bookingResult.startDate.toISOString().split("T")[0],
+                endDate: bookingResult.endDate.toISOString().split("T")[0],
+            }
+            await axios.post("http://localhost:5004/app/api/v1/product/update-relieveproductreservation", tempBody, {
+                headers: {
+                    Authorization: req.headers.token
+                }
+            })
             return FormateData(bookingResult);
         }
     }

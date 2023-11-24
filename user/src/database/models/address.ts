@@ -29,6 +29,10 @@ const addressSchema: Schema = new Schema<Address>(
             type: String,
             required: true,
         },
+        fullName: {
+            type: String,
+            required: true,
+        },
         unitNumber: {
             type: String,
         },

@@ -24,7 +24,7 @@ const userSchema: Schema = new Schema<User>(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
     stripe: {
       type: String,
@@ -58,6 +58,11 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false,
     },
+    loginType: {
+      type: String,
+      enum: ["google", "fb", "apple", "regular"],
+      default: "regular"
+    }
   },
   { timestamps: true }
 );

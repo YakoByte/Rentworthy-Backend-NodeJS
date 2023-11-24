@@ -18,9 +18,10 @@ export interface User extends Document {
     roleId: Types.ObjectId;
     appleId?: string;
     isGuest?: boolean;
-    isAuthenticated?: boolean;  
+    isAuthenticated?: boolean;
     isActive?: boolean;
     isDeleted?: boolean;
+    loginType?: string;
 }
 export interface userSignRequest {
     // userName: string;
@@ -38,6 +39,7 @@ export interface userSignRequest {
     isActive?: boolean;
     isDeleted?: boolean;
     roleName?: string;
+    loginType?: string;
 }
 export interface userLoginRequest {
     email?: string;
@@ -51,4 +53,35 @@ export interface userSetPasswordRequest {
     _id: string;
     oldPassword: string;
     newPassword: string;
+}
+
+export interface findMe {
+    email?: string;
+    phoneNo?: string;
+}
+
+export interface socialUserSignRequest {
+    // userName: string;
+    phoneNo?: number;
+    phoneCode?: string;
+    bussinessType?: string;
+    email?: string;
+    stripe?: string;
+    // roleId: string;
+    appleId?: string;
+    location?: string;
+    isGuest?: boolean;
+    isAuthenticated?: boolean;
+    isActive?: boolean;
+    isDeleted?: boolean;
+    roleName?: string;
+    loginType?: string;
+}
+
+export interface socialUserLoginRequest {
+    email?: string;
+    phoneNo?: string;
+    bussinessType?: string;
+    roleName: string;
+    loginType?: string;
 }

@@ -17,6 +17,7 @@ export interface Address extends Document {
     state: string;
     city: string;
     fullAddress: string;
+    fullName: string;
     unitNumber: string;
     typeOfAddress: string;
     isdefault?: boolean;
@@ -31,6 +32,7 @@ export interface addressRequest {
     state: string;
     city: string;
     fullAddress: string;
+    fullName: string;
     unitNumber: string;
     typeOfAddress: string;
     isdefault?: boolean;

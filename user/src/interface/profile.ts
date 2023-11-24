@@ -11,6 +11,11 @@ export interface AuthenticatedRequest extends Request {
 }
 export interface Profile extends Document {
     userId: Types.ObjectId;
+    userName?: string;
+    userDesc?: string;
+    countryCode?: number;
+    phoneNo?: number;
+    email?: string;
     isActive?: boolean;
     isBlocked?: boolean;
     isReported?: boolean;
@@ -22,11 +27,32 @@ export interface Profile extends Document {
 export interface profileRequest {
     // _id?: string;
     userId: string;
+    userName?: string;
+    userDesc?: string;
+    countryCode?: number;
+    phoneNo?: number;
+    email?: string;
     isActive?: boolean;
     isBlocked?: boolean;
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage: string;
+    locationId?: Types.ObjectId;
+}
+
+export interface updateProfile {
+    _id?: string;
+    userId?: string;
+    userName?: string;
+    userDesc?: string;
+    countryCode?: number;
+    phoneNo?: number;
+    email?: string;
+    isActive?: boolean;
+    isBlocked?: boolean;
+    isReported?: boolean;
+    isDeleted?: boolean;
+    profileImage?: string;
     locationId?: Types.ObjectId;
 }
 

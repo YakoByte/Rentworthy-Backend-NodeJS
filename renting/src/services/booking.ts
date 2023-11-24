@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest } from '../interface/booking';
+import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
 
 // All Business logic will be here
 class bookingService {
@@ -18,11 +18,12 @@ class bookingService {
         this.repository = new bookingRepository();
     }
     // create booking
-    async CreateBooking(bookingInputs: bookingRequest) {
+    async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
         try {
             console.log("bookingInputs", bookingInputs)
             const existingBooking: any = await this.repository.CreateBooking(
-                bookingInputs
+                bookingInputs,
+                req
             );
 
             return FormateData({ existingBooking });
@@ -72,7 +73,7 @@ class bookingService {
         }
     }
     // approve booking
-    async approveBooking(bookingInputs: bookingUpdateRequest) {
+    async approveBooking(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
         try {
             let existingBooking: any
             if (bookingInputs.isAccepted === true) {
@@ -81,7 +82,8 @@ class bookingService {
                 );
             } else {
                 existingBooking = await this.repository.rejectBooking(
-                    bookingInputs
+                    bookingInputs,
+                    req
                 );
             }
 

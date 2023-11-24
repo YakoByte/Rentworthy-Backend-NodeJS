@@ -17,7 +17,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.body)
-            const data = await service.CreateBooking(req.body);
+            const data = await service.CreateBooking(req.body, req);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -69,7 +69,7 @@ export default (app: Express) => {
     app.put('/approve-reject-booking', UserAuth, async (req: approveAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            const data = await service.approveBooking({ ...req.body, acceptedBy: authUser._id });
+            const data = await service.approveBooking({ ...req.body, acceptedBy: authUser._id }, req);
             return res.json(data);
         } catch (err) {
             next(err);

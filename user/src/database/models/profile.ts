@@ -9,6 +9,21 @@ const userSchema: Schema = new Schema<Profile>(
       ref: "User",
       required: true,
     },
+    userName: {
+      type: String,
+    },
+    userDesc: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    countryCode: {
+      type: Number,
+    },
+    phoneNo: {
+      type: Number,
+    },
     isActive: {
       type: Boolean,
       default: true,
