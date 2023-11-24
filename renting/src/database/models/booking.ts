@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 import { Booking } from "../../interface/booking";
 
-const categorySchema: Schema = new Schema<Booking>(
+const bookingSchema: Schema = new Schema<Booking>(
     {
         productId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -67,6 +67,6 @@ const categorySchema: Schema = new Schema<Booking>(
     { timestamps: true }
 );
 
-const Bookings = mongoose.model<Booking>("Booking", categorySchema);
+const Bookings = mongoose.model<Booking>("Booking", bookingSchema);
 
 export default Bookings;

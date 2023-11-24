@@ -7,6 +7,7 @@
 /renting/node_modules
 /chat/node_modules
 /cancellation/node_modules
+/social/node_modules
 
 # Package.lock
 /main/package-lock.json
@@ -17,6 +18,7 @@
 /renting/package-lock.json
 /chat/package-lock.json
 /cancellation/package-lock.json
+/social/package-lock.json
 
 # Dist
 /main/dist
@@ -27,6 +29,7 @@
 /renting/dist
 /chat/dist
 /cancellation/dist
+/social/dist
 
 # Build
 /main/build
@@ -37,6 +40,7 @@
 /renting/build
 /chat/build
 /cancellation/build
+/social/build
 
 # Env
 /main/.env 
@@ -47,6 +51,7 @@
 /renting/.env
 /chat/.env
 /cancellation/.env
+/social/.env
 
 # Log
 /main/log
@@ -57,6 +62,7 @@
 /renting/log
 /chat/log
 /cancellation/log
+/social/log
 
 # Temp
 /main/temp
@@ -67,6 +73,7 @@
 /renting/temp
 /chat/temp
 /cancellation/temp
+/social/temp
 
 # Cache
 /main/cache
@@ -77,6 +84,7 @@
 /renting/cache
 /chat/cache
 /cancellation/cache
+/social/cache
 
 # Error Log
 /main/app_error.log
@@ -87,6 +95,7 @@
 /renting/app_error.log
 /chat/app_error.log
 /cancellation/app_error.log
+/social/app_error.log
 
 # upload
 /public/images

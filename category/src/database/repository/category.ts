@@ -54,7 +54,7 @@ class CategoryRepository {
     }
     //get category by id
     async getCategoryById(categoryInputs: { _id: string }) {
-        const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true });
+        const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true }, { _id: 1, name: 1, description: 1, image: 1 });
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);
