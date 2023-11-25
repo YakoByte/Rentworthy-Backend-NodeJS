@@ -5,6 +5,11 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - $PWD/caddy_data:/data
+      - ./caddy_config:/config
 
   main:
     build: ./main
@@ -41,7 +46,7 @@ services:
       - "5004"
     env_file:
       - ./product/.env
-  rentings:
+  renting:
     build: ./renting
     restart: unless-stopped
     expose:
@@ -55,3 +60,7 @@ services:
       - "5006"
     env_file:
       - ./chat/.env
+
+volumes:
+  caddy_data:
+  caddy_config:
