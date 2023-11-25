@@ -10,48 +10,48 @@ services:
     build: ./main
     restart: unless-stopped
     expose:
-      - "5000:5000"
+      - "5000"
     env_file:
       - ./main/.env
   user:
     build: ./user
     restart: unless-stopped
     expose:
-      - "5001:5001"
+      - "5001"
     env_file:
       - ./user/.env
   category:
     build: ./category
     restart: unless-stopped
     expose:
-      - "5002:5002"
+      - "5002"
     env_file:
       - ./category/.env
   upload:
     build: ./upload
     restart: unless-stopped
     expose:
-      - "5003:5003"
+      - "5003"
     env_file:
       - ./upload/.env
   product:
     build: ./product
     restart: unless-stopped
     expose:
-      - "5004:5004"
+      - "5004"
     env_file:
       - ./product/.env
   rentings:
     build: ./renting
     restart: unless-stopped
     expose:
-      - "5005:5005"
+      - "5005"
     env_file:
       - ./renting/.env
   chat:
     build: ./chat
     restart: unless-stopped
     expose:
-      - "5006:5006"
+      - "5006"
     env_file:
       - ./chat/.env

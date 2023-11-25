@@ -1,5 +1,5 @@
-# Use an official Node runtime as a parent image
-FROM node:14
+ # Use an official Node runtime as a parent image
+FROM node:18.17.1
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -14,7 +14,8 @@ RUN npm install
 COPY . .
 
 # Make port available to the world outside this container
-EXPOSE 3000
+EXPOSE 3003
 
 # Run the app when the container launches
-CMD ["node", "server.js"]
+CMD ["npm", "run", "dev"]
+
