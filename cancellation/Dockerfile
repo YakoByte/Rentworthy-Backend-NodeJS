@@ -18,4 +18,3 @@ EXPOSE 3003
 
 # Run the app when the container launches
 CMD ["npm", "run", "dev"]
-

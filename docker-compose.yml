@@ -1,18 +1,8 @@
 version: "3"
 services:
-  caddy:
-    image: caddy:2
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/site:/srv
-      - $PWD/caddy_data:/data
-      - ./caddy_config:/config
-
   main:
     build: ./main
+    container_name: main
     restart: unless-stopped
     expose:
       - "5000"
@@ -20,6 +10,7 @@ services:
       - ./main/.env
   user:
     build: ./user
+    container_name: user
     restart: unless-stopped
     expose:
       - "5001"
@@ -27,6 +18,7 @@ services:
       - ./user/.env
   category:
     build: ./category
+    container_name: category
     restart: unless-stopped
     expose:
       - "5002"
@@ -34,6 +26,7 @@ services:
       - ./category/.env
   upload:
     build: ./upload
+    container_name: upload
     restart: unless-stopped
     expose:
       - "5003"
@@ -41,6 +34,7 @@ services:
       - ./upload/.env
   product:
     build: ./product
+    container_name: product
     restart: unless-stopped
     expose:
       - "5004"
@@ -48,6 +42,7 @@ services:
       - ./product/.env
   renting:
     build: ./renting
+    container_name: renting
     restart: unless-stopped
     expose:
       - "5005"
@@ -55,11 +50,23 @@ services:
       - ./renting/.env
   chat:
     build: ./chat
+    container_name: chat
     restart: unless-stopped
     expose:
       - "5006"
     env_file:
       - ./chat/.env
+  caddy:
+    image: caddy:2
+    container_name: caddy-service
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
 
 volumes:
   caddy_data:

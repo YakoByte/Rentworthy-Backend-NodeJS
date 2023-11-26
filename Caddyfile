@@ -1,5 +1,7 @@
-backend.rentworthy.us{
-    reverse_proxy main:5000{
+backend.rentworthy.us {
+    reverse_proxy main:5000 {
         header_down Strict-Transport-Security "max-age=31536000;"
     }
 }
+
+
