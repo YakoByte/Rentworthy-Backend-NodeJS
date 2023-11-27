@@ -4,58 +4,65 @@ services:
     build: ./main
     container_name: main
     restart: unless-stopped
-    expose:
-      - "5000"
+    ports:
+      - "5000:5000"
     env_file:
       - ./main/.env
+
   user:
     build: ./user
     container_name: user
     restart: unless-stopped
-    expose:
-      - "5001"
+    ports:
+      - "5001:5001"
     env_file:
       - ./user/.env
+
   category:
     build: ./category
     container_name: category
     restart: unless-stopped
-    expose:
-      - "5002"
+    ports:
+      - "5002:5002"
     env_file:
       - ./category/.env
+
   upload:
     build: ./upload
     container_name: upload
     restart: unless-stopped
-    expose:
-      - "5003"
+    ports:
+      - "5003:5003"
     env_file:
       - ./upload/.env
+
   product:
     build: ./product
     container_name: product
     restart: unless-stopped
-    expose:
-      - "5004"
+    ports:
+      - "5004:5004"
     env_file:
       - ./product/.env
+
   renting:
     build: ./renting
     container_name: renting
     restart: unless-stopped
-    expose:
-      - "5005"
+    ports:
+      - "5005:5005"
     env_file:
       - ./renting/.env
+
   chat:
     build: ./chat
     container_name: chat
     restart: unless-stopped
-    expose:
-      - "5006"
+    ports:
+      - "5006:5006"
     env_file:
       - ./chat/.env
+
   caddy:
     image: caddy:2
     container_name: caddy-service
