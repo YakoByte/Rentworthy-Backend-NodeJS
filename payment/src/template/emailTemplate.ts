@@ -18,7 +18,7 @@ export function sendEmail(options: EmailOptions): void {
         service: 'Gmail', // e.g., 'Gmail'
         auth: {
             user: 'bhavdip.gadara762@gmail.com',
-            pass: 'nheu qhyc cbjg lttp'
+            pass: 'xctt lurz uasz bewu'
         }
     });
 

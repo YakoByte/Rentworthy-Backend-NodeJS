@@ -22,6 +22,11 @@ const bookingSchema: Schema = new Schema<Booking>(
             ref: "user",
             required: true,
         },
+        paymentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "payment",
+            required: true,
+        },
         quantity: {
             type: Number,
             required: true,
@@ -57,6 +62,11 @@ const bookingSchema: Schema = new Schema<Booking>(
         },
         isAccepted: {
             type: Boolean,
+        },
+        status: {
+            type: String,
+            default: "Processing",
+            enum: ["Processing", "Pending", "Delivered", "Canceled", "Rejected", "Returned"]
         },
         acceptedBy: {
             type: mongoose.Schema.Types.ObjectId,

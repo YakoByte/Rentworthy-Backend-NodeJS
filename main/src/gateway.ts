@@ -38,6 +38,9 @@ const rentingMicroservice: string =
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://chat:5006";
+const paymentMicroservice: string =
+  // process.env.CHAT_MICROSERVICE_URL ||
+  "http://chat:5007";
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -75,4 +78,10 @@ const chat = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: chatMicroservice });
 };
 
-export { user, category, upload, product, renting, chat };
+//payment microservice
+const payment = (req: IncomingMessage, res: ServerResponse) => {
+  console.log("Routing to chat microservice", req.url);
+  gateway.web(req, res, { target: paymentMicroservice });
+};
+
+export { user, category, upload, product, renting, chat, payment };

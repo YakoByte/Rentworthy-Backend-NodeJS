@@ -10,7 +10,7 @@ const LogErrors: Logger = createLogger({
 });
 
 class ErrorLogger {
-  constructor() { }
+  constructor() {}
 
   async logError(err: Error) {
     console.log("==================== Start Error Logger ===============");
@@ -46,7 +46,7 @@ const ErrorHandler = async (err: Error, req: Request, res: Response, next: NextF
     errorLogger.logError(error);
     if (errorLogger.isTrustError(error as AppError)) {
       // process exit // need restart
-    }
+    } 
   });
 
   if (err) {

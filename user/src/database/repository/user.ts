@@ -3,6 +3,8 @@ import { FormateData, GeneratePassword, GenerateSalt, GenerateSignature, Validat
 import { APIError, BadRequestError, STATUS_CODES, } from "../../utils/app-error";
 import { userSignRequest, userLoginRequest, socialUserSignRequest, findMe } from "../../interface/user";
 import { roleRequest } from "../../interface/role";
+import OTPRepository from "./otp";
+const OTPRep = new OTPRepository()
 
 
 
@@ -28,6 +30,7 @@ class AdminRepository {
             { phoneNo: userInputs.phoneNo },
           ]
         });
+      console.log(findUser, "user")
       if (findUser) {
         return FormateData({ message: "User already exist" });
       }
@@ -44,7 +47,9 @@ class AdminRepository {
       console.log("user", user)
       const userResult = await user.save();
       console.log("userInputs", userInputs)
-
+      if (user.email) {
+        OTPRep.CreateOTP({ email: user.email })
+      }
       // create history
       const history = new historyModel({
         userId: userResult._id,

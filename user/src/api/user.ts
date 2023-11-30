@@ -25,11 +25,11 @@ export default (app: Express) => {
     }
   });
   // API = create new user
-  app.post('/signup', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post('/signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "user";
-      req.body.otp = req.user;
+      // req.body.otp = req.user;
       const { data } = await adminService.SignUp(req.body);
       return res.status(200).json(data);
     } catch (err) {
@@ -116,7 +116,6 @@ export default (app: Express) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "user";
-      req.body.otp = req.user;
       const { data } = await adminService.SocialSignUp(req.body);
       return res.status(200).json(data);
     } catch (err) {

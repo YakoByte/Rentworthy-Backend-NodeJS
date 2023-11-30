@@ -13,7 +13,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from "../../interface/booking";
+import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, approveAuthenticatedRequest, bookingRequestWithPayment } from "../../interface/booking";
 class BookingRepository {
     //create booking
     async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
@@ -62,20 +62,37 @@ class BookingRepository {
                 return FormateData({ message: "All the Products Are Booked" });
             }
             // console.log("findAllBooking", findAllBooking)
-
-            const booking = new bookingModel(bookingInputs);
-            bookingResult = await booking.save();
-            let tempBody = {
+            let paymentObj = {
+                paymentMethodId: bookingInputs.paymentMethodId,
                 productId: bookingInputs.productId,
-                startDate: bookingInputs.startDate,
-                endDate: bookingInputs.endDate,
+                paymentIntentId: bookingInputs.paymentIntentId,
+                userId: bookingInputs.userId,
+                quantity: bookingInputs.quantity,
+                price: bookingInputs.totalAmount
             }
-            await axios.post("http://localhost:5004/app/api/v1/product/update-productreservation", tempBody, {
+            let paymentStatus: any = await axios.post("http://localhost:5007/app/api/v1/payment/confirm-payment-intent", paymentObj, {
                 headers: {
                     Authorization: req.headers.token
                 }
             })
-            return bookingResult;
+            if (paymentStatus.payStatus == "succeeded") {
+                let tempObj: bookingRequestWithPayment = { ...bookingInputs, paymentId: paymentStatus.paymentId }
+                const booking = new bookingModel(tempObj);
+                bookingResult = await booking.save();
+                let tempBody = {
+                    productId: bookingInputs.productId,
+                    startDate: bookingInputs.startDate,
+                    endDate: bookingInputs.endDate,
+                }
+                await axios.post("http://localhost:5004/app/api/v1/product/update-productreservation", tempBody, {
+                    headers: {
+                        Authorization: req.headers.token
+                    }
+                })
+                return bookingResult;
+            } else {
+                return FormateData({ message: "Something went wrong with the payment." });
+            }
         } catch (err) {
             console.log("err", err)
             return err;
