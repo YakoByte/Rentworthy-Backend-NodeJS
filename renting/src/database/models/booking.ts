@@ -25,7 +25,6 @@ const bookingSchema: Schema = new Schema<Booking>(
         paymentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "payment",
-            required: true,
         },
         quantity: {
             type: Number,

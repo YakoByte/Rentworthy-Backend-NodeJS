@@ -13,6 +13,8 @@ import {
 } from "../../utils/app-error";
 import { productRequest, productDeleteRequest, productUpdateRequest, productGetRequest } from "../../interface/product";
 import { populate } from "dotenv";
+import productReservationService from "../../services/productreservation";
+const ResRepo = new productReservationService()
 class ProductRepository {
     //create product
     async CreateProduct(productInputs: productRequest) {
@@ -25,7 +27,12 @@ class ProductRepository {
 
         const product = new productModel(productInputs);
         const productResult = await product.save();
-
+        let resObj = {
+            productId: productResult._id.toString(),
+            startDate: productInputs.rentingDate.startDate,
+            endDate: productInputs.rentingDate.endDate
+        }
+        ResRepo.CreateProductReservation(resObj)
         const history = new historyModel({
             productId: productResult._id,
             log: [

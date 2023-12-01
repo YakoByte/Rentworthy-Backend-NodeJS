@@ -1,5 +1,5 @@
 import productratingRepository from '../database/repository/productrating';
-import { productRatingRequest, getProductRatingRequest } from "../interface/productrating";
+import { productRatingRequest, getProductRatingRequest, AuthenticatedRequest } from "../interface/productrating";
 import {
     FormateData,
     GeneratePassword,
@@ -17,10 +17,10 @@ class productService {
         this.repository = new productratingRepository();
     }
 
-    async CreateProductRating(productInputs: productRatingRequest) {
+    async CreateProductRating(productInputs: productRatingRequest, req: AuthenticatedRequest) {
         try {
             const existingProduct: any = await this.repository.CreateProductRating(
-                productInputs
+                productInputs, req
             );
 
             return FormateData({ existingProduct });

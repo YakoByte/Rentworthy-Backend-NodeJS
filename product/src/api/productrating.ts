@@ -11,7 +11,7 @@ export default (app: Express) => {
     app.post('/create-productrating', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.CreateProductRating(req.body);
+            const { data } = await service.CreateProductRating(req.body, req);
             return res.json(data);
         } catch (err) {
             next(err);

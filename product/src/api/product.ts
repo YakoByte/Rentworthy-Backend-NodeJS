@@ -20,13 +20,12 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
     }
 
     try {
-        const response = await axios.post("http://localhost:5000rs/app/api/v1/upload/image-uploads", formData, {
+        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token, // Add the token to the Authorization header
             },
         });
-        console.log('some-----', response)
         return response.data.existingImage.map((obj: { _id: any; }) => obj._id);
     } catch (error: any) {
         return error.message;
@@ -45,12 +44,23 @@ export default (app: Express) => {
         try {
             req.body.userId = req.user._id;
             req.body = { ...req.body }
+            let coordinate = JSON.parse(req.body['location.coordinates'])
+            delete req.body['location.coordinates']
+            req.body.location = {
+                type: "Point",
+                coordinates: coordinate
+            }
+            req.body.rentingDate = {
+                startDate: req.body.startDate,
+                endDate: req.body.endDate
+            }
+            delete req.body.startDate
+            delete req.body.endDate
             req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             const { data } = await service.CreateProduct(req.body);
-            console.log('data--------', data)
             return res.status(200).json(data);
         } catch (err: any) {
-            console.log('went like this-----symphonyyyyyyyyyyyy ', err)
+            console.log('went like this-----', err)
             return res.status(err.STATUS_CODE).json(err);
             next(err);
         }
