@@ -240,17 +240,16 @@ class AdminRepository {
       if (findUser) {
         return FormateData({ message: "User already exist" });
       }
-      // generate salt and password
-      // let salt = await GenerateSalt();
-      // let userPassword = await GeneratePassword(userInputs.password, salt);
-      // console.log("userPassword", userPassword)
-      // userInputs.password = userPassword;
 
       // create user
       const user = new userModel(
         { ...userInputs, roleId: roleId[0] }
       );
       console.log("user", user)
+      if(userInputs.loginType === "google"){
+        // check token and get data from that token
+          
+      }
       const userResult = await user.save();
       console.log("userInputs", userInputs)
 
