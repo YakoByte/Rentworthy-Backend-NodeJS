@@ -67,7 +67,14 @@ services:
       - ./site:/srv
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - backend_network
+    restart: unless-stopped
 
 volumes:
   caddy_data:
   caddy_config:
+
+networks:
+  backend_network:
+    driver: bridge
