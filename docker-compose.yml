@@ -1,8 +1,8 @@
 version: "3"
 services:
-  main:
+  backend-main:
     build: ./main
-    container_name: main
+    container_name: backend-main
     restart: unless-stopped
     expose:
       - "5000"
@@ -60,8 +60,8 @@ services:
     image: caddy:2
     container_name: caddy-service
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./site:/srv
