@@ -59,7 +59,7 @@ services:
   caddy:
     image: caddy:2
     container_name: caddy-service
-    ports:
+    expose:
       - "80:80"
       - "443:443"
     volumes:
@@ -70,4 +70,4 @@ services:
 
 volumes:
   caddy_data:
-  caddy_config:
+  caddy_config:
