@@ -51,8 +51,12 @@ export interface productRequest {
     address: string
     location: {
         type: string;
-        coordinate: number[];
+        coordinates: number[];
     }
+    rentingDate: {
+        startDate: string;
+        endDate: string;
+    };
     link: string
 }
 export interface productUpdateRequest {

@@ -1,5 +1,5 @@
 import productReviewRepository from '../database/repository/productreview';
-import { productReviewRequest, getProductReviewRequest } from "../interface/productreview";
+import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest } from "../interface/productreview";
 import {
     FormateData,
     GeneratePassword,
@@ -17,10 +17,10 @@ class productService {
         this.repository = new productReviewRepository();
     }
 
-    async CreateProductReview(productInputs: productReviewRequest) {
+    async CreateProductReview(productInputs: productReviewRequest, req: AuthenticatedRequest) {
         try {
             const existingProduct: any = await this.repository.CreateProductReview(
-                productInputs
+                productInputs, req
             );
 
             return FormateData({ existingProduct });

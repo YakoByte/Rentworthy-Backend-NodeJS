@@ -10,7 +10,7 @@ import {
 import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
 
 
-class productService {
+class productReservationService {
     private repository: productreservationRepository;
 
     constructor() {
@@ -83,4 +83,4 @@ class productService {
     }
 }
 
-export = productService;
+export = productReservationService;

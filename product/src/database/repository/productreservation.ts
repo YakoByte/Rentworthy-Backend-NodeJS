@@ -99,7 +99,10 @@ class ProductReservationRepository {
                     customerRes: oneObj.reserved
                 },
                 $pull: {
-                    availableDates: oneObj.reserved
+                    // availableDates: oneObj.reserved
+                    availableDates: {
+                        $in: oneObj.reserved
+                    }
                 }
             })
 
@@ -152,7 +155,9 @@ class ProductReservationRepository {
                     selfRes: oneObj.reserved
                 },
                 $pull: {
-                    availableDates: oneObj.reserved
+                    availableDates: {
+                        $in: oneObj.reserved
+                    }
                 }
             })
 
@@ -205,7 +210,10 @@ class ProductReservationRepository {
                     availableDates: oneObj.reserved
                 },
                 $pull: {
-                    customerRes: oneObj.reserved
+                    // customerRes: oneObj.reserved
+                    customerRes: {
+                        $in: oneObj.reserved
+                    }
                 }
             })
 

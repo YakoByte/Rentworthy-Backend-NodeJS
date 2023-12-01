@@ -18,7 +18,7 @@ export interface ProductReview extends Document {
 export interface productReviewRequest {
     userId: string;
     productId: string;
-    review: number
+    review: string
 }
 
 export interface getProductReviewRequest {

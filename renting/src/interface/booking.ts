@@ -8,6 +8,8 @@ export interface postAuthenticatedRequest extends Request {
     };
     body: {
         productId: string;
+        // paymentMethodId: string
+        // paymentIntentId: string
         startDate: Date;
         endDate: Date;
         userId: string;
@@ -68,6 +70,7 @@ export interface Booking extends Document {
     startDate: Date;
     endDate: Date;
     userId: Types.ObjectId;
+    paymentId?: Types.ObjectId;
     quantity: number;
     isDeleted?: boolean;
     images: string[];
@@ -76,12 +79,34 @@ export interface Booking extends Document {
     totalAmount: number;
     expandId?: Types.ObjectId;
     isAccepted?: boolean;
+    status?: string;
     acceptedBy?: string;
 }
 
 export interface bookingRequest {
     _id?: string;
     productId: string;
+    // paymentMethodId: string
+    // paymentIntentId: string
+    status?: string;
+    startDate: Date;
+    endDate: Date;
+    userId: string;
+    quantity: string;
+    images: string[];
+    addressId: string;
+    price: string;
+    totalAmount: string;
+    expandId?: string;
+}
+
+export interface bookingRequestWithPayment {
+    _id?: string;
+    productId: string;
+    // paymentId: Types.ObjectId;
+    // paymentMethodId: string
+    // paymentIntentId: string
+    status?: string;
     startDate: Date;
     endDate: Date;
     userId: string;
