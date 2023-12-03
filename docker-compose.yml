@@ -1,8 +1,8 @@
 version: "3"
 services:
-  backend-main:
+  backend_main:
     build: ./main
-    container_name: backend-main
+    container_name: backend_main
     restart: unless-stopped
     expose:
       - "5000"
@@ -56,9 +56,9 @@ services:
       - "5006"
     env_file:
       - ./chat/.env
-  caddy:
+  caddy_backend:
     image: caddy:2
-    container_name: caddy-service
+    container_name: caddy_service
     ports:
       - "8080:80"
       - "8443:443"
@@ -67,14 +67,8 @@ services:
       - ./site:/srv
       - caddy_data:/data
       - caddy_config:/config
-    networks:
-      - backend_network
     restart: unless-stopped
 
 volumes:
   caddy_data:
   caddy_config:
-
-networks:
-  backend_network:
-    driver: bridge
