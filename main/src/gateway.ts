@@ -16,7 +16,7 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
 
 const userMicroservice: string =
   // process.env.USER_MICROSERVICE_URL ||
-  "http://user:5001";
+  "http://localhost:5001";
 
 // const categoryMicroservice: string = "http://localhost:5002";
 // const uploadMicroservice: string = "http://localhost:5003";
@@ -25,22 +25,25 @@ const userMicroservice: string =
 // const chatMicroservice: string = "http://localhost:5006";
 const categoryMicroservice: string =
   // process.env.CATEGORY_MICROSERVICE_URL ||
-  "http://category:5002";
+  "http://localhost:5002";
 const uploadMicroservice: string =
   // process.env.UPLOAD_MICROSERVICE_URL ||
-  "http://upload:5003";
+  "http://localhost:5003";
 const productMicroservice: string =
   // process.env.PRODUCT_MICROSERVICE_URL ||
-  "http://product:5004";
+  "http://localhost:5004";
 const rentingMicroservice: string =
   // process.env.RENTING_MICROSERVICE_URL ||
-  "http://renting:5005";
+  "http://localhost:5005";
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://chat:5006";
+  "http://localhost:5006";
 const paymentMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://chat:5007";
+  "http://localhost:5007";
+  const socialtMicroservice: string =
+  // process.env.CHAT_MICROSERVICE_URL ||
+  "http://localhost:5010";
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -80,8 +83,14 @@ const chat = (req: IncomingMessage, res: ServerResponse) => {
 
 //payment microservice
 const payment = (req: IncomingMessage, res: ServerResponse) => {
-  console.log("Routing to chat microservice", req.url);
+  console.log("Routing to payment microservice", req.url);
   gateway.web(req, res, { target: paymentMicroservice });
 };
 
-export { user, category, upload, product, renting, chat, payment };
+//social microservice
+const social = (req: IncomingMessage, res: ServerResponse) => {
+  console.log("Routing to social microservice", req.url);
+  gateway.web(req, res, { target: socialtMicroservice });
+};
+
+export { user, category, upload, product, renting, chat, payment,social };

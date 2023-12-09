@@ -24,7 +24,7 @@ export default (app: Express) => {
     });
 
     // API = get subCategory by id and search and all subCategory
-    app.get('/get-subcategory', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-subcategory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;

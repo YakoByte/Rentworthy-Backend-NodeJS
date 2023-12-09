@@ -84,6 +84,19 @@ export default (app: Express) => {
       next(err);
     }
   })
+
+  // API = Check if the token has expired
+  app.post('/verifyTokenExpiry', UserAuth,async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log("req.body", req.body)
+      let token:any = req.headers.authorization
+      const { data } = await adminService.expiryToken(token);
+      return res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  })
+
   // API = reset password
   app.put('/reset-password', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {

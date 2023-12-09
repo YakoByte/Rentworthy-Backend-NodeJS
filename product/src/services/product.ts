@@ -59,7 +59,7 @@ class productService {
             return existingProduct;
         } catch (err: any) {
             console.log("err", err.message)
-            throw new BadRequestError("Data Not found", err);
+            return new BadRequestError("Data Not found", err);
         }
     }
     // update product

@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { PORT } from "./config";
-import { product, user, category, upload, renting, chat, payment } from "./gateway";
+import { product, user, category, upload, renting, chat, payment,social } from "./gateway";
 import path from "path";
 
 const StartServer = async (): Promise<void> => {
@@ -23,6 +23,8 @@ const StartServer = async (): Promise<void> => {
   app.use("/app/api/v1/renting", renting);
   app.use("/web/api/v1/payment", payment);
   app.use("/app/api/v1/payment", payment);
+  app.use("/web/api/v1/social", social);
+  app.use("/app/api/v1/social", social);
   // app.use('/web/api/v1/chat', chat)
   // app.use('/app/api/v1/chat', chat)
 

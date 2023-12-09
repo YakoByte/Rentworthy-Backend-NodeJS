@@ -68,7 +68,12 @@ const adsSchema: Schema = new Schema<Ads>(
             },
         },
         location: {
-            type: "Point",
+            type: {
+                type: String,
+                enum: ["Point"],
+                default: "Point",
+                required: true,
+            },
             coordinates: {
                 type: [Number],
                 required: true,

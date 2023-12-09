@@ -1,3 +1,4 @@
 export = {
-    ads: require('./ads').default,
+    ads: require('./ads'),
+    recommendation: require('./recommendation'),
 };
