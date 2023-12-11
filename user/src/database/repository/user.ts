@@ -230,13 +230,25 @@ class AdminRepository {
       //   return FormateData({ message: "Invalid Role" });
       // }
       // check if user already exist
-      const findUser = await userModel.findOne(
-        {
-          $or: [
-            { email: userInputs.email },
-            { phoneNo: userInputs.phoneNo },
-          ]
-        });
+      let findUser
+      if (userInputs.email) {
+        findUser = await userModel.findOne(
+          {
+            $or: [
+              { email: userInputs.email },
+              // { phoneNo: userInputs.phoneNo },
+            ]
+          });
+      } else if (userInputs.phoneNo) {
+        findUser = await userModel.findOne(
+          {
+            $or: [
+              // { email: userInputs.email },
+              { phoneNo: userInputs.phoneNo },
+            ]
+          });
+      }
+      console.log(findUser, "user")
       if (findUser) {
         return FormateData({ message: "User already exist" });
       }
@@ -246,10 +258,10 @@ class AdminRepository {
         { ...userInputs, roleId: roleId[0] }
       );
       console.log("user", user)
-      if(userInputs.loginType === "google"){
-        // check token and get data from that token
-          
-      }
+      // if (userInputs.loginType === "google") {
+      //   // check token and get data from that token
+
+      // }
       const userResult = await user.save();
       console.log("userInputs", userInputs)
 
@@ -272,6 +284,19 @@ class AdminRepository {
       return userResult;
     } catch (err) {
       console.log("err", err)
+    }
+  }
+
+  async FindAllUsers() {
+    try {
+      const users = await userModel.find();
+      return users;
+    } catch (error) {
+      throw new APIError(
+        "API Error",
+        STATUS_CODES.INTERNAL_ERROR,
+        "Error on Find All Users"
+      );
     }
   }
 }

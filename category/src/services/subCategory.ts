@@ -32,6 +32,8 @@ class subCategoryService {
     // get subCategory by id , name or all subCategory
     async getSubCategory(subCategoryInputs: subCategoryGetRequest) {
         try {
+            subCategoryInputs.page = subCategoryInputs.page ? (Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit)).toString() : '0';
+            subCategoryInputs.limit = subCategoryInputs.limit ? Number(subCategoryInputs.limit).toString() : '10';
             let existingSubCategory: any
             if (subCategoryInputs._id) {
                 existingSubCategory = await this.repository.getSubCategoryById(
@@ -53,7 +55,7 @@ class subCategoryService {
 
             return FormateData({ existingSubCategory });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return ({ message: "Data Not found", err });
         }
     }
     // update subCategory

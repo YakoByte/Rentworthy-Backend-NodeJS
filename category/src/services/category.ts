@@ -8,7 +8,8 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { categoryRequest, categoryUpdateRequest,categoryDeleteRequest, categoryGetRequest } from '../interface/category';
+import { categoryRequest, categoryUpdateRequest, categoryDeleteRequest, categoryGetRequest } from '../interface/category';
+import category from '../api/category';
 
 // All Business logic will be here
 class categoryService {
@@ -31,6 +32,8 @@ class categoryService {
     }
     // get category by id , search or all category
     async getCategory(categoryInputs: categoryGetRequest) {
+        let page = categoryInputs.page ? Number(categoryInputs.page) * Number(categoryInputs.limit) - Number(categoryInputs.limit) : 0;
+        let limit = categoryInputs.limit ? Number(categoryInputs.limit) : 10;
         try {
             let existingCategory: any
             if (categoryInputs._id) {
@@ -43,14 +46,15 @@ class categoryService {
                 );
             } else {
                 existingCategory = await this.repository.getAllCategory({
-                    skip: Number(categoryInputs.page) * Number(categoryInputs.limit) - Number(categoryInputs.limit),
-                    limit: Number(categoryInputs.limit)
+                    skip: page,
+                    limit: limit
                 });
             }
 
             return FormateData({ existingCategory });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            console.log("service err", err)
+            return FormateData({ message: "Data Not found", err });
         }
     }
     // update category

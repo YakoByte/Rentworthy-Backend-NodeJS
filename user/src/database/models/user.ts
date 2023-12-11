@@ -12,15 +12,17 @@ const userSchema: Schema = new Schema<User>(
     // },
     phoneNo: {
       type: Number,
-      unique: true,
+      // unique: true,
+      default: null,
     },
     phoneCode: {
       type: String,
     },
     email: {
       type: String,
-      unique: true,
+      // unique: true,
       lowercase: true,
+      default: null,
     },
     password: {
       type: String,

@@ -30,14 +30,15 @@ export default (app: Express) => {
     // API = get category by id and search and all category
     app.get('/get-category', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
-            req.body.userId = authUser._id;
+            // let authUser: any = req.user
+            // req.body.userId = authUser._id;
             console.log("req.body", req.query)
 
             const { data } = await service.getCategory(req.query);
             return res.json(data);
         } catch (err) {
-            next(err);
+            console.log("err", err)
+            return (err);
         }
     });
 

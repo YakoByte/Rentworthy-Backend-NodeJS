@@ -86,10 +86,10 @@ export default (app: Express) => {
   })
 
   // API = Check if the token has expired
-  app.post('/verifyTokenExpiry', UserAuth,async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/verifyTokenExpiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
-      let token:any = req.headers.authorization
+      let token: any = req.headers.authorization
       const { data } = await adminService.expiryToken(token);
       return res.status(200).json(data);
     } catch (err) {
@@ -125,7 +125,7 @@ export default (app: Express) => {
   // });
 
   // API = social signUp
-  app.post('/social-signup', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post('/social-signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "user";
@@ -142,6 +142,18 @@ export default (app: Express) => {
       const userDetail: socialUserLoginRequest = req.body;
       req.body.roleName = "user";
       const { data } = await adminService.SocialSignIn(userDetail);
+      console.log("data", data)
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.get('/get-all-users', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // const userDetail: socialUserLoginRequest = req.body;
+      // req.body.roleName = "user";
+      const { data } = await adminService.GetAllUsers();
       console.log("data", data)
       return res.json(data);
     } catch (err) {

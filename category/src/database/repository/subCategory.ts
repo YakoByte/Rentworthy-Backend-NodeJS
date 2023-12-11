@@ -1,4 +1,5 @@
 import { subCategoryModel, historyModel } from "../models";
+import ObjectId from "mongoose";
 import {
     FormateData,
     GeneratePassword,
@@ -61,7 +62,7 @@ class SubCategoryRepository {
         const findSubCategory =
             await subCategoryModel
                 .find({ categoryId: subCategoryInputs.categoryId, isDeleted: false, isActive: true })
-                .skip(Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit))
+                .skip(Number(subCategoryInputs.page))
                 .limit(Number(subCategoryInputs.limit));
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
@@ -73,7 +74,7 @@ class SubCategoryRepository {
         const findSubCategory =
             await subCategoryModel
                 .find({ isDeleted: false, isActive: true })
-                .skip(Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit))
+                .skip(Number(subCategoryInputs.page))
                 .limit(Number(subCategoryInputs.limit));
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
@@ -90,7 +91,7 @@ class SubCategoryRepository {
     }
     //update subCategory name, description, isActive, isShow, image
     async updateSubCategory(subCategoryInputs: subCategoryUpdateRequest) {
-        const findSubCategory = await subCategoryModel.findOne({ _id: subCategoryInputs._id,  isDeleted: false, isActive: true  });
+        const findSubCategory = await subCategoryModel.findOne({ _id: subCategoryInputs._id, isDeleted: false, isActive: true });
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
             const subCategoryResult = await subCategoryModel.updateOne({ _id: subCategoryInputs._id }, subCategoryInputs);

@@ -10,7 +10,7 @@ export default (app: Express) => {
     const service = new SubCategoryService();
 
     // API = create new subCategory
-    app.post('/create-subcategory', UserAuth, isAdmin,  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-subcategory', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             // console.log("req.file", req.file)
             let authUser: any = req.user
@@ -26,14 +26,14 @@ export default (app: Express) => {
     // API = get subCategory by id and search and all subCategory
     app.get('/get-subcategory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
-            req.body.userId = authUser._id;
+            // let authUser: any = req.user
+            // req.body.userId = authUser._id;
             console.log("req.body", req.query)
 
-            const { data } = await service.getSubCategory(req.query);
+            const data = await service.getSubCategory(req.query);
             return res.json(data);
         } catch (err) {
-            next(err);
+            return (err);
         }
     });
 
