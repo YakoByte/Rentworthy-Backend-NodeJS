@@ -23,13 +23,13 @@ class AdminRepository {
       //   return FormateData({ message: "Invalid Role" });
       // }
       // check if user already exist
-      const findUser = await userModel.findOne(
-        {
-          $or: [
-            { email: userInputs.email },
-            { phoneNo: userInputs.phoneNo },
-          ]
-        });
+      let query = {}
+      if (userInputs.email) {
+        query = { email: userInputs.email }
+      } else if (userInputs.phoneNo) {
+        query = { phoneNo: userInputs.phoneNo }
+      }
+      const findUser = await userModel.findOne(query);
       console.log(findUser, "user")
       if (findUser) {
         return FormateData({ message: "User already exist" });
@@ -151,8 +151,14 @@ class AdminRepository {
 
   async FindMe(userInputs: findMe) {
     try {
-
-      const userResult: any = await userModel.findOne({ $or: [{ email: userInputs.email }, { phoneNo: userInputs.phoneNo }] }).populate("roleId");
+      let query = {}
+      if (userInputs.email) {
+        query = { email: userInputs.email }
+      } else if (userInputs.phoneNo) {
+        query = { phoneNo: userInputs.phoneNo }
+      }
+      console.log("query", query)
+      const userResult: any = await userModel.findOne(query).populate("roleId");
       // check role 
       // let role: any = await roleModel.findOne({ _id: userResult?.roleId });
       // if (role || role?.name === userInputs.roleName) {

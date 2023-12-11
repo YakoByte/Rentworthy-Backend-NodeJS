@@ -25,7 +25,7 @@ export default (app: Express) => {
     });
 
     // API = get location by id
-    app.get('/get-location', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         // req.body._id = req.query._id
