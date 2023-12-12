@@ -5,23 +5,49 @@ import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest, adsRequest, postAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/ads';
 import upload from '../middlewares/imageStorage';
+import axios from 'axios';
+import fs from 'fs';
+import FormData from 'form-data';
 // import multer from 'multer';
 // import path from 'path';
 // import { validateCreateAdmin } from './adminValidation';
 
+async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<void> {
+    const formData = new FormData();
+
+    // Append each image file to the FormData object
+    for (const imagePath of imagePaths) {
+        formData.append('image', fs.createReadStream(imagePath));
+    }
+
+    try {
+        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
+            headers: {
+                ...formData.getHeaders(),
+                Authorization: token, // Add the token to the Authorization header
+            },
+        });
+        return response.data.existingImage.map((obj: { _id: any; }) => obj._id);
+    } catch (error: any) {
+        return error.message;
+    }
+}
+
 export default (app: Express) => {
-    const service = new AdsService();                                                                                                               
+    const service = new AdsService();
 
     // API = create new ads
-    app.post('/create-ads', UserAuth, upload.single("images"), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-ads', UserAuth, upload.array("image", 5), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.body)
+            req.body.image = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             const data = await service.CreateAds(req.body);
             return res.json(data);
         } catch (err) {
-            next(err);
+            console.log("api err", err)
+            return (err);
         }
     });
 
@@ -31,6 +57,7 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             // req.query.user = authUser;
             console.log("req.query", req.query)
+            console.log("authUser", authUser)
             const { data } = await service.getAds({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {

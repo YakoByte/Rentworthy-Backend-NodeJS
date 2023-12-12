@@ -25,10 +25,10 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return existingAds;
         } catch (err: any) {
             console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return ({ message: "Data Not found", err });
         }
     }
     // get ads by id , userId or all ads

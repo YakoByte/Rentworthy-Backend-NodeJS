@@ -56,6 +56,8 @@ export interface deleteAuthenticatedRequest extends Request {
 
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
+    files?: any;
+    headers: any;
     user?: {
         _id: string;
     };

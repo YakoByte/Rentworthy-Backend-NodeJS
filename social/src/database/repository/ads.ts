@@ -1,4 +1,5 @@
 import { adsModel, productModel, historyModel } from "../models";
+import { ObjectId } from 'mongodb';
 import {
     FormateData,
     GeneratePassword,
@@ -25,92 +26,110 @@ class AdsRepository {
             }
             adsResult = await adsModel.create(adsInputs);
             if (adsResult) {
-                return FormateData(adsResult);
+                return adsResult;
             }
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            console.log("repository err", err)
+            return ({ message: "Data Not found", err });
         }
     }
     //get all ads
     async getAllAds(adsInputs: adsGetRequest) {
         let adsResult
         try {
-            // get ads by id
+
+            const baseQuery = { isDeleted: false };
+
+            const queryConditions = [];
+
             if (adsInputs._id) {
-                adsResult = await adsModel.findOne({ _id: adsInputs._id, isDeleted: false });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ _id: new ObjectId(adsInputs._id) });
             }
-            // get ads by userId
-            if (adsInputs.userId) {
-                adsResult = await adsModel.find({ userId: adsInputs.userId, isDeleted: false });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+
+            if (adsInputs.user) {
+                console.log("adsInputs.user", adsInputs.user)
+                queryConditions.push({ userId: new ObjectId(adsInputs.user._id) });
             }
-            // get ads by productId
             if (adsInputs.productId) {
-                adsResult = await adsModel.find({ productId: adsInputs.productId, isDeleted: false });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ productId: new ObjectId(adsInputs.productId) });
             }
-            // get ads by categoryId
             if (adsInputs.categoryId) {
-                adsResult = await adsModel.find({ categoryId: adsInputs.categoryId, isDeleted: false });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ categoryId: new ObjectId(adsInputs.categoryId) });
             }
-            // get ads by subCategoryId
             if (adsInputs.subCategoryId) {
-                adsResult = await adsModel.find({ subCategoryId: adsInputs.subCategoryId, isDeleted: false });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ subCategoryId: new ObjectId(adsInputs.subCategoryId) });
             }
-            // get ads by nearBy
             if (adsInputs.lat && adsInputs.long) {
-                adsResult = await adsModel.find({
-                    location: {
+                queryConditions.push({
+                    "location": {
                         $near: {
                             $geometry: {
                                 type: "Point",
-                                coordinates: adsInputs.lat.toString() + adsInputs.long.toString()
+                                coordinates: [Number(adsInputs.lat), Number(adsInputs.long)]
                             },
                             $maxDistance: adsInputs.distance ? adsInputs.distance : 10000
                         }
                     }
                 });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
             }
-            // get ads by city 
             if (adsInputs.city) {
-                adsResult = await adsModel.find({ "address.city": adsInputs.city });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ "address.city": adsInputs.city });
             }
-            //get ads by state
             if (adsInputs.state) {
-                adsResult = await adsModel.find({ "address.state": adsInputs.state });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ "address.state": adsInputs.state });
             }
-            // get ads by country
             if (adsInputs.country) {
-                adsResult = await adsModel.find({ "address.country": adsInputs.country });
-                if (adsResult) {
-                    return FormateData(adsResult);
-                }
+                queryConditions.push({ "address.country": adsInputs.country });
             }
-            // get all ads
-            adsResult = await adsModel.find({ isDeleted: false });
+
+
+            try {
+                if (queryConditions.length > 0) {
+                    console.log("queryConditions", queryConditions, baseQuery)
+                    adsResult = await adsModel.aggregate([
+                        {
+                            $match: {
+                                ...baseQuery,
+                                $or: queryConditions
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "wishlists",
+                                let: { productId: "$productId" },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $and: [
+                                                    { $eq: ["$userId", new ObjectId(adsInputs.user._id)] },
+                                                    { $in: ["$$productId", "$productIds"] }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ],
+                                as: "wishlist"
+                            }
+                        },
+                        {
+                            $addFields: {
+                                isFav: {
+                                    $cond: {
+                                        if: { $eq: [{ $size: "$wishlist" }, 0] },
+                                        then: false,
+                                        else: true
+                                    }
+                                }
+                            }
+                        }
+                    ]);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            console.log("adsResult", adsResult)
+
             if (adsResult) {
                 return FormateData(adsResult);
             }

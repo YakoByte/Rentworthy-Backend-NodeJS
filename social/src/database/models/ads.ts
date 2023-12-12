@@ -7,25 +7,25 @@ const adsSchema: Schema = new Schema<Ads>(
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "category",
-            required: true,
+            // required: true,
         },
         subCategoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "subCategory",
-            required: true,
+            // required: true,
         },
         title: {
             type: String,
-            required: true,
+            // required: true,
         },
         description: {
             type: String,
-            required: true,
+            // required: true,
         },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",
-            required: true,
+            // required: true,
         },
         startDate: {
             type: Date,
@@ -38,7 +38,7 @@ const adsSchema: Schema = new Schema<Ads>(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
-            required: true,
+            // required: true,
         },
         isDeleted: {
             type: Boolean,
@@ -47,24 +47,24 @@ const adsSchema: Schema = new Schema<Ads>(
         image: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "image",
-            required: true,
+            // required: true,
         },
         address: {
             area: {
                 type: String,
-                required: true,
+                // required: true,
             },
             city: {
                 type: String,
-                required: true,
+                // required: true,
             },
             state: {
                 type: String,
-                required: true,
+                // required: true,
             },
             country: {
                 type: String,
-                required: true,
+                // required: true,
             },
         },
         location: {
@@ -72,32 +72,32 @@ const adsSchema: Schema = new Schema<Ads>(
                 type: String,
                 enum: ["Point"],
                 default: "Point",
-                required: true,
+                // required: true,
             },
             coordinates: {
                 type: [Number],
-                required: true,
+                // required: true,
             },
         },
         distance: {
             type: Number,
-            required: true,
+            // required: true,
         },
         isGlobal: {
             type: Boolean,
-            required: true,
+            // required: true,
         },
         startTime: {
             type: String,
-            required: true,
+            // required: true,
         },
         endTime: {
             type: String,
-            required: true,
+            // required: true,
         },
         url: {
             type: String,
-            required: true,
+            // required: true,
         },
         isApproved: {
             type: Boolean,
@@ -113,5 +113,8 @@ const adsSchema: Schema = new Schema<Ads>(
 );
 
 const Ads = mongoose.model<Ads>("Ads", adsSchema);
+
+// create index for location
+adsSchema.index({ location: "2dsphere" });
 
 export default Ads;

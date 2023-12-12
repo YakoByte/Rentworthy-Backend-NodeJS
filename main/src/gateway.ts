@@ -41,7 +41,7 @@ const chatMicroservice: string =
 const paymentMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://localhost:5007";
-  const socialtMicroservice: string =
+  const socialMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://localhost:5010";
 
@@ -90,7 +90,7 @@ const payment = (req: IncomingMessage, res: ServerResponse) => {
 //social microservice
 const social = (req: IncomingMessage, res: ServerResponse) => {
   console.log("Routing to social microservice", req.url);
-  gateway.web(req, res, { target: socialtMicroservice });
+  gateway.web(req, res, { target: socialMicroservice });
 };
 
 export { user, category, upload, product, renting, chat, payment,social };
