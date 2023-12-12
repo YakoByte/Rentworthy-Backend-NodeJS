@@ -21,9 +21,16 @@
     "http-proxy": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "net": "^1.0.2",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
+    "path": "^0.12.7",
     "socket.io": "^4.7.2",
-    "ts-node": "^10.9.1",
-    "ws": "^8.14.2"
-  }
+    "ts-node": "^10.9.2",
+    "ws": "^8.15.0"
+  },
+  "name": "main",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
