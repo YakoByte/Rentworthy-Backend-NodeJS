@@ -77,7 +77,7 @@ export default (app: Express) => {
     // API = update ads by id
     app.put('/update-ads-by-id', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.updateAdsById(req.body);
+            const data = await service.updateAdsById({...req.body, _id: req.query._id as string});
             return res.json(data);
         } catch (err) {
             next(err);
@@ -88,7 +88,7 @@ export default (app: Express) => {
     app.put('/approve-reject-ads', UserAuth, async (req: approveAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            const data = await service.approveAds({ ...req.body, approvedBy: authUser._id });
+            const data = await service.approveAds({ ...req.body, approvedBy: authUser._id, _id: req.query._id as string });
             return res.json(data);
         } catch (err) {
             next(err);
