@@ -25,7 +25,6 @@ class imageService {
             if (imageInputs.imageDetail.mimetype !== "image/jpeg" && imageInputs.imageDetail.mimetype !== "image/png") {
                 return FormateData({ message: "Invalid Image Type" });
             }
-
             const imagePath = imageInputs.imageDetail.path;
             const imageMimetype = imageInputs.imageDetail.mimetype;
             const imageSize = imageInputs.imageDetail.size;
@@ -59,7 +58,6 @@ class imageService {
                 if (imageInputs.imageDetails[i].mimetype !== "image/jpeg" && imageInputs.imageDetails[i].mimetype !== "image/png") {
                     return FormateData({ message: "Invalid Image Type" });
                 }
-                
                 const imagePath = imageInputs.imageDetails[i].path;
                 const imageMimetype = imageInputs.imageDetails[i].mimetype;
                 const imageSize = imageInputs.imageDetails[i].size;
