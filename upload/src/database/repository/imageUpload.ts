@@ -16,10 +16,6 @@ class ImageRepository {
     //create image
     async CreateImage(imageInputs: imageDetail) {
         try {
-            // check mimetype and size of image
-            if (imageInputs.mimetype !== "image/jpeg" && imageInputs.mimetype !== "image/png") {
-                return FormateData({ message: "Invalid Image Type" });
-            }
             const image = new imageModel(imageInputs);
             const imageResult = await image.save();
             console.log("imageResult", imageResult)
@@ -52,21 +48,7 @@ class ImageRepository {
     // create images
     async CreateImages(imageInputs: imageRequests) {
         try {
-            let imagePayload: any = [];
-            for (let i = 0; i < imageInputs.imageDetails.length; i++) {
-                if (imageInputs.imageDetails[i].mimetype !== "image/jpeg" && imageInputs.imageDetails[i].mimetype !== "image/png") {
-                    return FormateData({ message: "Invalid Image Type" });
-                }
-                let image = {
-                    imageName: imageInputs.imageDetails[i].filename,
-                    userId: imageInputs.userId,
-                    mimetype: imageInputs.imageDetails[i].mimetype,
-                    size: imageInputs.imageDetails[i].size,
-                    path: `http://localhost:4000/images/${imageInputs.imageDetails[i].filename}`,
-                }
-                imagePayload.push(image)
-            }
-            const imageResult = await imageModel.insertMany(imagePayload);
+            const imageResult = await imageModel.insertMany(imageInputs);
             // create histories
             for (let i = 0; i < imageResult.length; i++) {
                 let history = new historyModel({

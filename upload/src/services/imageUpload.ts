@@ -9,6 +9,8 @@ import {
 import { APIError, BadRequestError } from '../utils/app-error';
 
 import { imageRequest, imageRequests } from '../interface/imageUpload';
+import { uploadS3File } from '../utils/aws';
+import fs from "fs";
 
 // All Business logic will be here
 class imageService {
@@ -20,12 +22,28 @@ class imageService {
     // create image
     async CreateImage(imageInputs: imageRequest) {
         try {
+            if (imageInputs.imageDetail.mimetype !== "image/jpeg" && imageInputs.imageDetail.mimetype !== "image/png") {
+                return FormateData({ message: "Invalid Image Type" });
+            }
+
+            const imagePath = imageInputs.imageDetail.path;
+            const imageMimetype = imageInputs.imageDetail.mimetype;
+            const imageSize = imageInputs.imageDetail.size;
+            const newImageName = `${Date.now()}_${imageInputs.imageDetail.imageName}`;
+        
+            const newImagePath = await uploadS3File(imagePath, newImageName);
+        
+            // delete the file if it exists
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+            }
+
             const existingImage: any = await this.repository.CreateImage({
-                imageName: imageInputs.imageDetail.imageName,
+                imageName: newImageName,
                 userId: imageInputs.userId,
-                mimetype: imageInputs.imageDetail.mimetype,
-                size: imageInputs.imageDetail.size,
-                path: imageInputs.imageDetail.path,
+                mimetype: imageMimetype,
+                size: imageSize,
+                path: newImagePath,
             }); 
 
             return FormateData({ existingImage });
@@ -36,7 +54,35 @@ class imageService {
 
     async CreateImages(imageInputs: imageRequests) {
         try {
-            const existingImage: any = await this.repository.CreateImages(imageInputs);
+            let imagePayload: any = [];
+            for (let i = 0; i < imageInputs.imageDetails.length; i++) {
+                if (imageInputs.imageDetails[i].mimetype !== "image/jpeg" && imageInputs.imageDetails[i].mimetype !== "image/png") {
+                    return FormateData({ message: "Invalid Image Type" });
+                }
+                
+                const imagePath = imageInputs.imageDetails[i].path;
+                const imageMimetype = imageInputs.imageDetails[i].mimetype;
+                const imageSize = imageInputs.imageDetails[i].size;
+                const newImageName = `${Date.now()}_${imageInputs.imageDetails[i].filename}`;
+            
+                const newImagePath = await uploadS3File(imagePath, newImageName);
+            
+                // delete the file if it exists
+                if (fs.existsSync(imagePath)) {
+                  fs.unlinkSync(imagePath);
+                }
+
+                let image = {
+                    imageName: newImageName,
+                    userId: imageInputs.userId,
+                    mimetype: imageMimetype,
+                    size: imageSize,
+                    path: newImagePath,
+                }
+                imagePayload.push(image)
+            }
+
+            const existingImage: any = await this.repository.CreateImages(imagePayload);
 
             return FormateData({ existingImage });
         } catch (err: any) {
