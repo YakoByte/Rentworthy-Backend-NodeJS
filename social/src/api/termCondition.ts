@@ -17,13 +17,13 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
+        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
-        return response.data.existingImage[0]._id; // Assuming you are expecting a single image ID
+        return response.data.existingImage._id; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;
     }
@@ -94,18 +94,30 @@ export default (app: Express) => {
         }
     });
     // API = add images to TermCondition
-    app.post('/add-images-to-termCondition', UserAuth, upload.array("images", 10), async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/add-images-to-termCondition', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+   
+            if (req.file) {
+                req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
+            }
             const data = await service.addImagesToTermCondition(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
-
     // API = update TermCondition by id
-    app.put('/update-termCondition-by-id', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.put('/update-termCondition-by-id', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+   
+            if (req.file) {
+                req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
+            }
+
             const data = await service.updateById({...req.body, _id: req.query._id as string});
             return res.json(data);
         } catch (err) {
