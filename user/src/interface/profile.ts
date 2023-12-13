@@ -7,6 +7,7 @@ export interface AuthenticatedRequest extends Request {
         userName: string;
         roleName: string;
     };
+    headers: any;
     file?: any;
 }
 export interface Profile extends Document {

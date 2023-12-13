@@ -4,6 +4,26 @@ import UserAuth from '../middlewares/auth';
 import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest, getProfileRequest } from '../interface/profile';
 // import { validateCreateAdmin } from './adminValidation';
+import axios from 'axios';
+import fs from 'fs';
+import FormData from 'form-data';
+
+async function uploadImageWithToken(imagePath: string, token: string): Promise<string> {
+    const formData = new FormData();
+    formData.append('image', fs.createReadStream(imagePath));
+
+    try {
+        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+            headers: {
+                ...formData.getHeaders(),
+                Authorization: token,
+            },
+        });
+        return response.data.existingImage._id; // Assuming you are expecting a single image ID
+    } catch (error: any) {
+        return error.message;
+    }
+}
     
 export default (app: Express) => {
     const service = new ProfileService();
@@ -11,10 +31,14 @@ export default (app: Express) => {
     app.post('/create-profile', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
+    
+            // Check if req.file is defined before accessing its properties
         let authUser: any = req.user
         req.body.userId = authUser._id;
         console.log("req.file", req.file)
-        req.body.profileImage = `http://localhost:4000/images/${req.file.filename}`;
+        if (req.file) {
+            req.body.profileImage = await uploadImageWithToken(req.file.path, req.headers.authorization);
+        }
         console.log("req.body", req.body)
         try {
             const { data } = await service.CreateProfile(req.body);
@@ -54,7 +78,7 @@ export default (app: Express) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
         if (req.file) {
-            req.body.profileImage = `http://localhost:4000/images/${req.file.filename}`;
+            req.body.profileImage = await uploadImageWithToken(req.file.path, req.headers.authorization);
         }
         console.log("req.body", req.body)
         try {
