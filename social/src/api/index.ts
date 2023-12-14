@@ -4,4 +4,5 @@ export = {
     contactus: require('./contactus'),
     termCondition: require('./termCondition'),
     privacyPolicy: require('./privacyPolicy'),
+    AboutUs: require('./aboutUs'),
 };
