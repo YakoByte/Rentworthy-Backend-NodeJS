@@ -7,6 +7,7 @@ import otpModel from './otp';
 import profileModel from './profile';
 import locationModel from './location';
 import addressModel from './address';
+import businessModel from './business';
 
 // Then, export them:
 export {
@@ -17,4 +18,5 @@ export {
     profileModel,
     locationModel,
     addressModel,
+    businessModel
 };
