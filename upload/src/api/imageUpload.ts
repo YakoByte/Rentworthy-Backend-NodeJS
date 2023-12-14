@@ -36,4 +36,14 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+    // API = image delete
+    app.delete('/image-upload/:id', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { data } = await service.DeleteImage(req.params.id);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 };

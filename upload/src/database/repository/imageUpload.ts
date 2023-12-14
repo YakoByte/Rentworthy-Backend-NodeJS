@@ -79,6 +79,52 @@ class ImageRepository {
         }
     }
 
+    // delete image
+    async DeleteImage(id: string) {
+        try {
+            // Find the image
+            const image = await imageModel.findById(id);
+    
+            // If the image doesn't exist, throw an error
+            if (!image) {
+                throw new Error("Image not found");
+            }
+    
+            // Create history log
+            const historyEntry = {
+                objectId: image._id,
+                data: {
+                    image: image
+                },
+                action: `Image with name '${image.imageName}' deleted`,
+                date: new Date().toISOString(),
+                time: Date.now(),
+            };
+    
+            const history = new historyModel({
+                imageId: image._id,
+                log: [historyEntry],
+            });
+    
+            // Save history log
+            await history.save();
+    
+            // Delete the image
+            const deletedImage = await imageModel.findByIdAndDelete(id);
+    
+            // Return the deleted image
+            return deletedImage;
+        } catch (error) {
+            // Handle errors appropriately
+            console.error("Error deleting image:", error);
+            throw new APIError(
+                "API Error",
+                STATUS_CODES.INTERNAL_ERROR,
+                "Unable to delete image"
+            );
+        }
+    }
+    
 }
 
 export default ImageRepository;

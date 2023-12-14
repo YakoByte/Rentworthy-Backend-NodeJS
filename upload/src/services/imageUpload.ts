@@ -87,6 +87,16 @@ class imageService {
             throw new APIError("Data Not found", err);
         }
     }
+
+    // delete image
+    async DeleteImage(id: string) {
+        try {
+            const existingImage: any = await this.repository.DeleteImage(id);
+            return FormateData({ existingImage });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
 }
 
 export = imageService;
