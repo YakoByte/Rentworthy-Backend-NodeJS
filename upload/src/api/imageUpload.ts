@@ -38,9 +38,19 @@ export default (app: Express) => {
     });
 
     // API = image delete
-    app.delete('/image-upload/:id', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/image-delete/:id', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { data } = await service.DeleteImage(req.params.id);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = image delete by imageName
+    app.delete('/image-delete', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { data } = await service.DeleteImageByName(req.body.imageName);
             return res.json(data);
         } catch (err) {
             next(err);

@@ -9,7 +9,7 @@ import {
 import { APIError, BadRequestError } from '../utils/app-error';
 
 import { imageRequest, imageRequests } from '../interface/imageUpload';
-import { uploadS3File } from '../utils/aws';
+import { deleteS3File, uploadS3File } from '../utils/aws';
 import fs from "fs";
 
 // All Business logic will be here
@@ -91,7 +91,21 @@ class imageService {
     // delete image
     async DeleteImage(id: string) {
         try {
-            const existingImage: any = await this.repository.DeleteImage(id);
+            const existingImage: any = await this.repository.DeleteImageById(id);
+            const ImageKey = existingImage.path.split('/').pop();
+            await deleteS3File(ImageKey);
+            return FormateData({ existingImage });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
+
+    // delete image by imageName
+    async DeleteImageByName(imageName: string) {
+        try {
+            const existingImage: any = await this.repository.DeleteImageByName(imageName);
+            const ImageKey = existingImage.path.split('/').pop();
+            await deleteS3File(ImageKey);
             return FormateData({ existingImage });
         } catch (err: any) {
             throw new APIError("Data Not found", err);
