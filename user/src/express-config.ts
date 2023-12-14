@@ -8,6 +8,8 @@ import Role from './api/role.ts';
 import profile from './api/profile.ts';
 import location from './api/location.ts';
 import address from './api/address.ts';
+import business from './api/business.ts';
+
 
 
 export const configureExpress = async (app: Express) => {
@@ -21,6 +23,7 @@ export const configureExpress = async (app: Express) => {
   profile(app);
   location(app);
   address(app);
+  business(app)
 
   // Error handling
   app.use(HandleErrors);
