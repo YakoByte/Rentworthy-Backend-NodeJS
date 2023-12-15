@@ -56,6 +56,20 @@ services:
       - "5006"
     env_file:
       - ./chat/.env
+  payment:
+    build: ./payment
+    container_name: payment
+    restart: unless-stopped
+    expose:
+      - "5007"
+
+  social:
+    build: ./social
+    container_name: social
+    restart: unless-stopped
+    expose:
+      - "5010"
+
   caddy_backend:
     image: caddy:2
     container_name: caddy_service

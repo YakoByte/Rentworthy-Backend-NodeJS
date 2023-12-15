@@ -16,7 +16,10 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
 
 const userMicroservice: string =
   // process.env.USER_MICROSERVICE_URL ||
-  "http://localhost:5001";
+  "http://user:5001";
+// const userMicroservice: string =
+//   // process.env.USER_MICROSERVICE_URL ||
+//   "http://localhost:5001";
 
 // const categoryMicroservice: string = "http://localhost:5002";
 // const uploadMicroservice: string = "http://localhost:5003";
@@ -25,25 +28,46 @@ const userMicroservice: string =
 // const chatMicroservice: string = "http://localhost:5006";
 const categoryMicroservice: string =
   // process.env.CATEGORY_MICROSERVICE_URL ||
-  "http://localhost:5002";
+  "http://category:5002";
 const uploadMicroservice: string =
   // process.env.UPLOAD_MICROSERVICE_URL ||
-  "http://localhost:5003";
+  "http://upload:5003";
 const productMicroservice: string =
   // process.env.PRODUCT_MICROSERVICE_URL ||
-  "http://localhost:5004";
+  "http://product:5004";
 const rentingMicroservice: string =
   // process.env.RENTING_MICROSERVICE_URL ||
-  "http://localhost:5005";
+  "http://renting:5005";
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://localhost:5006";
+  "http://chat:5006";
 const paymentMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://localhost:5007";
-  const socialMicroservice: string =
+  "http://payment:5007";
+const socialMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://localhost:5010";
+  "http://social:5010";
+// const categoryMicroservice: string =
+//   // process.env.CATEGORY_MICROSERVICE_URL ||
+//   "http://localhost:5002";
+// const uploadMicroservice: string =
+//   // process.env.UPLOAD_MICROSERVICE_URL ||
+//   "http://localhost:5003";
+// const productMicroservice: string =
+//   // process.env.PRODUCT_MICROSERVICE_URL ||
+//   "http://localhost:5004";
+// const rentingMicroservice: string =
+//   // process.env.RENTING_MICROSERVICE_URL ||
+//   "http://localhost:5005";
+// const chatMicroservice: string =
+//   // process.env.CHAT_MICROSERVICE_URL ||
+//   "http://localhost:5006";
+// const paymentMicroservice: string =
+//   // process.env.CHAT_MICROSERVICE_URL ||
+//   "http://localhost:5007";
+// const socialMicroservice: string =
+//   // process.env.CHAT_MICROSERVICE_URL ||
+//   "http://localhost:5010";
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -93,4 +117,4 @@ const social = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: socialMicroservice });
 };
 
-export { user, category, upload, product, renting, chat, payment,social };
+export { user, category, upload, product, renting, chat, payment, social };
