@@ -1,7 +1,17 @@
 import express, { Express, Request, Response } from "express";
 import { PORT } from "./config";
-import { product, user, category, upload, renting, chat, payment,social } from "./gateway";
+import {
+  product,
+  user,
+  category,
+  upload,
+  renting,
+  chat,
+  payment,
+  social,
+} from "./gateway";
 import path from "path";
+import { Server } from "socket.io";
 
 const StartServer = async (): Promise<void> => {
   const app: Express = express();
@@ -25,8 +35,8 @@ const StartServer = async (): Promise<void> => {
   app.use("/app/api/v1/payment", payment);
   app.use("/web/api/v1/social", social);
   app.use("/app/api/v1/social", social);
-  // app.use('/web/api/v1/chat', chat)
-  // app.use('/app/api/v1/chat', chat)
+  app.use('/web/api/v1/chat', chat);
+  app.use('/app/api/v1/chat', chat);
 
   // 10mb limit for file upload
   app.use(express.json({ limit: "10mb" }));
@@ -40,7 +50,7 @@ const StartServer = async (): Promise<void> => {
   app.set("uploads", path.join(__dirname, "../../public"));
 
   // server listening
-  app
+  const server = app
     .listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     })
@@ -48,6 +58,25 @@ const StartServer = async (): Promise<void> => {
       console.log(err);
       process.exit(1);
     });
+
+  // Create a Socket.IO instance on top of the HTTP server
+  const io = new Server(server, {
+    cors: {
+      origin: "*",
+    },
+  });
+  io.on("connection", (socket) => {
+    socket.on("createRoom", (userData) => {
+      socket.join(userData.id);
+      socket.emit("connected");
+    });
+    socket.on("joinRoom", (room) => {
+      socket.join(room);
+    });
+    socket.on("leaveRoom", (room) => {
+      socket.leave(room);
+    });
+  });
 };
 
 StartServer();
