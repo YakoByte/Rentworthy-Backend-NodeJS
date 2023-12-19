@@ -25,7 +25,7 @@ class adsService {
                 adsInputs
             );
 
-            return existingAds;
+            return FormateData({ existingAds });
         } catch (err: any) {
             console.log("err", err.message)
             return ({ message: "Data Not found", err });

@@ -19,7 +19,7 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return existingPrivacyPolicy;
+            return FormateData ({ existingPrivacyPolicy });
         } catch (err: any) {
             console.log("err", err.message)
             return ({ message: "Data Not found", err });

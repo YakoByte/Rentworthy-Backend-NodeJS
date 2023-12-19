@@ -29,10 +29,25 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     }
 }
 
+async function deleteImageWithToken(id: string, token: string): Promise<string> {
+    try {
+        console.log(id, token);
+        
+        const response = await axios.delete(`http://localhost:5000/app/api/v1/upload/image-delete/${id}`, {
+            headers: {
+                Authorization: token,
+            },
+        });
+        return response.data; // Assuming you are expecting a single image ID
+    } catch (error: any) {
+        return error.message;
+    }
+}
+
 export default (app: Express) => {
     const service = new TermConditionService();
 
-    // API = create new TermCondition
+    // API = create new termCondition
     app.post('/create-termCondition', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user;
@@ -54,7 +69,7 @@ export default (app: Express) => {
             return res.status(500).json({ error: "Internal Server Error" });
         }
     });    
-    // API = get TermCondition by id and search and all TermCondition
+    // API = get termCondition by id and search and all termCondition
     app.get('/get-termCondition', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
@@ -67,7 +82,7 @@ export default (app: Express) => {
             next(err);
         }
     });
-    // API = get PrivacyPolicy by id and search and all PrivacyPolicy
+    // API = get termCondition by id and search and all termCondition
     app.get('/get-termCondition/title', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
@@ -80,7 +95,7 @@ export default (app: Express) => {
             next(err);
         }
     });
-    // API = get PrivacyPolicy by id and search and all PrivacyPolicy
+    // API = get termCondition by id and search and all termCondition
     app.get('/get-termCondition/all', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
@@ -93,45 +108,68 @@ export default (app: Express) => {
             next(err);
         }
     });
-    // API = add images to TermCondition
+    // API = add images to termCondition
     app.post('/add-images-to-termCondition', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user;
             req.body.userId = authUser._id;
+
+            const existingData = await service.getTermConditionById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingtermCondition.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
    
             if (req.file) {
                 req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
             }
+
             const data = await service.addImagesToTermCondition(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
-    // API = update TermCondition by id
-    app.put('/update-termCondition-by-id', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    // API = update termCondition by id
+    app.put('/update-termCondition', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user;
             req.body.userId = authUser._id;
+
+            const existingData = await service.getTermConditionById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingtermCondition.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
    
             if (req.file) {
                 req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
             }
 
-            const data = await service.updateById({...req.body, _id: req.query._id as string});
+            const data = await service.updateById({...req.body, _id: req.body._id as string});
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
-    //API = delete TermCondition
+    //API = delete termCondition
     app.delete('/delete-termCondition', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.deleteTermCondition({ ...req.query });
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+
+            const existingData = await service.getTermConditionById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingtermCondition.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
+            const data = await service.deleteTermCondition({ ...req.body });
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
-
 };

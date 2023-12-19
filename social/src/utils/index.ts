@@ -30,7 +30,7 @@ export const GenerateSignature = async (payload: any): Promise<string | Error> =
 export const ValidateSignature = async (req: any): Promise<boolean> => {
     try {
         const token: string = req.headers.authorization;
-        const splitToken: string = token.split(" ")[1];
+        const splitToken: string = token.split(' ')[1];
         const payload: any = await jwt.verify(splitToken, secret_key);
         req.user = payload;
         return true;

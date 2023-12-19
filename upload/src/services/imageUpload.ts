@@ -43,7 +43,7 @@ class imageService {
                 mimetype: imageMimetype,
                 size: imageSize,
                 path: newImagePath,
-            }); 
+            });
 
             return FormateData({ existingImage });
         } catch (err: any) {

@@ -10,7 +10,7 @@ class AboutUSRepository {
         try {
             const aboutUSResult = await AboutUSModel.create(aboutUSInputs);
             if (aboutUSResult) {
-                return aboutUSResult;
+                return FormateData(aboutUSResult);
             }
             return FormateData("Failed to create aboutUS");
         } catch (err: any) {
@@ -65,27 +65,27 @@ class AboutUSRepository {
         if (aboutUSResult) {
             return FormateData(aboutUSResult);
         }
+        return FormateData(false)
     }
     //update aboutUS by id
     async updateAboutUSById(aboutUSInputs: aboutUSUpdateRequest) {
         const aboutUSResult = await AboutUSModel.findOneAndUpdate(
-            { _id: aboutUSInputs._id, isDeleted: false },
+            { _id: aboutUSInputs._id },
             { $set: aboutUSInputs },
             { new: true });
 
         if (aboutUSResult) {
             return FormateData(aboutUSResult);
         }
+        return FormateData(false)
     }
     //delete aboutUS by id
     async deleteAboutUSById(aboutUSInputs: { _id: string }) {
-        const aboutUSResult = await AboutUSModel.findOneAndUpdate(
-            { _id: aboutUSInputs._id, isDeleted: false },
-            { isDeleted: true },
-            { new: true });
+        const aboutUSResult = await AboutUSModel.findByIdAndDelete(aboutUSInputs._id);
         if (aboutUSResult) {
             return FormateData("aboutUS Deleted");
         }
+        return FormateData(false);
     }
 }
 

@@ -29,6 +29,21 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     }
 }
 
+async function deleteImageWithToken(id: string, token: string): Promise<string> {
+    try {
+        console.log(id, token);
+        
+        const response = await axios.delete(`http://localhost:5000/app/api/v1/upload/image-delete/${id}`, {
+            headers: {
+                Authorization: token,
+            },
+        });
+        return response.data; // Assuming you are expecting a single image ID
+    } catch (error: any) {
+        return error.message;
+    }
+}
+
 export default (app: Express) => {
     const service = new AboutUSService();
 
@@ -98,6 +113,13 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user;
             req.body.userId = authUser._id;
+
+            const existingData = await service.getAboutUSById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingAboutUS.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
    
             if (req.file) {
                 req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
@@ -110,16 +132,23 @@ export default (app: Express) => {
         }
     });
     // API = update AboutUS by id
-    app.put('/update-aboutUS-by-id', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-aboutUS', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user;
             req.body.userId = authUser._id;
+
+            const existingData = await service.getAboutUSById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingAboutUS.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
    
             if (req.file) {
                 req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
             }
 
-            const data = await service.updateById({...req.body, _id: req.query._id as string});
+            const data = await service.updateById({...req.body, _id: req.body._id as string});
             return res.json(data);
         } catch (err) {
             next(err);
@@ -128,7 +157,16 @@ export default (app: Express) => {
     //API = delete AboutUS
     app.delete('/delete-aboutUS', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.deleteAboutUS({ ...req.query });
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+
+            const existingData = await service.getAboutUSById({ ...req.body, user: authUser });
+            const imageId = existingData.data.existingAboutUS.data.image 
+            
+            if(imageId){
+                req.body.image = await deleteImageWithToken(imageId, req.headers.authorization);
+            }
+            const data = await service.deleteAboutUS({ ...req.body });
             return res.json(data);
         } catch (err) {
             next(err);

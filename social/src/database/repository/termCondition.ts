@@ -10,7 +10,7 @@ class TermConditionRepository {
         try {
             const TermConditionResult = await TermConditionModel.create(TermConditionInputs);
             if (TermConditionResult) {
-                return TermConditionResult;
+                return FormateData(TermConditionResult);
             }
             return FormateData("Failed to create TermCondition");
         } catch (err: any) {
@@ -65,27 +65,30 @@ class TermConditionRepository {
         if (TermConditionResult) {
             return FormateData(TermConditionResult);
         }
+        return FormateData(false)
     }
     //update TermCondition by id
     async updateTermConditionById(TermConditionInputs: termConditionUpdateRequest) {
         const TermConditionResult = await TermConditionModel.findOneAndUpdate(
-            { _id: TermConditionInputs._id, isDeleted: false },
+            { _id: TermConditionInputs._id },
             { $set: TermConditionInputs },
             { new: true });
 
         if (TermConditionResult) {
             return FormateData(TermConditionResult);
         }
+        return FormateData(false)
     }
     //delete TermCondition by id
     async deleteTermConditionById(TermConditionInputs: { _id: string }) {
         const TermConditionResult = await TermConditionModel.findOneAndUpdate(
-            { _id: TermConditionInputs._id, isDeleted: false },
+            { _id: TermConditionInputs._id},
             { isDeleted: true },
             { new: true });
         if (TermConditionResult) {
             return FormateData("TermCondition Deleted");
         }
+        return FormateData(false)
     }
 }
 

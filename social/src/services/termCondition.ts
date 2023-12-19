@@ -19,7 +19,7 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return existingTermCondition;
+            return FormateData ({ existingTermCondition });
         } catch (err: any) {
             console.log("err", err.message)
             return ({ message: "Data Not found", err });

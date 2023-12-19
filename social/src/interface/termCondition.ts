@@ -19,6 +19,7 @@ export interface deleteAuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    headers: any;
     query: {
         _id: string,
     }

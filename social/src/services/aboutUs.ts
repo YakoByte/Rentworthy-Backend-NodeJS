@@ -19,7 +19,7 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return existingAboutUS;
+            return FormateData({ existingAboutUS });;
         } catch (err: any) {
             console.log("err", err.message)
             return ({ message: "Data Not found", err });

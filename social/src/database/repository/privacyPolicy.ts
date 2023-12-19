@@ -10,7 +10,7 @@ class PrivacyPolicyRepository {
         try {
             const PrivacyPolicyResult = await PrivacyPolicyModel.create(PrivacyPolicyInputs);
             if (PrivacyPolicyResult) {
-                return PrivacyPolicyResult;
+                return FormateData(PrivacyPolicyResult);
             }
             return FormateData("Failed to create PrivacyPolicy");
         } catch (err: any) {
@@ -65,27 +65,30 @@ class PrivacyPolicyRepository {
         if (PrivacyPolicyResult) {
             return FormateData(PrivacyPolicyResult);
         }
+        return FormateData(false)
     }
     //update PrivacyPolicy by id
     async updatePrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyUpdateRequest) {
         const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate(
-            { _id: PrivacyPolicyInputs._id, isDeleted: false },
+            { _id: PrivacyPolicyInputs._id },
             { $set: PrivacyPolicyInputs },
             { new: true });
 
         if (PrivacyPolicyResult) {
             return FormateData(PrivacyPolicyResult);
         }
+        return FormateData(false)
     }
     //delete PrivacyPolicy by id
     async deletePrivacyPolicyById(PrivacyPolicyInputs: { _id: string }) {
         const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate(
-            { _id: PrivacyPolicyInputs._id, isDeleted: false },
+            { _id: PrivacyPolicyInputs._id },
             { isDeleted: true },
             { new: true });
         if (PrivacyPolicyResult) {
             return FormateData("PrivacyPolicy Deleted");
         }
+        return FormateData(false)
     }
 }
 

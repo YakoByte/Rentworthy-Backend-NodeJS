@@ -38,8 +38,10 @@ export default (app: Express) => {
     });
 
     // API = image delete
-    app.delete('/image-delete/:id', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/image-delete/:id', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            console.log(req.params.id);
+            
             const { data } = await service.DeleteImage(req.params.id);
             return res.json(data);
         } catch (err) {
@@ -47,7 +49,7 @@ export default (app: Express) => {
         }
     });
 
-    // API = image delete by imageName
+    // API = image delete by imageName url
     app.delete('/image-delete', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { data } = await service.DeleteImageByName(req.body.imageName);
