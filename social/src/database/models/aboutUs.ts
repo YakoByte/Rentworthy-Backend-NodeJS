@@ -14,7 +14,11 @@ const aboutUSSchema: Schema = new Schema<aboutUS>(
         },
         description: {
             type: String,
-        }
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );

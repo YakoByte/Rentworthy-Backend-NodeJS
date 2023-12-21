@@ -19,36 +19,36 @@ class AboutUSRepository {
         }
     }
     //get all aboutUS
-    async getAboutUSById(aboutUSInputs: aboutUSGetRequest) {
-        try {
-            const aboutUSResult = await AboutUSModel.findById(aboutUSInputs._id);
-            if(!aboutUSResult){
-                return FormateData("No aboutUS");
-            }
-            return FormateData(aboutUSResult);
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
-    //get all aboutUS
-    async getAllAboutUS() {
-        try {
-            const aboutUSResult = await AboutUSModel.find();
-            if(!aboutUSResult){
-                return FormateData("No aboutUS");
-            }
-            return FormateData(aboutUSResult);
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
+    // async getAboutUSById(aboutUSInputs: aboutUSGetRequest) {
+    //     try {
+    //         const aboutUSResult = await AboutUSModel.findById(aboutUSInputs._id);
+    //         if (!aboutUSResult) {
+    //             return FormateData("No aboutUS");
+    //         }
+    //         return FormateData(aboutUSResult);
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
+    // //get all aboutUS
+    // async getAllAboutUS() {
+    //     try {
+    //         const aboutUSResult = await AboutUSModel.find({ isDeleted: false });
+    //         if (!aboutUSResult) {
+    //             return FormateData("No aboutUS");
+    //         }
+    //         return FormateData(aboutUSResult);
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
     //get one aboutUS
     async getAboutUS(aboutUSInputs: aboutUSGetRequest) {
         try {
-            const aboutUSResult = await AboutUSModel.find({title: aboutUSInputs.title});
-            if(!aboutUSResult){
+            const aboutUSResult = await AboutUSModel.find({ ...aboutUSInputs, isDeleted: false });
+            if (!aboutUSResult) {
                 return FormateData("No aboutUS");
             }
             return FormateData(aboutUSResult);
@@ -59,7 +59,7 @@ class AboutUSRepository {
     }
     //add images to aboutUS
     async addImagesToAboutUS(aboutUSInputs: aboutUSUpdateRequest) {
-        const aboutUSResult = await AboutUSModel.findOneAndUpdate( { _id: aboutUSInputs._id },
+        const aboutUSResult = await AboutUSModel.findOneAndUpdate({ _id: aboutUSInputs._id, isDeleted: false },
             { $set: { image: aboutUSInputs.image } },
             { new: true });
         if (aboutUSResult) {
@@ -70,7 +70,7 @@ class AboutUSRepository {
     //update aboutUS by id
     async updateAboutUSById(aboutUSInputs: aboutUSUpdateRequest) {
         const aboutUSResult = await AboutUSModel.findOneAndUpdate(
-            { _id: aboutUSInputs._id },
+            { _id: aboutUSInputs._id, isDeleted: false },
             { $set: aboutUSInputs },
             { new: true });
 
@@ -81,7 +81,7 @@ class AboutUSRepository {
     }
     //delete aboutUS by id
     async deleteAboutUSById(aboutUSInputs: { _id: string }) {
-        const aboutUSResult = await AboutUSModel.findByIdAndDelete(aboutUSInputs._id);
+        const aboutUSResult = await AboutUSModel.findOneAndUpdate({ _id: aboutUSInputs._id }, { $set: { isDeleted: true } }, { new: true });
         if (aboutUSResult) {
             return FormateData("aboutUS Deleted");
         }

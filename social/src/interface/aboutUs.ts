@@ -25,10 +25,11 @@ export interface deleteAuthenticatedRequest extends Request {
     }
 }
 
-export interface aboutUS extends Document { 
+export interface aboutUS extends Document {
     title: string;
     image: Types.ObjectId;
     description: string;
+    isDeleted: boolean;
 }
 
 export interface aboutUSRequest {
@@ -46,13 +47,7 @@ export interface aboutUSUpdateRequest {
 
 export interface aboutUSGetRequest {
     _id?: string
-    user: {
-        _id: string;
-        roleName: string;
-        email: string;
-    };
     title?: string;
-    image?: string;
     description?: string;
 }
 

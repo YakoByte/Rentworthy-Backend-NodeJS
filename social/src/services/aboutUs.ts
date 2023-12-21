@@ -26,30 +26,30 @@ class AboutUSService {
         }
     }
     // get AboutUS by id
-    async getAboutUSById(AboutUSInputs: aboutUSGetRequest) {
-        try {
-            let existingAboutUS = await this.repository.getAboutUSById(
-                AboutUSInputs
-            );
+    // async getAboutUSById(AboutUSInputs: aboutUSGetRequest) {
+    //     try {
+    //         let existingAboutUS = await this.repository.getAboutUSById(
+    //             AboutUSInputs
+    //         );
 
-            return FormateData({ existingAboutUS });
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
-    // get All AboutUS
-    async getAllAboutUS(AboutUSInputs: aboutUSGetRequest) {
-        try {
-            let existingAboutUS: any
-            existingAboutUS = await this.repository.getAllAboutUS();
+    //         return FormateData({ existingAboutUS });
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         return FormateData(err)
+    //     }
+    // }
+    // // get All AboutUS
+    // async getAllAboutUS(AboutUSInputs: aboutUSGetRequest) {
+    //     try {
+    //         let existingAboutUS: any
+    //         existingAboutUS = await this.repository.getAllAboutUS();
 
-            return FormateData({ existingAboutUS });
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
+    //         return FormateData({ existingAboutUS });
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         return FormateData(err)
+    //     }
+    // }
     // get AboutUS by id
     async getAboutUS(AboutUSInputs: aboutUSGetRequest) {
         try {
@@ -61,7 +61,7 @@ class AboutUSService {
             return FormateData({ existingAboutUS });
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateData(err)
         }
     }
     // add images to AboutUS
@@ -74,7 +74,7 @@ class AboutUSService {
             return FormateData({ existingAboutUS });
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateData(err)
         }
     }
     // update AboutUS by id
@@ -87,7 +87,7 @@ class AboutUSService {
             return FormateData({ existingAboutUS });
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateData(err)
         }
     }
     // delete AboutUS by id  (soft delete)
@@ -100,7 +100,7 @@ class AboutUSService {
             return FormateData({ existingAboutUS });
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateData(err)
         }
     }
 
