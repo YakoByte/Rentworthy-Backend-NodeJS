@@ -9,9 +9,8 @@ const adsSchema: Schema = new Schema<Ads>(
             ref: "category",
             // required: true,
         },
-        subCategoryId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "subCategory",
+        brand: {
+            type: String,
             // required: true,
         },
         title: {
@@ -22,19 +21,39 @@ const adsSchema: Schema = new Schema<Ads>(
             type: String,
             // required: true,
         },
+        min_qty: {
+            type: Number,
+            default: 0,
+            // required: true,
+        },
+        max_qty: {
+            type: Number,
+            default: 0,
+            // required: true,
+        },
+        min_price: {
+            type: Number,
+            default: 0,
+            // required: true,
+        },
+        max_price: {
+            type: Number,
+            default: 0,
+            // required: true,
+        },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",
             // required: true,
         },
-        startDate: {
-            type: Date,
-            required: true,
-        },
-        endDate: {
-            type: Date,
-            required: true,
-        },
+        // startDate: {
+        //     type: Date,
+        //     required: true,
+        // },
+        // endDate: {
+        //     type: Date,
+        //     required: true,
+        // },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
@@ -49,24 +68,6 @@ const adsSchema: Schema = new Schema<Ads>(
             ref: "image",
             // required: true,
         },
-        address: {
-            area: {
-                type: String,
-                // required: true,
-            },
-            city: {
-                type: String,
-                // required: true,
-            },
-            state: {
-                type: String,
-                // required: true,
-            },
-            country: {
-                type: String,
-                // required: true,
-            },
-        },
         location: {
             type: {
                 type: String,
@@ -79,26 +80,6 @@ const adsSchema: Schema = new Schema<Ads>(
                 // required: true,
             },
         },
-        distance: {
-            type: Number,
-            // required: true,
-        },
-        isGlobal: {
-            type: Boolean,
-            // required: true,
-        },
-        startTime: {
-            type: String,
-            // required: true,
-        },
-        endTime: {
-            type: String,
-            // required: true,
-        },
-        url: {
-            type: String,
-            // required: true,
-        },
         isApproved: {
             type: Boolean,
             default: false,
@@ -107,7 +88,6 @@ const adsSchema: Schema = new Schema<Ads>(
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
         },
-
     },
     { timestamps: true }
 );

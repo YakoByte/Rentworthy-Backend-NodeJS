@@ -41,7 +41,8 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.body)
+            // console.log("req.body", req.body)
+            console.log("req.files", req.files)
             req.body.image = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             const data = await service.CreateAds(req.body);
             return res.json(data);

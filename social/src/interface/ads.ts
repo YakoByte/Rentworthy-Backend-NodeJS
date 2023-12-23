@@ -21,6 +21,7 @@ export interface postAuthenticatedRequest extends Request {
             state?: string;
             country?: string;
         };
+        brand?: string;
         distance?: number;
         isGlobal: boolean;
         startDate: Date;
@@ -85,6 +86,11 @@ export interface Ads extends Document {
     subCategoryId: Types.ObjectId;
     userId: Types.ObjectId;
     title: string;
+    brand: string;
+    min_qty: number;
+    max_qty: number;
+    min_price: number;
+    max_price: number;
     description: string;
     productId: Types.ObjectId;
     isDeleted: boolean;

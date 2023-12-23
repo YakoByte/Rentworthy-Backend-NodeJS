@@ -46,11 +46,7 @@ export interface privacyPolicyUpdateRequest {
 
 export interface privacyPolicyGetRequest {
     _id?: string
-    user: {
-        _id: string;
-        roleName: string;
-        email: string;
-    };
+   
     title?: string;
     image?: string;
     description?: string;

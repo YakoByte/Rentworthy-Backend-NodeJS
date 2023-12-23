@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { FormateData } from '../../utils';
 import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import { privacyPolicyRequest, privacyPolicyGetRequest, privacyPolicyUpdateRequest } from "../../interface/privacyPolicy";
+import e from "express";
 
 class PrivacyPolicyRepository {
     //create PrivacyPolicy
@@ -22,7 +23,7 @@ class PrivacyPolicyRepository {
     async getPrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyGetRequest) {
         try {
             const PrivacyPolicyResult = await PrivacyPolicyModel.findById(PrivacyPolicyInputs._id);
-            if(!PrivacyPolicyResult){
+            if (!PrivacyPolicyResult) {
                 return FormateData("No PrivacyPolicy");
             }
             return FormateData(PrivacyPolicyResult);
@@ -35,7 +36,7 @@ class PrivacyPolicyRepository {
     async getAllPrivacyPolicy() {
         try {
             const PrivacyPolicyResult = await PrivacyPolicyModel.find();
-            if(!PrivacyPolicyResult){
+            if (!PrivacyPolicyResult) {
                 return FormateData("No PrivacyPolicy");
             }
             return FormateData(PrivacyPolicyResult);
@@ -47,8 +48,8 @@ class PrivacyPolicyRepository {
     //get one PrivacyPolicy
     async getPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
         try {
-            const PrivacyPolicyResult = await PrivacyPolicyModel.find({title: PrivacyPolicyInputs.title});
-            if(!PrivacyPolicyResult){
+            const PrivacyPolicyResult = await PrivacyPolicyModel.find(PrivacyPolicyInputs);
+            if (!PrivacyPolicyResult) {
                 return FormateData("No PrivacyPolicy");
             }
             return FormateData(PrivacyPolicyResult);
@@ -59,7 +60,7 @@ class PrivacyPolicyRepository {
     }
     //add images to PrivacyPolicy
     async addImagesToPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyUpdateRequest) {
-        const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate( { _id: PrivacyPolicyInputs._id },
+        const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate({ _id: PrivacyPolicyInputs._id },
             { $set: { image: PrivacyPolicyInputs.image } },
             { new: true });
         if (PrivacyPolicyResult) {
@@ -69,6 +70,7 @@ class PrivacyPolicyRepository {
     }
     //update PrivacyPolicy by id
     async updatePrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyUpdateRequest) {
+        console.log("PrivacyPolicyInputs", PrivacyPolicyInputs)
         const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate(
             { _id: PrivacyPolicyInputs._id },
             { $set: PrivacyPolicyInputs },
@@ -77,7 +79,7 @@ class PrivacyPolicyRepository {
         if (PrivacyPolicyResult) {
             return FormateData(PrivacyPolicyResult);
         }
-        return FormateData(false)
+        return FormateData("Failed to update PrivacyPolicy")
     }
     //delete PrivacyPolicy by id
     async deletePrivacyPolicyById(PrivacyPolicyInputs: { _id: string }) {

@@ -47,7 +47,7 @@ class TermConditionRepository {
     //get one TermCondition
     async getTermCondition(TermConditionInputs: termConditionGetRequest) {
         try {
-            const TermConditionResult = await TermConditionModel.find({title: TermConditionInputs.title});
+            const TermConditionResult = await TermConditionModel.find(TermConditionInputs);
             if(!TermConditionResult){
                 return FormateData("No TermCondition");
             }

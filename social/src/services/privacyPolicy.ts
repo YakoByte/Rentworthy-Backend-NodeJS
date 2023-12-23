@@ -25,31 +25,31 @@ class PrivacyPolicyService {
             return ({ message: "Data Not found", err });
         }
     }
-    // get PrivacyPolicy by id
-    async getPrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyGetRequest) {
-        try {
-            let existingPrivacyPolicy = await this.repository.getPrivacyPolicyById(
-                PrivacyPolicyInputs
-            );
+    // // get PrivacyPolicy by id
+    // async getPrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyGetRequest) {
+    //     try {
+    //         let existingPrivacyPolicy = await this.repository.getPrivacyPolicyById(
+    //             PrivacyPolicyInputs
+    //         );
 
-            return FormateData({ existingPrivacyPolicy });
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
-    // get All PrivacyPolicy
-    async getAllPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
-        try {
-            let existingPrivacyPolicy: any
-            existingPrivacyPolicy = await this.repository.getAllPrivacyPolicy();
+    //         return FormateData({ existingPrivacyPolicy });
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
+    // // get All PrivacyPolicy
+    // async getAllPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
+    //     try {
+    //         let existingPrivacyPolicy: any
+    //         existingPrivacyPolicy = await this.repository.getAllPrivacyPolicy();
 
-            return FormateData({ existingPrivacyPolicy });
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
+    //         return FormateData({ existingPrivacyPolicy });
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
     // get PrivacyPolicy by id
     async getPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
         try {
