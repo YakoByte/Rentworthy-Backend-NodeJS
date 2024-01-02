@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-import { Message } from "../interface/messages";
+import { Message } from "../../interface/messages";
 
 const messageSchema: Schema = new Schema<Message>(
     {
