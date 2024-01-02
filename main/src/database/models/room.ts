@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-import { Room } from "../../../../main/src/interface/room";
+import { Room } from "../interface/room";
 
 const roomSchema: Schema = new Schema<Room>(
     {
