@@ -22,6 +22,7 @@ export interface User extends Document {
     isActive?: boolean;
     isDeleted?: boolean;
     loginType?: string;
+    os?: string;
 }
 export interface userSignRequest {
     // userName: string;

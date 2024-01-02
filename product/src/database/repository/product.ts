@@ -12,7 +12,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { productRequest, productDeleteRequest, productUpdateRequest, productGetRequest } from "../../interface/product";
+import { productRequest, productDeleteRequest, productUpdateRequest, productSorting, productGetRequest } from "../../interface/product";
 import { populate } from "dotenv";
 import productReservationService from "../../services/productreservation";
 const ResRepo = new productReservationService()
@@ -129,29 +129,29 @@ class ProductRepository {
     // get product by subcategory id
     async getProductBySubCategoryId(productInputs: productGetRequest) {
         console.log("skip", productInputs.page, "limit", productInputs.limit)
-            const findProduct = await productModel.aggregate([
-                { $match: { subCategoryId: new Types.ObjectId(productInputs.subCategoryId), isDeleted: false, isActive: true } },
-                // { $skip: productInputs.page as number },
-                // { $limit: productInputs.limit },
-                {
-                    $lookup: {
-                        from: "images",
-                        localField: "images",
-                        foreignField: "_id",
-                        pipeline: [{ $project: { path: 1, _id: 0 } }],
-                        as: "images"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "users",
-                        localField: "userId",
-                        foreignField: "_id",
-                        pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
-                        as: "userId"
-                    }
+        const findProduct = await productModel.aggregate([
+            { $match: { subCategoryId: new Types.ObjectId(productInputs.subCategoryId), isDeleted: false, isActive: true } },
+            // { $skip: productInputs.page as number },
+            // { $limit: productInputs.limit },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "images"
                 }
-            ])
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                    as: "userId"
+                }
+            }
+        ])
         // const findProduct = await productModel.find({ subCategoryId: productInputs.subCategoryId, isDeleted: false, isActive: true }).populate("images");
         console.log("findProduct", findProduct)
         if (findProduct) {
@@ -193,6 +193,81 @@ class ProductRepository {
             return ({ STATUS_CODE: STATUS_CODES.NOT_FOUND, data: [], message: err.message })
         }
     }
+    // get product sorting wise
+    async getProductPriceSortingWise(productInputs: productSorting) {
+        try {
+            // console.log("skip", productInputs.page, "limit", productInputs.limit)
+            const findProduct = await productModel.aggregate([
+                { $match: { isDeleted: false, isActive: true } },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "images",
+                        foreignField: "_id",
+                        pipeline: [{ $project: { path: 1, _id: 0 } }],
+                        as: "images"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "userId",
+                        foreignField: "_id",
+                        pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                        as: "userId"
+                    }
+                },
+                { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
+            ])
+            console.log("findProduct", findProduct)
+            if (findProduct) {
+                return FormateData(findProduct);
+            }
+        } catch (err: any) {
+            return new BadRequestError("Data Not found", err);
+        }
+    }
+    // get product by location
+    async getProductByLocation(productInputs: { lat: number, long: number }) {
+        try {
+            const findProduct = await productModel.aggregate([
+                {
+                    $geoNear: {
+                        near: { type: "Point", coordinates: [productInputs.lat, productInputs.long] },
+                        distanceField: "dist.calculated",
+                        maxDistance: 100000,
+                        includeLocs: "dist.location",
+                        spherical: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "images",
+                        foreignField: "_id",
+                        pipeline: [{ $project: { path: 1, _id: 0 } }],
+                        as: "images"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "userId",
+                        foreignField: "_id",
+                        pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                        as: "userId"
+                    }
+                }
+            ])
+            console.log("findProduct", findProduct)
+            if (findProduct) {
+                return FormateData(findProduct);
+            }
+        } catch (err: any) {
+            return new BadRequestError("Data Not found", err);
+        }
+    }
+
     // get product by name and search using regex
     async getProductByName(productInputs: { name: string }) {
         // const findProduct = await productModel.find({ name: { $regex: productInputs.name, $options: 'i' }, isDeleted: false, isActive: true }).populate("images");

@@ -14,8 +14,8 @@ class PaymentService {
     async createPaymentIntent(PaymentDetails: PaymentDetails) {
         const { client_secret } = await stripe.paymentIntents.create({
             amount: PaymentDetails.amount,
-            currency: PaymentDetails.currency,
-            payment_method: "card",
+            currency: "usd",
+            payment_method_types: ['card'],
         });
         return FormateData({ client_secret });
     }
@@ -36,6 +36,51 @@ class PaymentService {
             return FormateData({ message: 'Payment failed or requires a different payment method!', payStatus: paymentIntent.status });
         }
     }
+
+    async PaymentTransfer(PaymentDetails: PaymentConfirmDetails) {
+        const transfer = await stripe.transfers.create({
+            amount: PaymentDetails.vendorAmount,
+            currency: 'usd',
+            destination: 'VENDOR_STRIPE_ACCOUNT_ID',
+        });
+        return FormateData({ transfer });
+    }
+
+    // verify stripe Id
+
+    async VerifyStripeId(stripeId: string) {
+        try {
+            const customer = await stripe.customers.retrieve(stripeId);
+            console.log('Stripe ID is valid:', customer.id);
+            return FormateData({ customer });
+        } catch (error: any) {
+            console.error('Error verifying Stripe ID:', error.message);
+            return FormateData({ message: error.message });
+        }
+    }
+
+    async createTestCustomer() {
+        try {
+            const customer = await stripe.customers.create({
+                email: 'test@example.com',
+            });
+            console.log('Test Customer ID:', customer.id);
+            return FormateData({ customer });
+        } catch (error: any) {
+            console.error('Error creating test customer:', error.message);
+        }
+    }
+
+    // async deleteTestCustomer(customerId) {
+    //     try {
+    //         const deletedCustomer = await stripe.customers.del(customerId);
+    //         console.log('Test Customer Deleted:', deletedCustomer.id);
+    //     } catch (error) {
+    //         console.error('Error deleting test customer:', error.message);
+    //     }
+    // }
+
+
 }
 
 export = PaymentService;

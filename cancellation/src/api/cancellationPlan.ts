@@ -12,7 +12,7 @@ export default (app: Express) => {
     const service = new CancellationPlanService();
 
     // API = create new cancellationPlan
-    app.post('/create-cancellationPlan', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-cancellationPlan', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             console.log("req.body", req.body)

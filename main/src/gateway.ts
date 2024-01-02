@@ -37,7 +37,7 @@ const productMicroservice: string =
   "http://product:5004";
 const rentingMicroservice: string =
   // process.env.RENTING_MICROSERVICE_URL ||
-  "http://renting:5005";
+  "http://localhost:5005";
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://chat:5006";
@@ -49,7 +49,8 @@ const socialMicroservice: string =
   "http://social:5010";
 const cancellationMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://social:5008";
+  "http://localhost:5008";
+  // "http://localhost:5008";
 // const categoryMicroservice: string =
 //   // process.env.CATEGORY_MICROSERVICE_URL ||
 //   "http://localhost:5002";
@@ -120,4 +121,9 @@ const social = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: socialMicroservice });
 };
 
-export { user, category, upload, product, renting, chat, payment, social };
+const cancelBooking = (req: IncomingMessage, res: ServerResponse) => {
+  console.log("Routing to social microservice", req.url);
+  gateway.web(req, res, { target: cancellationMicroservice });
+};
+
+export { user, category, upload, product, renting, chat, payment, social, cancelBooking };

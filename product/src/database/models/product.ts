@@ -25,6 +25,24 @@ const categorySchema: Schema = new Schema<Product>(
       ref: "user",
       required: true,
     },
+    min_qty: {
+      type: Number,
+      // required: true,
+    },
+    max_qty: {
+      type: Number,
+      // required: true,
+    },
+    min_price: {
+      type: Number,
+      default: 0,
+      // required: true,
+    },
+    max_price: {
+      type: Number,
+      default: 0,
+      // required: true,
+    },
     quantity: {
       type: Number,
       required: true,
@@ -47,7 +65,10 @@ const categorySchema: Schema = new Schema<Product>(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "category",
-      required: true,
+    },
+    brand: {
+      type: String,
+      // required: true,
     },
     approvedBy: {
       type: Schema.Types.ObjectId,
@@ -56,7 +77,6 @@ const categorySchema: Schema = new Schema<Product>(
     subCategoryId: {
       type: Schema.Types.ObjectId,
       ref: "subCategory",
-      required: true,
     },
     isExtended: {
       type: Boolean,
@@ -84,6 +104,10 @@ const categorySchema: Schema = new Schema<Product>(
     address: {
       type: String,
     },
+    // pickupOnly: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     location: {
       // type: "Point",
       // coordinate: [Number]

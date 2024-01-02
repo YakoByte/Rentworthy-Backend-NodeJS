@@ -6,15 +6,27 @@ import {
   category,
   upload,
   renting,
-  chat,
+  cancelBooking,
+  // chat,
   payment,
   social,
 } from "./gateway";
 import path from "path";
 import { Server } from "socket.io";
-
+import http from "http";
+import { Server as SocketIOServer } from 'socket.io'; // Renamed to prevent naming collision with http.Server
+import { setupSocketServer } from './chat/chat';
+import databaseConnection from "./database/connection";
 const StartServer = async (): Promise<void> => {
   const app: Express = express();
+  // Connect to the database
+  try {
+    await databaseConnection(); // Assuming this function returns a promise
+    console.log('Database connected successfully');
+  } catch (error) {
+    console.error('Database connection error:', error);
+    process.exit(1);
+  }
 
   app.get("/", (req: Request, res: Response) => {
     res.status(200).send({ message: "Microservices called........" });
@@ -35,8 +47,10 @@ const StartServer = async (): Promise<void> => {
   app.use("/app/api/v1/payment", payment);
   app.use("/web/api/v1/social", social);
   app.use("/app/api/v1/social", social);
-  app.use('/web/api/v1/chat', chat);
-  app.use('/app/api/v1/chat', chat);
+  app.use("/web/api/v1/cancel-booking", cancelBooking);
+  app.use("/app/api/v1/cancel-booking", cancelBooking);
+  // app.use('/web/api/v1/chat', chat);
+  // app.use('/app/api/v1/chat', chat);
 
   // 10mb limit for file upload
   app.use(express.json({ limit: "10mb" }));
@@ -50,33 +64,43 @@ const StartServer = async (): Promise<void> => {
   app.set("uploads", path.join(__dirname, "../../public"));
 
   // server listening
-  const server = app
-    .listen(PORT, () => {
-      console.log(`Listening on port ${PORT}`);
-    })
-    .on("error", (err) => {
-      console.log(err);
-      process.exit(1);
-    });
+
 
   // Create a Socket.IO instance on top of the HTTP server
-  const io = new Server(server, {
+  const server = http.createServer(app);
+  const io = new SocketIOServer(server, {
     cors: {
-      origin: "*",
-    },
+      origin: '*', // Be cautious with this in production
+    }
   });
-  io.on("connection", (socket) => {
-    socket.on("createRoom", (userData) => {
-      socket.join(userData.id);
-      socket.emit("connected");
-    });
-    socket.on("joinRoom", (room) => {
-      socket.join(room);
-    });
-    socket.on("leaveRoom", (room) => {
-      socket.leave(room);
-    });
-  });
+  setupSocketServer(io);
+  console.log("Socket server created")
+  // io.on("connection", (socket) => {
+  //   console.log("Socket connected");
+  //   socket.on("createRoom", (userData) => {
+  //     socket.join(userData.id);
+  //     socket.emit("connected");
+  //   });
+  //   socket.on("joinRoom", (room) => {
+  //     socket.join(room);
+  //   });
+  //   socket.on("leaveRoom", (room) => {
+  //     socket.leave(room);
+  //   });
+  // });
+  server.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  })
+  // .on("error", (err) => {
+  //   console.log(err);
+  //   process.exit(1);
+  // });
 };
 
-StartServer();
+// StartServer();
+
+
+
+StartServer().catch(error => {
+  console.error('Failed to start the server:', error);
+});

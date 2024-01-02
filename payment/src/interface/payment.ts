@@ -49,6 +49,7 @@ export interface PaymentDetails {
 
 export interface PaymentConfirmDetails {
     paymentMethodId: string;
+    vendorAmount?: number;
     productId: Types.ObjectId;
     paymentIntentId: string
     userId: Types.ObjectId;

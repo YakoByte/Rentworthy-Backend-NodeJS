@@ -18,36 +18,10 @@ class NotificationRepository {
             return ({ message: "Data Not found", err });
         }
     }
-    //get all Notification
-    async getNotificationById(NotificationInputs: notificationRequest) {
-        try {
-            const NotificationResult = await NotificationModel.findById(NotificationInputs._id);
-            if (!NotificationResult) {
-                return FormateData("No Notification");
-            }
-            return FormateData(NotificationResult);
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
-    //get all Notification
-    async getAllNotification() {
-        try {
-            const NotificationResult = await NotificationModel.find();
-            if (!NotificationResult) {
-                return FormateData("No Notification");
-            }
-            return FormateData(NotificationResult);
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
     //get one Notification
     async getNotification(NotificationInputs: notificationRequest) {
         try {
-            const NotificationResult = await NotificationModel.find({ title: NotificationInputs.title });
+            const NotificationResult = await NotificationModel.find(NotificationInputs);
             if (!NotificationResult) {
                 return FormateData("No Notification");
             }

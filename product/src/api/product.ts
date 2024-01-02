@@ -62,7 +62,7 @@ export default (app: Express) => {
         } catch (err: any) {
             console.log('went like this-----', err)
             return res.status(err.STATUS_CODE).json(err);
-            next(err);
+            // next(err);
         }
     });
 

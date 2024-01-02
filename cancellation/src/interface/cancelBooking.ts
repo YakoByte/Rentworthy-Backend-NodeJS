@@ -53,6 +53,7 @@ export interface AuthenticatedRequest extends Request {
     };
     query: {
         _id?: string;
+        userId?: string;
         user?: {
             _id: string;
             roleName: string;
@@ -113,9 +114,19 @@ export interface cancelBookingUpdateRequest {
     approvedBy?: string;
 }
 
+export interface cancelBookingApproveRequest {
+    _id: string,
+    status: string;
+    isApproved?: boolean;
+    approvedBy?: string;
+}
+
 // for get cancelBooking
 export interface cancelBookingGetRequest {
-    _id?: string
+    _id?: string,
+    userId?: string,
+    page?: string,
+    limit?: string,
 }
 // for delete cancelBooking
 export interface cancelBookingDeleteRequest {

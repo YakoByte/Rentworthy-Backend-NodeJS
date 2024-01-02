@@ -27,7 +27,7 @@ class productService {
 
             return FormateData({ existingProduct });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return { STATUS_CODE: STATUS_CODES.BAD_REQUEST, data: err.message }
         }
     }
     // get product by id , search or all product
@@ -49,6 +49,14 @@ class productService {
             } else if (productInputs.subCategoryId) {
                 existingProduct = await this.repository.getProductBySubCategoryId(
                     { subCategoryId: productInputs.subCategoryId }
+                );
+            } else if (productInputs.lat && productInputs.long) {
+                existingProduct = await this.repository.getProductByLocation(
+                    { lat: Number(productInputs.lat), long: Number(productInputs.long) }
+                );
+            } else if (productInputs.price) {
+                existingProduct = await this.repository.getProductPriceSortingWise(
+                    { price: productInputs.price }
                 );
             } else {
                 existingProduct = await this.repository.getAllProduct({

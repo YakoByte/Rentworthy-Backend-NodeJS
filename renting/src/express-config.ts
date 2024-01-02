@@ -3,8 +3,9 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
-import wishlist from './api/wishlist.ts';
+// import wishlist from './api/wishlist.ts';
 import booking from './api/booking.ts';
+import expandDate from './api/expandDate.ts';
 // import Admin from './api/user.ts';
 // import Role from './api/role.ts';
 
@@ -14,7 +15,7 @@ export const configureExpress = async (app: Express) => {
   app.use(cors());
 
   // API
-  wishlist(app);
+  expandDate(app);
   booking(app);
 
   // Error handling

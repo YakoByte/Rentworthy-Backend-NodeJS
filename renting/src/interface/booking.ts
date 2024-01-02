@@ -6,10 +6,17 @@ export interface postAuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    headers: any;
     body: {
         productId: string;
         // paymentMethodId: string
         // paymentIntentId: string
+        preRentalScreening: {
+            question: string;
+            answer: string;
+            ansBoolean: boolean;
+            images: string[];
+        }[];
         startDate: Date;
         endDate: Date;
         userId: string;
@@ -67,6 +74,12 @@ export interface AuthenticatedRequest extends Request {
 
 export interface Booking extends Document {
     productId: Types.ObjectId;
+    preRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        image: string;
+    }[];
     startDate: Date;
     endDate: Date;
     userId: Types.ObjectId;
@@ -91,6 +104,12 @@ export interface bookingRequest {
     status?: string;
     startDate: Date;
     endDate: Date;
+    preRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        images: string[];
+    }[];
     userId: string;
     quantity: string;
     images: string[];
@@ -135,8 +154,24 @@ export interface bookingGetRequest {
     page?: string;
     limit?: string;
     productId?: string;
+    startDate?: string;   // pending, accepted, rejected, completed
+    endDate?: string;
+    status?: string;      // pending, accepted, rejected, completed
+}
+
+export interface recentBookingGetRequest {
+    _id?: string
+    user?: {
+        _id: string;
+        roleName: string;
+        email: string;
+    };
+    page?: string;
+    limit?: string;
+    productId?: string;
     startDate?: string;
     endDate?: string;
+    status?: string;      // pending, accepted, rejected, completed
 }
 
 // for delete booking

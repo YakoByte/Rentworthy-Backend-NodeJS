@@ -7,60 +7,60 @@ const cancelBookingSchema: Schema = new Schema<CancelBooking>(
         bookingId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "booking",
-            required: true,
+            // required: true,
         },
         cancellationPolicyId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "cancellationPlan",
-            required: true,
+            // required: true,
         },
         cancellationCharges: {
             type: String,
-            required: true,
+            // required: true,
         },
         cancellationChargesType: {
             type: String,
-            required: true,
+            // required: true,
         },
         cancellationDate: {
             type: Date,
-            required: true,
+            // required: true,
         },
         cancellationHours: {
             type: String,
-            required: true,
+            // required: true,
         },
         cancellationAmount: {
             type: String,
-            required: true,
+            // required: true,
         },
         approvedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
-            required: true,
         },
         description: {
             type: String,
-            required: true,
+            // required: true,
         },
         status: {
             type: String,
             enum: ["pending", "approved", "rejected", "paymentPending", "paymentProcessing", "paymentFailed", "paymentSuccess"],
-            required: true,
+            default: "pending",
+            // required: true,
         },
         isApproved: {
             type: Boolean,
-            required: true,
+            // required: true,
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
-            required: true,
+            // required: true,
         },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",
-            required: true,
+            // required: true,
         },
     },
     { timestamps: true }
