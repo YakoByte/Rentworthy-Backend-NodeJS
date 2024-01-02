@@ -11,8 +11,8 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { roomData, roomRequest, getRoomRequest, deleteRoomRequest } from "../../../../main/src/interface/room";
-import { messageData, messageRequest, getMessageRequest, deleteMessageRequest } from "../../../../main/src/interface/messages";
+import { roomData, roomRequest, getRoomRequest, deleteRoomRequest } from "../../interface/room";
+import { messageData, messageRequest, getMessageRequest, deleteMessageRequest } from "../../interface/messages";
 class RoomRepository {
     //create room
     async CreateRoom(roomInputs: roomRequest) {
