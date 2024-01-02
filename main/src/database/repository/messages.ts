@@ -11,7 +11,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { messageRequest, getMessageRequest, deleteMessageRequest } from "../../../../main/src/interface/messages";
+import { messageRequest, getMessageRequest, deleteMessageRequest } from "../../interface/messages";
 class MessageRepository {
     //create message
     async CreateMessage(messageInputs: messageRequest) {
