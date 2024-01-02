@@ -46,7 +46,7 @@ const paymentMicroservice: string =
   "http://payment:5007";
 const socialMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://social:5010";
+  "http://localhost:5010";
 const cancellationMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://localhost:5008";
