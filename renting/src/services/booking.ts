@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
+import { bookingRequest, bookingUpdateRequest, bookingGetRequest, recentBookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
 
 // All Business logic will be here
 class bookingService {
@@ -32,6 +32,21 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+    // get recent booking 
+    async getRecentBooking(bookingInputs: recentBookingGetRequest) {
+        try {
+            let existingBooking: any
+            existingBooking = await this.repository.getRecentBooking(
+                bookingInputs
+            );
+
+            return FormateData({ existingBooking });
+        } catch (err: any) {
+            console.log("err", err)
+            throw new APIError("Data Not found", err);
+        }
+    }
+
     // get booking by id , userId or all booking
     async getBooking(bookingInputs: bookingGetRequest) {
         try {
@@ -97,6 +112,19 @@ class bookingService {
     async updateBookingById(bookingInputs: bookingRequest) {
         try {
             const existingBooking: any = await this.repository.updateBookingById(
+                bookingInputs
+            );
+
+            return FormateData({ existingBooking });
+        } catch (err: any) {
+            console.log("err", err)
+            throw new APIError("Data Not found", err);
+        }
+    }
+    // update preRentalScreening by id
+    async updatePreRentalScreeningById(bookingInputs: bookingRequest) {
+        try {
+            const existingBooking: any = await this.repository.updatePreRentalScreeningByBookingId(
                 bookingInputs
             );
 

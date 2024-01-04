@@ -64,7 +64,10 @@ const userSchema: Schema = new Schema<User>(
       type: String,
       enum: ["google", "fb", "apple", "regular"],
       default: "regular"
-    }
+    },
+    os: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

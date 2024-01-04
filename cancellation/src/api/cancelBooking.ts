@@ -12,7 +12,7 @@ export default (app: Express) => {
     const service = new CancelBookingService();
 
     // API = create new cancleBooking
-    app.post('/create-cancel-booking', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-cancel-booking', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
@@ -28,9 +28,9 @@ export default (app: Express) => {
     app.get('/get-cancel-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            // req.query.user = authUser;
+            req.query.userId = authUser._id;
             console.log("req.query", req.query)
-            const { data } = await service.getCancelBooking(req.query);
+            const { data } = await service.getCancelBooking({ ...req.query });
             return res.json(data);
         } catch (err) {
             next(err);

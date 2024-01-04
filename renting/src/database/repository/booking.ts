@@ -13,7 +13,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, approveAuthenticatedRequest, bookingRequestWithPayment } from "../../interface/booking";
+import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, recentBookingGetRequest, approveAuthenticatedRequest, bookingRequestWithPayment } from "../../interface/booking";
 class BookingRepository {
     //create booking
     async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
@@ -61,6 +61,7 @@ class BookingRepository {
             if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {
                 return FormateData({ message: "All the Products Are Booked" });
             }
+
             // console.log("findAllBooking", findAllBooking)
             // let paymentObj = {
             //     paymentMethodId: bookingInputs.paymentMethodId,
@@ -100,6 +101,114 @@ class BookingRepository {
         } catch (err) {
             console.log("err", err)
             return err;
+        }
+    }
+    // get active booking, panding, completed, requested
+    async getBooking(bookingInputs: bookingGetRequest) {
+        let criteria: any = { isDeleted: false };
+        if (bookingInputs.status == "active") {
+            criteria.status = "pending"
+        } else if (bookingInputs.status == "completed") {
+            criteria.status = bookingInputs.status;
+        } else if (bookingInputs.status == "requested") {
+            criteria.status = "accepted";
+        }
+        console.log("criteria", criteria)
+        const findBooking = await bookingModel.find(criteria);
+        console.log("findBooking", findBooking)
+        if (findBooking) {
+            return FormateData(findBooking);
+        } else {
+            return FormateData({ message: "Booking not found" });
+        }
+    }
+    // get recent booking
+    async getRecentBooking(bookingInputs: recentBookingGetRequest) {
+        let criteria: any = { isDeleted: false };
+        if (bookingInputs._id) {
+            criteria._id = bookingInputs._id;
+        }
+        if (bookingInputs.productId) {
+            criteria.productId = bookingInputs.productId;
+        }
+        if (bookingInputs.startDate && bookingInputs.endDate) {
+            criteria.$and = [
+                { startDate: { $gte: bookingInputs.startDate } },
+                { endDate: { $lte: bookingInputs.endDate } }
+            ]
+        }
+        console.log("criteria", criteria)
+        //add user detail and product detail in booking
+        const findBooking = await bookingModel.aggregate([
+            {
+                $match: criteria
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userDetail"
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "productDetail"
+                }
+            },
+            {
+                $unwind: "$userDetail"
+            },
+            {
+                $unwind: "$productDetail"
+            },
+            {
+                $project: {
+                    productId: 1,
+                    userId: 1,
+                    quantity: 1,
+                    startDate: 1,
+                    endDate: 1,
+                    preRentalScreening: 1,
+                    images: 1,
+                    addressId: 1,
+                    price: 1,
+                    totalAmount: 1,
+                    expandId: 1,
+                    isAccepted: 1,
+                    status: 1,
+                    acceptedBy: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    isDeleted: 1,
+                    userDetail: {
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1,
+                        phone: 1,
+                        address: 1,
+                        profilePic: 1,
+                    },
+                    productDetail: {
+                        title: 1,
+                        description: 1,
+                        images: 1,
+                        address: 1,
+                        location: 1,
+                        quantity: 1,
+                        price: 1,
+                    }
+                }
+            }
+        ]).sort({ createdAt: -1 });
+        console.log("findBooking", findBooking)
+        if (findBooking) {
+            return FormateData(findBooking);
+        } else {
+            return FormateData({ message: "Booking not found" });
         }
     }
     //get all booking
@@ -158,6 +267,18 @@ class BookingRepository {
             { new: true });
         if (bookingResult) {
             return FormateData(bookingResult);
+        }
+    }
+    // update preRentalScreening by booking id
+    async updatePreRentalScreeningByBookingId(bookingInputs: bookingRequest) {
+        const bookingResult = await bookingModel.findOneAndUpdate(
+            { _id: bookingInputs._id, isDeleted: false },
+            { ...bookingInputs },
+            { new: true });
+        if (bookingResult) {
+            return FormateData(bookingResult);
+        } else {
+            return FormateData({ message: "Booking not found" });
         }
     }
     //approve booking by product owner

@@ -13,6 +13,11 @@ export interface Product extends Document {
     images: [Types.ObjectId];
     description: string;
     isActive?: boolean;
+    brand: string;
+    min_qty: number;
+    max_qty: number;
+    min_price: number;
+    max_price: number;
     userId: Types.ObjectId;
     isDeleted?: boolean;
     isVerified?: string;
@@ -95,6 +100,17 @@ export interface productGetRequest {
     categoryId?: string;
     subCategoryId?: string;
     userId?: string;
+    lat?: string;
+    long?: string;
+    sort?: string;
+    price?: string;
+}
+
+export interface productSorting {
+    // sort?: string;
+    price?: string;
+    quantity?: string;
+    createdAt?: string;
 }
 
 // for delete Product

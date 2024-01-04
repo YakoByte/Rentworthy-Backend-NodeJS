@@ -62,14 +62,24 @@ services:
     restart: unless-stopped
     expose:
       - "5007"
-
+    env_file:
+      - ./payment/.env
   social:
     build: ./social
     container_name: social
     restart: unless-stopped
     expose:
       - "5010"
-
+    env_file:
+      - ./social/.env
+  cancellation:
+    build: ./cancellation
+    container_name: cancellation
+    restart: unless-stopped
+    expose:
+      - "5008"
+    env_file:
+      - ./cancellation/.env
   caddy_backend:
     image: caddy:2
     container_name: caddy_service

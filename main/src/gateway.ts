@@ -4,7 +4,7 @@ import { IncomingMessage, ServerResponse } from "http";
 const httpProxyAny = httpProxy as any;
 const gateway = httpProxyAny.createProxyServer({});
 const chatServiceProxy = httpProxyAny.createProxyServer({
-  target: "http://localhost:5006",
+  target: "http://chat:5006",
 });
 gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
   console.error("Error occurred while proxying:", err);
@@ -49,7 +49,7 @@ const socialMicroservice: string =
   "http://social:5010";
 const cancellationMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://cancellation:5008";
+  "http://social:5008";
 // const categoryMicroservice: string =
 //   // process.env.CATEGORY_MICROSERVICE_URL ||
 //   "http://localhost:5002";
@@ -120,4 +120,9 @@ const social = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: socialMicroservice });
 };
 
-export { user, category, upload, product, renting, chat, payment, social };
+const cancelBooking = (req: IncomingMessage, res: ServerResponse) => {
+  console.log("Routing to social microservice", req.url);
+  gateway.web(req, res, { target: cancellationMicroservice });
+};
+
+export { user, category, upload, product, renting, chat, payment, social, cancelBooking };

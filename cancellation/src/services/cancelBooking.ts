@@ -8,7 +8,7 @@ import {
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 
-import { cancelBookingRequest, cancelBookingUpdateRequest, cancelBookingGetRequest, cancelBookingDeleteRequest } from '../interface/cancelBooking';
+import { cancelBookingRequest, cancelBookingUpdateRequest, cancelBookingGetRequest, cancelBookingApproveRequest,cancelBookingDeleteRequest } from '../interface/cancelBooking';
 
 // All Business logic will be here
 class cancelBookingService {
@@ -47,6 +47,7 @@ class cancelBookingService {
     }
     // update cancelBooking by id
     async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
+        console.log("cancelBookingInputs", cancelBookingInputs)
         try {
             const existingCancelBooking: any = await this.repository.updateCancelBookingById(
                 cancelBookingInputs
@@ -59,7 +60,7 @@ class cancelBookingService {
         }
     }
     //  approve and reject cancelBooking
-    async approveCancelBooking(cancelBookingInputs: cancelBookingUpdateRequest) {
+    async approveCancelBooking(cancelBookingInputs: cancelBookingApproveRequest) {
         try {
             const existingCancelBooking: any = await this.repository.updateCancelBookingById(
                 cancelBookingInputs

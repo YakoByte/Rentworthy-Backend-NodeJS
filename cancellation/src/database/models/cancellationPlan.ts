@@ -35,7 +35,6 @@ const cancellationPlanSchema: Schema = new Schema<CancellationPlan>(
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
-            required: true,
         },
     },
     { timestamps: true }

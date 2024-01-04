@@ -38,7 +38,7 @@ const bookingSchema: Schema = new Schema<Booking>(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "image",
-                required: true,
+                // required: true,
             },
         ],
         addressId: {
@@ -62,6 +62,25 @@ const bookingSchema: Schema = new Schema<Booking>(
         isAccepted: {
             type: Boolean,
         },
+        preRentalScreening: [{
+            question: {
+                type: String,
+                required: true,
+            },
+            answer: {
+                type: String,
+                required: true,
+            },
+            ansBoolean: {
+                type: Boolean,
+                required: true,
+            },
+            images: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "image",
+                // required: true,
+            }],
+        }],
         status: {
             type: String,
             default: "Processing",

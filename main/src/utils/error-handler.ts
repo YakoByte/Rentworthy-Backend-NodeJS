@@ -1,11 +1,8 @@
-import { createLogger, transports } from "winston";
+import { createLogger, transports, Logger } from "winston";
 import { AppError } from "./app-error";
+import { Request, Response, NextFunction } from "express";
 
-declare var process: {
-  on(event: string, callback: Function): void;
-};
-
-const LogErrors = createLogger({
+const LogErrors: Logger = createLogger({
   transports: [
     new transports.Console(),
     new transports.File({ filename: "app_error.log" }),
@@ -24,6 +21,7 @@ class ErrorLogger {
     });
     console.log("==================== End Error Logger ===============");
     // log error with Logger plugins
+
     return false;
   }
 
@@ -36,24 +34,21 @@ class ErrorLogger {
   }
 }
 
-const ErrorHandler = async (err: Error, req: any, res: any, next: any) => {
+const ErrorHandler = async (err: Error, req: Request, res: Response, next: NextFunction) => {
   const errorLogger = new ErrorLogger();
 
-  process.on("uncaughtException", (reason: any, promise: any) => {
+  process.on("uncaughtException", (reason, promise) => {
     console.log(reason, "UNHANDLED");
     throw reason; // need to take care
   });
 
-  process.on("uncaughtException", (error: any) => {
+  process.on("uncaughtException", (error) => {
     errorLogger.logError(error);
     if (errorLogger.isTrustError(error as AppError)) {
       // process exit // need restart
-    }
+    } 
   });
 
-  // console.log(err.description, '-------> DESCRIPTION')
-  // console.log(err.message, '-------> MESSAGE')
-  // console.log(err.name, '-------> NAME')
   if (err) {
     await errorLogger.logError(err);
     if (errorLogger.isTrustError(err as AppError)) {

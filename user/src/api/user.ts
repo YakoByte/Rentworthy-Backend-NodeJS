@@ -5,6 +5,7 @@ import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLogi
 // import { validateCreateAdmin, validateLoginUser } from './userValidation';
 import RoleService from '../services/role';
 import OTPService from '../services/otp';
+const os = require('os');
 // import { isAdmin } from '../middlewares/checkRole';
 
 export default (app: Express) => {
@@ -51,8 +52,9 @@ export default (app: Express) => {
   });
 
   // API = login user
-  app.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/login', async (req: any, res: Response, next: NextFunction) => {
     try {
+      console.log("req.os", os.platform())
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "user";
       const { data } = await adminService.SignIn(userDetail);

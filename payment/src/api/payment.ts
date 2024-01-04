@@ -27,4 +27,24 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+    // API = verify stripe Id
+    app.get('/verify-stripe-id/:stripeId', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.VerifyStripeId(req.params.stripeId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = create test customer
+    app.post('/create-test-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.createTestCustomer();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 };

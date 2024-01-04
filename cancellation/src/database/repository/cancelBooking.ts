@@ -5,13 +5,13 @@ import {
     GenerateSalt,
     GenerateSignature,
     ValidatePassword,
-} from '../../utils';
+} from '../../utils/index';
 import {
     APIError,
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { cancelBookingRequest, cancelBookingGetRequest, cancelBookingUpdateRequest, cancelBookingDeleteRequest } from "../../interface/cancelBooking";
+import { cancelBookingRequest, cancelBookingGetRequest, cancelBookingUpdateRequest, cancelBookingApproveRequest, cancelBookingDeleteRequest } from "../../interface/cancelBooking";
 class CancelBookingRepository {
     //create cancelBooking
     async CreateCancelBooking(cancelBookingInputs: cancelBookingRequest) {
@@ -19,7 +19,7 @@ class CancelBookingRepository {
             const cancelBooking = await cancelBookingModel.create(cancelBookingInputs);
             return FormateData(cancelBooking);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateData(err);
         }
     }
     //get cancelBooking by id , all cancelBooking
@@ -31,12 +31,13 @@ class CancelBookingRepository {
                 cancelBooking = await cancelBookingModel.findOne(
                     {
                         _id: cancelBookingInputs._id,
-                        isDeleted: false
+                        // isDeleted: false
                     });
             } else {
                 cancelBooking = await cancelBookingModel.find(
                     {
-                        isDeleted: false
+                        ...cancelBookingInputs,
+                        // isDeleted: false
                     });
             }
             return FormateData(cancelBooking);
@@ -47,7 +48,16 @@ class CancelBookingRepository {
     //update cancelBooking by id
     async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
         const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
-            { _id: cancelBookingInputs._id, isDeleted: false },
+            { _id: cancelBookingInputs._id, },
+            { ...cancelBookingInputs },
+            { new: true });
+        if (cancelBookingResult) {
+            return FormateData(cancelBookingResult);
+        }
+    }
+    async approveCancelBookingById(cancelBookingInputs: cancelBookingApproveRequest) {
+        const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
+            { _id: cancelBookingInputs._id, },
             { ...cancelBookingInputs },
             { new: true });
         if (cancelBookingResult) {

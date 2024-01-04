@@ -51,7 +51,7 @@ class NotificationService {
     //     }
     // }
     // get Notification by id
-    async getNotification(NotificationInputs: notificationGetRequest) {
+    async getNotification(NotificationInputs: notificationRequest) {
         try {
             let existingNotification: any
             existingNotification = await this.repository.getNotification(
@@ -65,18 +65,18 @@ class NotificationService {
         }
     }
     // add images to Notification
-    async addImagesToNotification(NotificationInputs: notificationUpdateRequest) {
-        try {
-            const existingNotification: any = await this.repository.addImagesToNotification(
-                NotificationInputs
-            );
+    // async addImagesToNotification(NotificationInputs: notificationUpdateRequest) {
+    //     try {
+    //         const existingNotification: any = await this.repository.addImagesToNotification(
+    //             NotificationInputs
+    //         );
 
-            return FormateData({ existingNotification });
-        } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
-        }
-    }
+    //         return FormateData({ existingNotification });
+    //     } catch (err: any) {
+    //         console.log("err", err)
+    //         throw new APIError("Data Not found", err);
+    //     }
+    // }
     // update Notification by id
     async updateById(NotificationInputs: notificationUpdateRequest) {
         try {

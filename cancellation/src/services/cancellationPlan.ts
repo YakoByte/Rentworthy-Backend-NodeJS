@@ -47,6 +47,7 @@ class cancellationPlanService {
     }
     // update cancellationPlan by id
     async updateCancellationPlanById(cancellationPlanInputs: cancellationPlanUpdateRequest) {
+        console.log("cancellationPlanInputs", cancellationPlanInputs)
         try {
             const existingCancellationPlan: any = await this.repository.updateCancellationPlanById(
                 cancellationPlanInputs

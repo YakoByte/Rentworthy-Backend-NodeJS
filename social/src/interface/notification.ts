@@ -60,10 +60,10 @@ export interface Notification extends Document {
 
 export interface notificationRequest {
     _id?: string;
-    desc: string;
+    desc?: string;
     isRead?: boolean;
-    title: string;
-    type: string;
+    title?: string;
+    type?: string;
     userId?: string;
     receiverId?: string;
     isDeleted?: boolean;
