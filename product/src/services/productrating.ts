@@ -2,10 +2,10 @@ import productratingRepository from '../database/repository/productrating';
 import { productRatingRequest, getProductRatingRequest, AuthenticatedRequest } from "../interface/productrating";
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
 

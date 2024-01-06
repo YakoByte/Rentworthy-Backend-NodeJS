@@ -2,10 +2,10 @@ import productLikeRepository from '../database/repository/productlike';
 import { productLikeRequest, getProductLikeRequest } from "../interface/productlike";
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
 

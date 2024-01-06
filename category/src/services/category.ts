@@ -1,10 +1,10 @@
 import categoryRepository from '../database/repository/category';
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 

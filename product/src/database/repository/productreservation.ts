@@ -2,10 +2,10 @@ import { productReservationModel } from "../models";
 
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../../utils';
 
 import { productReservationRequest, updateProductReservation, getAvailables } from "../../interface/productreservation";

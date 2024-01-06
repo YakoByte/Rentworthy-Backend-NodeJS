@@ -40,7 +40,7 @@ const rentingMicroservice: string =
   "http://renting:5005";
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://chat:5006";
+  "http://localhost:5006";
 const paymentMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://payment:5007";
@@ -103,7 +103,7 @@ const renting = (req: IncomingMessage, res: ServerResponse) => {
 };
 
 // Chat microservice
-const chat = (req: IncomingMessage, res: ServerResponse) => {
+const chatApi = (req: IncomingMessage, res: ServerResponse) => {
   console.log("Routing to chat microservice", req.url);
   gateway.web(req, res, { target: chatMicroservice });
 };
@@ -125,4 +125,4 @@ const cancelBooking = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: cancellationMicroservice });
 };
 
-export { user, category, upload, product, renting, chat, payment, social, cancelBooking };
+export { user, category, upload, product, renting, chatApi, payment, social, cancelBooking };

@@ -7,7 +7,7 @@ import databaseConnection from './database/connection'; // Removed ".ts" extensi
 
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io'; // Renamed to prevent naming collision with http.Server
-import { setupSocketServer } from './api/chat';
+// import { setupSocketServer } from './api/chat';
 
 const startServer = async (): Promise<void> => {
     const app: Express = express();
@@ -29,12 +29,12 @@ const startServer = async (): Promise<void> => {
     // Setup socket server
 
     const server = http.createServer(app);
-    const io = new SocketIOServer(server, {
-        cors: {
-            origin: '*', // Be cautious with this in production
-        }
-    });
-    setupSocketServer(io);
+    // const io = new SocketIOServer(server, {
+    //     cors: {
+    //         origin: '*', // Be cautious with this in production
+    //     }
+    // });
+    // setupSocketServer(io);
 
     // Define a simple root route
     app.get('/', (req: Request, res: Response) => {

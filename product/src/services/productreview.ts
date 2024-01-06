@@ -2,10 +2,10 @@ import productReviewRepository from '../database/repository/productreview';
 import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest } from "../interface/productreview";
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
 

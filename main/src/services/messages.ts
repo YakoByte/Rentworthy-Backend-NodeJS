@@ -1,10 +1,10 @@
 import messageRepository from "../database/repository/messages";
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../utils';
 import { APIError, BadRequestError } from '../utils/app-error';
 

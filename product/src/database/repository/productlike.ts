@@ -2,10 +2,10 @@ import { productLikeModel, historyModel } from "../models";
 
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../../utils';
 
 import { productLikeRequest, getProductLikeRequest } from "../../interface/productlike";

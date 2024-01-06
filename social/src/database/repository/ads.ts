@@ -2,10 +2,10 @@ import { adsModel, productModel, historyModel } from "../models";
 import { ObjectId } from 'mongodb';
 import {
     FormateData,
-    GeneratePassword,
-    GenerateSalt,
-    GenerateSignature,
-    ValidatePassword,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
 } from '../../utils';
 import {
     APIError,

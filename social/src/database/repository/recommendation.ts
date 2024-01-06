@@ -1,10 +1,10 @@
 import { recommendationModel } from "../models";
 import {
   FormateData,
-  GeneratePassword,
-  GenerateSalt,
-  GenerateSignature,
-  ValidatePassword,
+  // GeneratePassword,
+  //   GenerateSalt,
+  //   GenerateSignature,
+  //   ValidatePassword,
 } from "../../utils";
 import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import { recommendationRequest } from "../../interface/recommendation";
