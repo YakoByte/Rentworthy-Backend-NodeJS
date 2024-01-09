@@ -10,21 +10,23 @@ const s3 = new AWS.S3({
 });
 
 const bucketName = AWS_BUCKET_NAME || '';
-
 async function uploadS3File(filePath: string, newFileNameKey: string): Promise<string> {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, (err: any, data: any) => {
       if (err) reject(err);
-
+      // console.log("bucketName",data, bucketName, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET_REGION)
+      console.log("newFileNameKey", newFileNameKey, "filePath", filePath )
       const params: AWS.S3.PutObjectRequest = {
         Bucket: bucketName,
         Key: newFileNameKey,
         Body: data,
+        // ACL: 'public-read',
       };
 
       s3.upload(params, (s3Err: any, data: any) => {
-        
+
         if (s3Err) reject(s3Err);
+        console.log("data", data)
         resolve(data.Location);
       });
     });

@@ -15,7 +15,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.imageDetail = req.file;
-            console.log("req.file", req.file)
+            console.log("req.file", req.body)
             const { data } = await service.CreateImage(req.body);
             return res.json(data);
         } catch (err) {

@@ -25,10 +25,11 @@ class imageService {
             if (imageInputs.imageDetail.mimetype !== "image/jpeg" && imageInputs.imageDetail.mimetype !== "image/png") {
                 return FormateData({ message: "Invalid Image Type" });
             }
+            console.log("imageInputs", imageInputs)
             const imagePath = imageInputs.imageDetail.path;
             const imageMimetype = imageInputs.imageDetail.mimetype;
             const imageSize = imageInputs.imageDetail.size;
-            const newImageName = `${Date.now()}_${imageInputs.imageDetail.imageName}`;
+            const newImageName = `${Date.now()}_${imageInputs.imageDetail.originalname}`;
         
             const newImagePath = await uploadS3File(imagePath, newImageName);
         

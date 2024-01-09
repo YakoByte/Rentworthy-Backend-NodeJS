@@ -20,6 +20,7 @@ export interface Image extends Document {
 
 export interface imageRequest {
     imageDetail: {
+        originalname? : string;
         imageName?: string;
         mimetype: string;
         path: string;
