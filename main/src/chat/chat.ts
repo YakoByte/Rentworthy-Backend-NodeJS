@@ -92,7 +92,7 @@ export function setupSocketServer(io: Server) {
 
         // get history
         socket.on('getHistory', async (message: any) => {
-            let roomDetail: getRoomRequest = { _id: message.roomId }
+            let roomDetail: getRoomRequest = { roomId: message.roomId }
             const data: any = await chatService.GetMessages(roomDetail);
             console.log(data);
             socket.emit('history', data);

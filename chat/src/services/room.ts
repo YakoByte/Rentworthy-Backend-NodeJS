@@ -30,7 +30,7 @@ class roomService {
     async GetRoom(roomInputs: getRoomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRoom(roomInputs);
-            return FormateData({ existingRoom });
+            return FormateData(existingRoom);
         } catch (err: any) {
             throw new APIError("Data Not found", err);
         }
@@ -39,7 +39,7 @@ class roomService {
     async GetRooms(roomInputs: roomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRooms(roomInputs);
-            return FormateData({ existingRoom });
+            return FormateData(existingRoom);
         } catch (err: any) {
             throw new APIError("Data Not found", err);
         }
@@ -48,7 +48,7 @@ class roomService {
     async DeleteRoom(roomInputs: deleteRoomRequest) {
         try {
             const existingRoom: any = await this.repository.DeleteRoom(roomInputs);
-            return FormateData({ existingRoom });
+            return FormateData(existingRoom);
         } catch (err: any) {
             throw new APIError("Data Not found", err);
         }

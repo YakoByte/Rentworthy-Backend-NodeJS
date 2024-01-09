@@ -1,6 +1,7 @@
 import { bookingModel, productModel, historyModel } from "../models";
 import axios from 'axios';
 
+import { Types } from 'mongoose';
 import {
     FormateData,
     // GeneratePassword,
@@ -126,10 +127,10 @@ class BookingRepository {
     async getRecentBooking(bookingInputs: recentBookingGetRequest) {
         let criteria: any = { isDeleted: false };
         if (bookingInputs._id) {
-            criteria._id = bookingInputs._id;
+            criteria._id = new Types.ObjectId(bookingInputs._id);
         }
         if (bookingInputs.productId) {
-            criteria.productId = bookingInputs.productId;
+            criteria.productId = new Types.ObjectId(bookingInputs.productId);
         }
         if (bookingInputs.startDate && bookingInputs.endDate) {
             criteria.$and = [
@@ -200,6 +201,7 @@ class BookingRepository {
                         location: 1,
                         quantity: 1,
                         price: 1,
+                        name: 1,
                     }
                 }
             }
@@ -215,13 +217,13 @@ class BookingRepository {
     async getAllBooking(bookingInputs: bookingGetRequest) {
         let criteria: any = { isDeleted: false };
         if (bookingInputs._id) {
-            criteria._id = bookingInputs._id;
+            criteria._id = new Types.ObjectId(bookingInputs._id);
         }
         if (bookingInputs.user.roleName === "user") {
-            criteria.userId = bookingInputs.user._id;
+            criteria.userId = new Types.ObjectId(bookingInputs.user._id);
         }
         if (bookingInputs.productId) {
-            criteria.productId = bookingInputs.productId;
+            criteria.productId = new Types.ObjectId(bookingInputs.productId);
         }
         if (bookingInputs.startDate && bookingInputs.endDate) {
             criteria.$and = [
@@ -230,7 +232,72 @@ class BookingRepository {
             ]
         }
         console.log("criteria", criteria)
-        const findBooking = await bookingModel.find(criteria);
+        const findBooking = await bookingModel.aggregate([
+            {
+                $match: criteria
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userDetail"
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "productDetail"
+                }
+            },
+            {
+                $unwind: "$userDetail"
+            },
+            {
+                $unwind: "$productDetail"
+            },
+            {
+                $project: {
+                    productId: 1,
+                    userId: 1,
+                    quantity: 1,
+                    startDate: 1,
+                    endDate: 1,
+                    preRentalScreening: 1,
+                    images: 1,
+                    addressId: 1,
+                    price: 1,
+                    totalAmount: 1,
+                    expandId: 1,
+                    isAccepted: 1,
+                    status: 1,
+                    acceptedBy: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    isDeleted: 1,
+                    userDetail: {
+                        userName: 1,
+                        lastName: 1,
+                        email: 1,
+                        phone: 1,
+                        bussinessType: 1,
+                        profilePic: 1,
+                    },
+                    productDetail: {
+                        title: 1,
+                        description: 1,
+                        images: 1,
+                        address: 1,
+                        location: 1,
+                        quantity: 1,
+                        price: 1,
+                        name: 1,
+                    }
+                }
+            }
+        ]).sort({ createdAt: -1 });
         console.log("findBooking", findBooking)
         if (findBooking) {
             return FormateData(findBooking);

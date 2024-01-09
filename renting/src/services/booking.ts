@@ -55,7 +55,7 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
             console.log("err", err)
             throw new APIError("Data Not found", err);
