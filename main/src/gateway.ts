@@ -40,7 +40,7 @@ const rentingMicroservice: string =
   "http://renting:5005";
 const chatMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://localhost:5006";
+  "http://chat:5006";
 const paymentMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
   "http://payment:5007";
@@ -49,7 +49,7 @@ const socialMicroservice: string =
   "http://social:5010";
 const cancellationMicroservice: string =
   // process.env.CHAT_MICROSERVICE_URL ||
-  "http://social:5008";
+  "http://cancellation:5008";
 // const categoryMicroservice: string =
 //   // process.env.CATEGORY_MICROSERVICE_URL ||
 //   "http://localhost:5002";

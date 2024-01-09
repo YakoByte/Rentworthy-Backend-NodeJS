@@ -79,6 +79,12 @@ class profileRepository {
     //update profile
     async updateProfileById(profileInputs: profileRequest) {
         const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false });
+        if (!findProfile) {
+            //create new profile
+            const profile = new profileModel(profileInputs);
+            const profileResult = await profile.save();
+            return FormateData(profileResult);
+        }
         console.log("findProfile", findProfile)
         //if profile exist
         if (findProfile) {
