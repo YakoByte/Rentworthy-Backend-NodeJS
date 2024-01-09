@@ -44,6 +44,7 @@ export interface getRoomRequest {
     rentingId?: string;
     isActive?: boolean;
     unRead?: string;
+    lastMessage?: boolean;
 }
 
 export interface deleteRoomRequest {

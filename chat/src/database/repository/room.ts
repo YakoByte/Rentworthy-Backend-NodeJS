@@ -42,7 +42,12 @@ class RoomRepository {
             let room: any
             if (roomInputs.productId) {
                 criteria = { ...criteria, productId: roomInputs.productId }
-                room = await roomModel.findOne(criteria);
+                roomInputs.lastMessage = true;
+                // room = await roomModel.findOne(criteria);
+            }
+            if (roomInputs._id) {
+                criteria = { ...criteria, _id: roomInputs._id }
+                roomInputs.lastMessage = true;
             }
             if (roomInputs.userId) {
                 criteria = { ...criteria, $or: [{ userId: roomInputs.userId }, { vendorId: roomInputs.userId }], isActive: true, isDeleted: false }
@@ -61,7 +66,7 @@ class RoomRepository {
                 let tempRooms: any = await roomModel.find(criteria);
                 room = [];
                 for (let i = 0; i < tempRooms.length; i++) {
-                    const element: any = tempRooms[i];  
+                    const element: any = tempRooms[i];
                     let message: any = await messageModel.findOne({ roomId: element._id, isSeen: false });
                     if (message) {
                         room.push({ ...element, lastMessage: message.message, lastMessageTime: message.createdAt });
@@ -69,11 +74,27 @@ class RoomRepository {
                 }
                 // room = await roomModel.find(criteria);
             }
+            if (roomInputs.lastMessage) {
+                // show only unread messages rooms
+                //if message is seen then dont show that room
+                let tempRooms: any = await roomModel.find(criteria).lean();
+                room = [];
+                for (let i = 0; i < tempRooms.length; i++) {
+                    const element: any = tempRooms[i];
+                    let message: any = await messageModel.findOne({ roomId: element._id }).sort({ createdAt: -1 }).lean();
+                    if (message) {
+                        room.push({ ...element, lastMessage: message.message, lastMessageTime: message.createdAt });
+                    } else {
+                        room.push({ ...element, lastMessage: "", lastMessageTime: "" });
+                    }
+                }
+                // room = await roomModel.find(criteria);
+            }
             if (!room) {
-                return FormateData({ message: "Room not found" });
+                return { message: "Room not found" };
             }
 
-            return FormateData(room);
+            return room;
         } catch (error) {
             return error;
         }
