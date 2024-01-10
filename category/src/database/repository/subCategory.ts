@@ -1,5 +1,5 @@
 import { subCategoryModel, historyModel } from "../models";
-import ObjectId from "mongoose";
+import { Types } from "mongoose";
 import {
     FormateData,
     // GeneratePassword,
@@ -51,7 +51,43 @@ class SubCategoryRepository {
     }
     //get subCategory by id
     async getSubCategoryById(subCategoryInputs: { _id: string }) {
-        const findSubCategory = await subCategoryModel.findOne({ _id: subCategoryInputs._id, isDeleted: false, isActive: true });
+        // const findSubCategory = await subCategoryModel.findOne({ _id: subCategoryInputs._id, isDeleted: false, isActive: true });
+        const findSubCategory = await subCategoryModel.aggregate([
+            { $match: { _id: new Types.ObjectId(subCategoryInputs._id), isDeleted: false, isActive: true } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "category",
+                },
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    as: "image",
+                },
+            },
+            {
+                $unwind: "$category"
+            },
+            {
+                $unwind: "$image"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    category: "$category.name",
+                    description: 1,
+                    image: "$image.path"
+                }
+            },
+
+        ]);
+
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
             return FormateData(findSubCategory);
@@ -59,11 +95,48 @@ class SubCategoryRepository {
     }
     // get subCategory by categoryId
     async getSubCategoryByCategoryId(subCategoryInputs: subCategoryGetRequest) {
-        const findSubCategory =
-            await subCategoryModel
-                .find({ categoryId: subCategoryInputs.categoryId, isDeleted: false, isActive: true })
-                .skip(Number(subCategoryInputs.page))
-                .limit(Number(subCategoryInputs.limit));
+        // const findSubCategory =
+        //     await subCategoryModel
+        //         .find({ categoryId: subCategoryInputs.categoryId, isDeleted: false, isActive: true })
+        //         .skip(Number(subCategoryInputs.page))
+        //         .limit(Number(subCategoryInputs.limit));
+
+        const findSubCategory = await subCategoryModel.aggregate([
+            { $match: { categoryId: new Types.ObjectId(subCategoryInputs.categoryId), isDeleted: false, isActive: true } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "category",
+                },
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    as: "image",
+                },
+            },
+            {
+                $unwind: "$category"
+            },
+            {
+                $unwind: "$image"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    category: "$category.name",
+                    description: 1,
+                    image: "$image.path"
+                }
+            },
+            { $skip: Number(subCategoryInputs.page) },
+            { $limit: Number(subCategoryInputs.limit) }
+        ]);
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
             return FormateData(findSubCategory);
@@ -71,11 +144,47 @@ class SubCategoryRepository {
     }
     //get all subCategory
     async getAllSubCategory(subCategoryInputs: subCategoryGetRequest) {
-        const findSubCategory =
-            await subCategoryModel
-                .find({ isDeleted: false, isActive: true })
-                .skip(Number(subCategoryInputs.page))
-                .limit(Number(subCategoryInputs.limit));
+        // const findSubCategory =
+        //     await subCategoryModel
+        //         .find({ isDeleted: false, isActive: true })
+        //         .skip(Number(subCategoryInputs.page))
+        //         .limit(Number(subCategoryInputs.limit));
+        const findSubCategory = await subCategoryModel.aggregate([
+            { $match: { isDeleted: false, isActive: true } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "category",
+                },
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    as: "image",
+                },
+            },
+            {
+                $unwind: "$category"
+            },
+            {
+                $unwind: "$image"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    category: "$category.name",
+                    description: 1,
+                    image: "$image.path"
+                }
+            },
+            { $skip: Number(subCategoryInputs.page) },
+            { $limit: Number(subCategoryInputs.limit) }
+        ]);
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
             return FormateData(findSubCategory);
@@ -83,7 +192,42 @@ class SubCategoryRepository {
     }
     // get subCategory by name and search using regex
     async getSubCategoryByName(subCategoryInputs: { name: string }) {
-        const findSubCategory = await subCategoryModel.find({ name: { $regex: subCategoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
+        // const findSubCategory = await subCategoryModel.find({ name: { $regex: subCategoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
+        const findSubCategory = await subCategoryModel.aggregate([
+            { $match: { name: { $regex: subCategoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true } },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "categoryId",
+                    foreignField: "_id",
+                    as: "category",
+                },
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    as: "image",
+                },
+            },
+            {
+                $unwind: "$category"
+            },
+            {
+                $unwind: "$image"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    category: "$category.name",
+                    description: 1,
+                    image: "$image.path"
+                }
+            },
+
+        ]);
         console.log("findSubCategory", findSubCategory)
         if (findSubCategory) {
             return FormateData(findSubCategory);

@@ -47,7 +47,32 @@ class AboutUSRepository {
     //get one aboutUS
     async getAboutUS(aboutUSInputs: aboutUSGetRequest) {
         try {
-            const aboutUSResult = await AboutUSModel.find({ ...aboutUSInputs, isDeleted: false });
+            // const aboutUSResult = await AboutUSModel.find({ ...aboutUSInputs, isDeleted: false });
+            const aboutUSResult = await AboutUSModel.aggregate([
+                {
+                    $match: { ...aboutUSInputs, isDeleted: false }
+                },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "image",
+                        foreignField: "_id",
+                        as: "image"
+                    }
+                },
+                {
+                    $unwind: "$image"
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        image: 1,
+                        title: 1,
+                        description: 1,
+                        isDeleted: 1
+                    }
+                }
+            ]);
             if (!aboutUSResult) {
                 return FormateData("No aboutUS");
             }

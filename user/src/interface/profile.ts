@@ -21,7 +21,7 @@ export interface Profile extends Document {
     isBlocked?: boolean;
     isReported?: boolean;
     isDeleted?: boolean;
-    profileImage: string;
+    profileImage: Types.ObjectId;
     locationId?: Types.ObjectId;
 }
 

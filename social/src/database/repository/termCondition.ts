@@ -21,8 +21,21 @@ class TermConditionRepository {
     //get all TermCondition
     async getTermConditionById(TermConditionInputs: termConditionGetRequest) {
         try {
-            const TermConditionResult = await TermConditionModel.findById(TermConditionInputs._id);
-            if(!TermConditionResult){
+            // const TermConditionResult = await TermConditionModel.findById(TermConditionInputs._id);
+            const TermConditionResult = await TermConditionModel.aggregate([
+                {
+                    $match: { ...TermConditionInputs, isDeleted: false }
+                },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "image",
+                        foreignField: "_id",
+                        as: "image"
+                    }
+                },
+            ]);
+            if (!TermConditionResult) {
                 return FormateData("No TermCondition");
             }
             return FormateData(TermConditionResult);
@@ -34,8 +47,21 @@ class TermConditionRepository {
     //get all TermCondition
     async getAllTermCondition() {
         try {
-            const TermConditionResult = await TermConditionModel.find();
-            if(!TermConditionResult){
+            // const TermConditionResult = await TermConditionModel.find();
+            const TermConditionResult = await TermConditionModel.aggregate([
+                {
+                    $match: { isDeleted: false }
+                },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "image",
+                        foreignField: "_id",
+                        as: "image"
+                    }
+                },
+            ]);
+            if (!TermConditionResult) {
                 return FormateData("No TermCondition");
             }
             return FormateData(TermConditionResult);
@@ -48,7 +74,7 @@ class TermConditionRepository {
     async getTermCondition(TermConditionInputs: termConditionGetRequest) {
         try {
             const TermConditionResult = await TermConditionModel.find(TermConditionInputs);
-            if(!TermConditionResult){
+            if (!TermConditionResult) {
                 return FormateData("No TermCondition");
             }
             return FormateData(TermConditionResult);
@@ -59,7 +85,7 @@ class TermConditionRepository {
     }
     //add images to TermCondition
     async addImagesToTermCondition(TermConditionInputs: termConditionUpdateRequest) {
-        const TermConditionResult = await TermConditionModel.findOneAndUpdate( { _id: TermConditionInputs._id },
+        const TermConditionResult = await TermConditionModel.findOneAndUpdate({ _id: TermConditionInputs._id },
             { $set: { image: TermConditionInputs.image } },
             { new: true });
         if (TermConditionResult) {
@@ -82,7 +108,7 @@ class TermConditionRepository {
     //delete TermCondition by id
     async deleteTermConditionById(TermConditionInputs: { _id: string }) {
         const TermConditionResult = await TermConditionModel.findOneAndUpdate(
-            { _id: TermConditionInputs._id},
+            { _id: TermConditionInputs._id },
             { isDeleted: true },
             { new: true });
         if (TermConditionResult) {

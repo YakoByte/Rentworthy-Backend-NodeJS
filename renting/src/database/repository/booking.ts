@@ -115,7 +115,116 @@ class BookingRepository {
             criteria.status = "accepted";
         }
         console.log("criteria", criteria)
-        const findBooking = await bookingModel.find(criteria);
+        // const findBooking = await bookingModel.find(criteria);
+        const findBooking = await bookingModel.aggregate([
+            {
+                $match: criteria
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userDetail"
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "productDetail"
+                }
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    as: "images"
+                }
+            },
+            {
+                $unwind: "$userDetail"
+            },
+            {
+                $unwind: "$productDetail"
+            },
+            {
+                $unwind: "$preRentalScreening"
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "preRentalScreening.images",
+                    foreignField: "_id",
+                    as: "preRentalScreening.images"
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    productId: { $first: "$productId" },
+                    userId: { $first: "$userId" },
+                    quantity: { $first: "$quantity" },
+                    startDate: { $first: "$startDate" },
+                    endDate: { $first: "$endDate" },
+                    images: { $first: "$images" },
+                    preRentalScreening: { $push: "$preRentalScreening" },
+                    addressId: { $first: "$addressId" },
+                    price: { $first: "$price" },
+                    totalAmount: { $first: "$totalAmount" },
+                    expandId: { $first: "$expandId" },
+                    isAccepted: { $first: "$isAccepted" },
+                    status: { $first: "$status" },
+                    acceptedBy: { $first: "$acceptedBy" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                    isDeleted: { $first: "$isDeleted" },
+                    userDetail: { $first: "$userDetail" },
+                    productDetail: { $first: "$productDetail" },
+                }
+            },
+            {
+                $project: {
+                    productId: 1,
+                    userId: 1,
+                    quantity: 1,
+                    startDate: 1,
+                    endDate: 1,
+                    preRentalScreening: 1,
+                    images: 1,
+                    addressId: 1,
+                    price: 1,
+                    totalAmount: 1,
+                    expandId: 1,
+                    isAccepted: 1,
+                    status: 1,
+                    acceptedBy: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    isDeleted: 1,
+                    userDetail: {
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1,
+                        phone: 1,
+                        address: 1,
+                        profilePic: 1,
+                    },
+                    productDetail: {
+                        title: 1,
+                        description: 1,
+                        images: 1,
+                        address: 1,
+                        location: 1,
+                        quantity: 1,
+                        price: 1,
+                        name: 1,
+                    }
+                }
+            }
+        ])
         console.log("findBooking", findBooking)
         if (findBooking) {
             return FormateData(findBooking);
@@ -161,10 +270,53 @@ class BookingRepository {
                 }
             },
             {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    as: "images"
+                }
+            },
+            {
                 $unwind: "$userDetail"
             },
             {
                 $unwind: "$productDetail"
+            },
+            {
+                $unwind: "$preRentalScreening"
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "preRentalScreening.images",
+                    foreignField: "_id",
+                    as: "preRentalScreening.images"
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    productId: { $first: "$productId" },
+                    userId: { $first: "$userId" },
+                    quantity: { $first: "$quantity" },
+                    startDate: { $first: "$startDate" },
+                    endDate: { $first: "$endDate" },
+                    images: { $first: "$images" },
+                    preRentalScreening: { $push: "$preRentalScreening" },
+                    addressId: { $first: "$addressId" },
+                    price: { $first: "$price" },
+                    totalAmount: { $first: "$totalAmount" },
+                    expandId: { $first: "$expandId" },
+                    isAccepted: { $first: "$isAccepted" },
+                    status: { $first: "$status" },
+                    acceptedBy: { $first: "$acceptedBy" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                    isDeleted: { $first: "$isDeleted" },
+                    userDetail: { $first: "$userDetail" },
+                    productDetail: { $first: "$productDetail" },
+                }
             },
             {
                 $project: {
@@ -174,7 +326,11 @@ class BookingRepository {
                     startDate: 1,
                     endDate: 1,
                     preRentalScreening: 1,
-                    images: 1,
+                    images:
+                    {
+                        _id: 1,
+                        image: 1
+                    },
                     addressId: 1,
                     price: 1,
                     totalAmount: 1,
@@ -258,6 +414,58 @@ class BookingRepository {
             {
                 $unwind: "$productDetail"
             },
+            // {
+            //     $unwind: "$images"
+            // },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    as: "images"
+                }
+            },
+            {
+                $unwind: "$preRentalScreening"
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "preRentalScreening.images",
+                    foreignField: "_id",
+                    as: "preRentalScreening.images"
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    productId: { $first: "$productId" },
+                    userId: { $first: "$userId" },
+                    quantity: { $first: "$quantity" },
+                    startDate: { $first: "$startDate" },
+                    endDate: { $first: "$endDate" },
+                    images: { $first: "$images" },
+                    // images: {
+                    //     $push: {
+                    //         _id: "$images._id",
+                    //         image: "$images.image"
+                    //     }
+                    // },z
+                    preRentalScreening: { $push: "$preRentalScreening" },
+                    addressId: { $first: "$addressId" },
+                    price: { $first: "$price" },
+                    totalAmount: { $first: "$totalAmount" },
+                    expandId: { $first: "$expandId" },
+                    isAccepted: { $first: "$isAccepted" },
+                    status: { $first: "$status" },
+                    acceptedBy: { $first: "$acceptedBy" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                    isDeleted: { $first: "$isDeleted" },
+                    userDetail: { $first: "$userDetail" },
+                    productDetail: { $first: "$productDetail" },
+                }
+            },
             {
                 $project: {
                     productId: 1,
@@ -297,7 +505,7 @@ class BookingRepository {
                     }
                 }
             }
-        ]).sort({ createdAt: -1 });
+        ])
         console.log("findBooking", findBooking)
         if (findBooking) {
             return FormateData(findBooking);

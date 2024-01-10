@@ -59,8 +59,37 @@ class profileRepository {
 
     //get all profile active or inactive blocked or unblocked
     async getAllProfile(profileInputs: getProfileRequest) {
-        const findProfile = await profileModel.find(profileInputs)
-            .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
+        // const findProfile = await profileModel.find(profileInputs)
+        //     .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
+        const findProfile = await profileModel.aggregate([
+            {
+                $match: { isDeleted: false, isBlocked: false }
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "locationId",
+                    foreignField: "_id",
+                    as: "locationId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "profileImage",
+                    foreignField: "_id",
+                    as: "profileImage"
+                }
+            }
+        ])
         console.log("findProfile", findProfile)
         if (findProfile) {
             return findProfile;
@@ -68,8 +97,39 @@ class profileRepository {
     }
 
     async getProfileById(profileInputs: profileRequest) {
-        const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false, })
-            .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
+        // const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false, })
+        //     .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
+        const findProfile = await profileModel.aggregate([
+            {
+                // $match: { userId: profileInputs.userId, isDeleted: false, isBlocked: false }
+                $match: { isDeleted: false, isBlocked: false }
+            },
+            {
+                $lookup: {
+                    from: "locations",
+                    localField: "locationId",
+                    foreignField: "_id",
+                    as: "locationId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "userId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "profileImage",
+                    foreignField: "_id",
+                    as: "profileImage"
+                }
+            }
+        ])
+
         console.log("findProfile", findProfile)
         if (findProfile) {
             return findProfile;

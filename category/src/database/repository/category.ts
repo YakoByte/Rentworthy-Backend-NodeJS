@@ -1,4 +1,5 @@
 import { categoryModel, subCategoryModel, historyModel } from "../models";
+import { Types } from 'mongoose';
 import {
     FormateData,
     // GeneratePassword,
@@ -54,7 +55,28 @@ class CategoryRepository {
     }
     //get category by id
     async getCategoryById(categoryInputs: { _id: string }) {
-        const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true }, { _id: 1, name: 1, description: 1, image: 1 });
+        // const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true }, { _id: 1, name: 1, description: 1, image: 1 });
+        const findCategory = await categoryModel.aggregate([
+            { $match: { _id: new Types.ObjectId(categoryInputs._id), isDeleted: false, isActive: true } },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "image",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "image"
+                }
+            },
+            { $unwind: "$image" },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    image: "$image.path"
+                }
+            }
+        ])
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);
@@ -63,7 +85,25 @@ class CategoryRepository {
     //get all category
     async getAllCategory({ skip, limit }: { skip: number, limit: number }) {
         const findCategory = await categoryModel.aggregate([
-            { $match: { isDeleted: false, isActive: true } }, { $skip: skip }, { $limit: limit }])
+            { $match: { isDeleted: false, isActive: true } }, {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "images"
+                }
+            },
+            { $unwind: "$images" },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    image: "$images.path"
+                }
+            },
+            { $skip: skip }, { $limit: limit }])
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);
@@ -71,7 +111,26 @@ class CategoryRepository {
     }
     // get category by name and search using regex
     async getCategoryByName(categoryInputs: { name: string }) {
-        const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
+        // const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
+        const findCategory = await categoryModel.aggregate([
+            { $match: { name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true } }, {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "images"
+                }
+            },
+            { $unwind: "$images" },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    description: 1,
+                    image: "$images.path"
+                }
+            },]);
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);

@@ -112,7 +112,87 @@ class ExpandDateRepository {
             ]
         }
         console.log("criteria", criteria)
-        const findExpandDate = await expandDatesModel.find(criteria);
+        // const findExpandDate = await expandDatesModel.find(criteria);
+        const findExpandDate = await expandDatesModel.aggregate([
+            {
+                $match: criteria
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "product"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {
+                $lookup: {
+                    from: "bookings",
+                    localField: "bookingId",
+                    foreignField: "_id",
+                    as: "booking"
+                }
+            },
+            {
+                $lookup: {
+                    from: "images",
+                    localField: "images",
+                    foreignField: "_id",
+                    as: "images"
+                }
+            },
+            {
+                $unwind: "$product"
+            },
+            {
+                $unwind: "$user"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userId: 1,
+                    productId: 1,
+                    startDate: 1,
+                    endDate: 1,
+                    quantity: 1,
+                    isAccepted: 1,
+                    image: 1,
+                    acceptedBy: 1,
+                    isDeleted: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    product: {
+                        _id: 1,
+                        name: 1,
+                        description: 1,
+                        quantity: 1,
+                        price: 1,
+                        images: 1,
+                        isDeleted: 1,
+                        createdAt: 1,
+                        updatedAt: 1,
+                    },
+                    user: {
+                        _id: 1,
+                        name: 1,
+                        email: 1,
+                        phone: 1,
+                        address: 1,
+                        isDeleted: 1,
+                        createdAt: 1,
+                        updatedAt: 1,
+                    }
+                }
+            }
+        ]);
         console.log("findExpandDate", findExpandDate)
         if (findExpandDate) {
             return FormateData(findExpandDate);

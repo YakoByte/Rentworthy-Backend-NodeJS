@@ -41,7 +41,8 @@ const userSchema: Schema = new Schema<Profile>(
       default: false,
     },
     profileImage: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "images",
     },
     locationId: {
       type: mongoose.Schema.Types.ObjectId,

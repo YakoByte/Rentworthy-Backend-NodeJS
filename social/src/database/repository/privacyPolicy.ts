@@ -48,7 +48,21 @@ class PrivacyPolicyRepository {
     //get one PrivacyPolicy
     async getPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
         try {
-            const PrivacyPolicyResult = await PrivacyPolicyModel.find(PrivacyPolicyInputs);
+            // const PrivacyPolicyResult = await PrivacyPolicyModel.find(PrivacyPolicyInputs);
+
+            const PrivacyPolicyResult = await PrivacyPolicyModel.aggregate([
+                {
+                    $match: { ...PrivacyPolicyInputs, isDeleted: false }
+                },
+                {
+                    $lookup: {
+                        from: "images",
+                        localField: "image",
+                        foreignField: "_id",
+                        as: "image"
+                    }
+                }
+            ])
             if (!PrivacyPolicyResult) {
                 return FormateData("No PrivacyPolicy");
             }
