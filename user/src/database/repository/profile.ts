@@ -12,6 +12,7 @@ import {
     STATUS_CODES,
 } from "../../utils/app-error";
 import { profileRequest, getProfileRequest } from "../../interface/profile";
+import { Types } from "mongoose";
 class profileRepository {
     async CreateProfile(profileInputs: profileRequest) {
         // try {
@@ -63,7 +64,7 @@ class profileRepository {
         //     .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
         const findProfile = await profileModel.aggregate([
             {
-                $match: { isDeleted: false, isBlocked: false }
+                $match: { ...profileInputs, isDeleted: false, isBlocked: false }
             },
             {
                 $lookup: {
@@ -102,7 +103,7 @@ class profileRepository {
         const findProfile = await profileModel.aggregate([
             {
                 // $match: { userId: profileInputs.userId, isDeleted: false, isBlocked: false }
-                $match: { isDeleted: false, isBlocked: false }
+                $match: { userId: new Types.ObjectId(profileInputs.userId), isDeleted: false, isBlocked: false }
             },
             {
                 $lookup: {
