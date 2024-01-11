@@ -8,7 +8,8 @@ const categorySchema: Schema = new Schema<Category>(
             type: String,
         },
         image: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "images",
         },
         description: {
             type: String,

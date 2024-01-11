@@ -85,24 +85,25 @@ class CategoryRepository {
     //get all category
     async getAllCategory({ skip, limit }: { skip: number, limit: number }) {
         const findCategory = await categoryModel.aggregate([
-            { $match: { isDeleted: false, isActive: true } }, {
+            { $match: { isDeleted: false, isActive: true } },
+            {
                 $lookup: {
                     from: "images",
-                    localField: "images",
+                    localField: "image",
                     foreignField: "_id",
                     pipeline: [{ $project: { path: 1, _id: 0 } }],
-                    as: "images"
+                    as: "image"
                 }
             },
-            { $unwind: "$images" },
-            {
-                $project: {
-                    _id: 1,
-                    name: 1,
-                    description: 1,
-                    image: "$images.path"
-                }
-            },
+            { $unwind: "$image" },
+            // {
+            //     $project: {
+            //         _id: 1,
+            //         name: 1,
+            //         description: 1,
+            //         image: "$image.path"
+            //     }
+            // },
             { $skip: skip }, { $limit: limit }])
         console.log("findCategory", findCategory)
         if (findCategory) {

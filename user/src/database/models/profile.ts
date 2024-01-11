@@ -47,7 +47,28 @@ const userSchema: Schema = new Schema<Profile>(
     locationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Location",
-      // required: true,
+    },
+    recommendation: {
+      type: Boolean,
+      default: true,
+    },
+    updatesOrOffers: {
+      type: Boolean,
+      default: true,
+    },
+    language: {
+      type: String,
+      default: "english"  // english, hindi
+    },
+    level: {
+      type: Number,
+      default: 1,
+      max: 3
+    },
+    points: {
+      type: Number,
+      default: 0,
+      max: 6000
     },
   },
   { timestamps: true }

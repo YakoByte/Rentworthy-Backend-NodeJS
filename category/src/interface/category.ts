@@ -6,12 +6,13 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    headers: any;
     file?: any;
 }
 
 export interface Category extends Document {
     name: string;
-    image: string;
+    image: Types.ObjectId;
     description: string;
     isActive?: boolean;
     userId: Types.ObjectId;

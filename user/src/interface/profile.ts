@@ -23,6 +23,11 @@ export interface Profile extends Document {
     isDeleted?: boolean;
     profileImage: Types.ObjectId;
     locationId?: Types.ObjectId;
+    recommendation?: boolean;
+    updatesOrOffers?: boolean;
+    language?: string;
+    level: number;
+    points: number;
 }
 
 export interface profileRequest {

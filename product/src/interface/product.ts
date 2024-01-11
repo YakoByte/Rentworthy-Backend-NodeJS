@@ -20,6 +20,8 @@ export interface Product extends Document {
     max_price: number;
     userId: Types.ObjectId;
     isDeleted?: boolean;
+    interactionCount?: number;
+    viewCount?: number;
     isVerified?: string;
     approvedBy?: Types.ObjectId;
     categoryId: Types.ObjectId;

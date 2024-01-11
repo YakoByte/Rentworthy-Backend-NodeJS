@@ -83,6 +83,8 @@ class ProductRepository {
                     }
                 }
             ])
+
+            let updateCount = await productModel.updateOne({ _id: productInputs._id }, { $inc: { viewCount: 1 } })
             console.log("findProduct", findProduct)
             if (findProduct) {
                 return { STATUS_CODE: STATUS_CODES.OK, data: findProduct };

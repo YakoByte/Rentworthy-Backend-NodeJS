@@ -15,20 +15,26 @@ import {
     STATUS_CODES,
 } from "../../utils/app-error";
 import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, recentBookingGetRequest, approveAuthenticatedRequest, bookingRequestWithPayment } from "../../interface/booking";
+import booking from "../../api/booking";
 class BookingRepository {
     //create booking
     async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
         let bookingResult
         try {
             //check product's date already booked or product is exist in booking
-            let product = await productModel.findOne(
+            let product: any = await productModel.findOneAndUpdate(
                 {
                     _id: bookingInputs.productId,
                     quantity: { $gte: bookingInputs.quantity },
                     $and: [{ "rentingDate.startDate": { $lte: bookingInputs.startDate } }, { "rentingDate.endDate": { $gte: bookingInputs.endDate } }],
                     isDeleted: false
-                });
+                }, { $inc: { interactionCount: 1 } }, { new: true });
             console.log("product", product)
+            // call updateLevel api 
+            let updateProfile = await axios.put("http://localhost:5000/app/api/v1/user/update-level", {
+                userId: product.userId
+            })
+            console.log("updateProfile", updateProfile)
             if (!product) {
                 return FormateData({ message: "Product not available in this Date" });
             }
@@ -386,6 +392,46 @@ class BookingRepository {
                 { startDate: { $gte: bookingInputs.startDate } },
                 { endDate: { $lte: bookingInputs.endDate } }
             ]
+        }
+        if (bookingInputs.status) {
+            if (bookingInputs.status == "activeRental") {
+                criteria = {
+                    $and: [
+                        // { status: "accepted" },
+                        { startDate: { $lte: new Date() } },
+                        { endDate: { $gte: new Date() } },
+                        { isDeleted: false }
+                    ]
+                }
+            }
+            else if (bookingInputs.status == "requests") {
+                criteria = {
+                    $and: [
+                        { status: "pending" },
+                        { isDeleted: false },
+                        { startDate: { $gte: new Date() } },
+                    ]
+                }
+            }
+            else if (bookingInputs.status == "rented") {
+                criteria = {
+                    $and: [
+                        { status: "completed" },
+                        { startDate: { $lte: new Date() } },
+                        { endDate: { $lte: new Date() } },
+                        { isDeleted: false }
+                    ]
+                }
+            }
+            else if (bookingInputs.status == "requested") {
+                criteria = {
+                    $and: [
+                        { status: "accepted" },
+                        { startDate: { $gte: new Date() } },
+                        { isDeleted: false }
+                    ]
+                }
+            }
         }
         console.log("criteria", criteria)
         const findBooking = await bookingModel.aggregate([

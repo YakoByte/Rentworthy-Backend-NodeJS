@@ -69,6 +69,18 @@ class ProfileService {
         }
     }
 
+    async updateLevel(profileInputs: profileRequest) {
+        try {
+            const existingProfile: any = await this.repository.updateLevel(
+                profileInputs
+            );
+
+            return FormateData({ existingProfile });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
+
     //delete profile
     async deleteProfileById(profileInputs: profileRequest) {
         try {

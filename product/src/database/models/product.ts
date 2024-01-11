@@ -112,14 +112,22 @@ const categorySchema: Schema = new Schema<Product>(
       // type: "Point",
       // coordinate: [Number]
       type: {
-        type: String, // Don't do `{ location: { type: String } }`
-        enum: ["Point"], // 'location.type' must be 'Point'
+        type: String,
+        enum: ["Point"],
         required: true,
       },
       coordinates: {
         type: [Number],
         required: true,
       },
+    },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
+    interactionCount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

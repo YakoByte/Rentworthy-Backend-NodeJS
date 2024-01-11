@@ -164,6 +164,56 @@ class profileRepository {
 
     }
 
+    //update level and points
+
+    async updateLevel(profileInputs: profileRequest) {
+        const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false });
+        if (!findProfile) {
+            return FormateData({ message: "profile not found" });
+        }
+        console.log("findProfile", findProfile)
+        //if profile exist
+        if (findProfile) {
+            const profile: any = await profileModel
+                .findOneAndUpdate(
+                    {
+                        userId: profileInputs.userId,
+                        isDeleted: false,
+                        isBlocked: false
+                    },
+                    { $inc: { points: 1 } },
+                    { new: true }
+                );
+            if (profile.points >= 3000) {
+                await profileModel
+                    .findOneAndUpdate(
+                        {
+                            userId: profileInputs.userId,
+                            isDeleted: false,
+                            isBlocked: false
+                        },
+                        { level: 2 },
+                        { new: true }
+                    );
+            }
+            if (profile.points >= 6000) {
+                await profileModel
+                    .findOneAndUpdate(
+                        {
+                            userId: profileInputs.userId,
+                            isDeleted: false,
+                            isBlocked: false
+                        },
+                        { level: 3 },
+                        { new: true }
+                    );
+            }
+            return FormateData({ message: "profile updated successfully" });
+        }
+
+    }
+
+
     //delete profile
     async deleteProfileById(profileInputs: profileRequest) {
         const findProfile = await profileModel.findOne({ userId: profileInputs.userId, isDeleted: false, isBlocked: false });

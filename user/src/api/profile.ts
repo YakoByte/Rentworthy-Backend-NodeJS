@@ -89,6 +89,18 @@ export default (app: Express) => {
         }
     });
 
+
+    app.put('/update-level', async (req: Request, res: Response, next: NextFunction) => {
+        console.log("req.body", req.body)
+        try {
+            const { data } = await service.updateLevel(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    })
+    
+
     // API = delete profile by id
     app.delete('/delete-profile', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         //validate admin from token

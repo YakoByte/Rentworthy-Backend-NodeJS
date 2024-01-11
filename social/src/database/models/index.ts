@@ -8,7 +8,8 @@ import TermConditionModel from "./termsCondition";
 import PrivacyPolicyModel from "./privacyPolicy";
 import AboutUSModel from "./aboutUs";
 import NotificationModel from "./notification";
+import SubscriptionModel from "./subscription";
 // ... repeat for each model
 
 // Then, export them:
-export { historyModel, adsModel, productModel,NotificationModel, recommendationModel,contactUsModel, TermConditionModel, PrivacyPolicyModel, AboutUSModel };
+export { historyModel, adsModel, productModel, NotificationModel, SubscriptionModel, recommendationModel, contactUsModel, TermConditionModel, PrivacyPolicyModel, AboutUSModel };

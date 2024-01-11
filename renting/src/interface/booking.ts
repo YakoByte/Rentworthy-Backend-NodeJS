@@ -156,7 +156,7 @@ export interface bookingGetRequest {
     productId?: string;
     startDate?: string;   // pending, accepted, rejected, completed
     endDate?: string;
-    status?: string;      // pending, accepted, rejected, completed
+    status?: string;      // activeBooking, requests, rented, requested
 }
 
 export interface recentBookingGetRequest {
