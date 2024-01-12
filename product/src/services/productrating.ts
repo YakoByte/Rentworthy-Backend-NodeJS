@@ -17,13 +17,13 @@ class productService {
         this.repository = new productratingRepository();
     }
 
-    async CreateProductRating(productInputs: productRatingRequest, req: AuthenticatedRequest) {
+    async CreateProductRating(productInputs: any) {
         try {
             const existingProduct: any = await this.repository.CreateProductRating(
-                productInputs, req
+                productInputs
             );
 
-            return FormateData({ existingProduct });
+            return FormateData( existingProduct );
 
         } catch (err: any) {
             return FormateData("Data Not found");
