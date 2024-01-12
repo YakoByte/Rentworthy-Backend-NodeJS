@@ -27,6 +27,7 @@ class AdminService {
         // const { email, password } = userInputs;
         try {
             const existingAdmin = await this.repository.FindMe(userInputs);
+            const updateUser = await this.repository.UpdateUser(existingAdmin._id, { os: userInputs.os as string });
             // check role
             const checkRole: any = await this.repository.checkRole(userInputs.roleName, existingAdmin.roleId);
             console.log("checkRole", checkRole)
@@ -186,6 +187,16 @@ class AdminService {
             return FormateData(existingAdmin);
         } catch (err: any) {
             throw new APIError("Data Not found", err);
+        }
+    }
+
+    //get Windows, Android, iOS, Linux, Other all counts
+    async GetCount() {
+        try {
+            const existingUser = await this.repository.getAllOsCount();
+            return (existingUser);
+        } catch (err: any) {
+            return FormateData(err);
         }
     }
 }

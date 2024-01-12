@@ -17,6 +17,25 @@ export const configureExpress = async (app: Express) => {
   app.use(express.urlencoded({ extended: true, limit: '1mb' }));
   app.use(cors());
 
+  app.use((req: any, res: any, next: any) => {
+    const userAgent: any = req.headers['user-agent'];
+
+    // You can parse the user agent string to get information about the client
+    if (userAgent.includes('Windows')) {
+      req.clientPlatform = 'Windows';
+    } else if (userAgent.includes('Android')) {
+      req.clientPlatform = 'Android';
+    } else if (userAgent.includes('iOS')) {
+      req.clientPlatform = 'iOS';
+    } else if (userAgent.includes('Linux')) {
+      req.clientPlatform = 'Linux';
+    } else {
+      req.clientPlatform = 'Other';
+    }
+
+    next();
+  });
+
   // API
   Admin(app);
   Role(app);

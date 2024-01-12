@@ -298,13 +298,40 @@ class AdminRepository {
       const users = await userModel.find();
       return users;
     } catch (error) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Error on Find All Users"
+      return FormateData(
+        {
+          status: STATUS_CODES.INTERNAL_ERROR,
+          message: "Error on Find All Users"
+        }
       );
     }
   }
+
+  async getAllOsCount() {
+    try {
+      const users = await userModel.aggregate([
+        {
+          // _id = null is not needed
+          $match: { os: { $exists: true } }
+        },
+        {
+          $group: {
+            _id: '$os',
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+      return users;
+    } catch (error) {
+      return FormateData(
+        {
+          status: STATUS_CODES.INTERNAL_ERROR,
+          message: "Error on Find All Users"
+        });
+    }
+  }
 }
+
+
 
 export default AdminRepository;

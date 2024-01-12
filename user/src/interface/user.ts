@@ -48,6 +48,7 @@ export interface userLoginRequest {
     password: string;
     bussinessType?: string;
     roleName: string;
+    os?: string;
 }
 
 export interface userSetPasswordRequest {

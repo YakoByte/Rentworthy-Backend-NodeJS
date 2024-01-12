@@ -54,7 +54,9 @@ export default (app: Express) => {
   // API = login user
   app.post('/login', async (req: any, res: Response, next: NextFunction) => {
     try {
-      console.log("req.os", os.platform())
+      // console.log("req.os", os.machine())
+      req.body.os = req.clientPlatform;
+      // console.log("clientPlatform", clientPlatform)
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "user";
       const { data } = await adminService.SignIn(userDetail);
@@ -151,11 +153,28 @@ export default (app: Express) => {
     }
   });
 
-  app.get('/get-all-users', async (req: Request, res: Response, next: NextFunction) => {
+  app.get('/get-all-users', async (req: any, res: Response, next: NextFunction) => {
     try {
+      const clientPlatform = req.clientPlatform;
+      console.log("clientPlatform", clientPlatform)
       // const userDetail: socialUserLoginRequest = req.body;
       // req.body.roleName = "user";
       const { data } = await adminService.GetAllUsers();
+      console.log("data", data)
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // api = get Windows, Android, iOS, Linux, Other counts
+  app.get('/get-count', async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const clientPlatform = req.clientPlatform;
+      console.log("clientPlatform", clientPlatform)
+      // const userDetail: socialUserLoginRequest = req.body;
+      // req.body.roleName = "user";
+      const data = await adminService.GetCount();
       console.log("data", data)
       return res.json(data);
     } catch (err) {
