@@ -19,9 +19,9 @@ export default (app: Express) => {
     });
 
     // // API = get product rating by either userwise or productwise
-    app.get('/get-productrating', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-productrating', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.getProductRating({ ...req.query, userId: req.user._id });
+            const data = await service.getProductRating(req.query);
             return res.json(data);
         } catch (err: any) {
             return res.status(err.STATUS_CODE).json(err);

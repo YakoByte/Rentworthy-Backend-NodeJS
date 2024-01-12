@@ -26,7 +26,7 @@ class productService {
             return FormateData({ existingProduct });
 
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateData("Data Not found");
         }
     }
 
@@ -36,10 +36,10 @@ class productService {
                 productInputs
             );
 
-            return FormateData({ existingProduct });
+            return FormateData(existingProduct);
 
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateData("Data Not found");
         }
     }
 }
