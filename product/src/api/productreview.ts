@@ -11,7 +11,8 @@ export default (app: Express) => {
     app.post('/create-productreview', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.CreateProductReview(req.body, req);
+            req.body.token = req.headers.authorization
+            const { data } = await service.CreateProductReview(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

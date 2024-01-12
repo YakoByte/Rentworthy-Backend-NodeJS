@@ -17,16 +17,16 @@ class productService {
         this.repository = new productReviewRepository();
     }
 
-    async CreateProductReview(productInputs: productReviewRequest, req: AuthenticatedRequest) {
+    async CreateProductReview(productInputs: any) {
         try {
             const existingProduct: any = await this.repository.CreateProductReview(
-                productInputs, req
+                productInputs
             );
 
             return FormateData({ existingProduct });
 
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateData("Data Not found");
         }
     }
 

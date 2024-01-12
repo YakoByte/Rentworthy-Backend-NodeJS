@@ -14,22 +14,24 @@ import axios from "axios";
 
 class ProductReviewRepository {
 
-    async CreateProductReview(productInputs: productReviewRequest, req: AuthenticatedRequest) {
+    async CreateProductReview(productInputs: any) {
         const findProduct = await productReviewModel.findOne({ productId: productInputs.productId, userId: productInputs.userId }).lean();
         let tempBody: any = {
             productId: productInputs.productId,
             userId: productInputs.userId
         }
+        console.log("productInputs.token", productInputs.token)
+        console.log("tempBody", tempBody)
         let bookings = await axios.get("http://localhost:5000/app/api/v1/renting/get-booking",
             {
                 params: tempBody,
                 headers: {
-                    'Authorization': req.headers.authorization
+                    'Authorization': productInputs.token
                 }
             }
         )
-        console.log('booking----', bookings.data.existingBooking.data.length)
-        if (bookings.data.existingBooking.data.length) {
+        console.log('booking----', bookings.data.data)
+        if (bookings.data.data.length) {
             if (findProduct) {
                 const updateRes = await productReviewModel.findOneAndUpdate({
                     _id: findProduct._id
@@ -60,6 +62,7 @@ class ProductReviewRepository {
             await history.save();
             return FormateData(response)
         } else {
+            console.log("there needs to be a booking before giving review.")
             return FormateData("there needs to be a booking before giving review.")
         }
     }
