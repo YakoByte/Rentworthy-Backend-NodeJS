@@ -10,20 +10,20 @@ export default (app: Express) => {
     const service = new ImageService();
 
     // API = create new image-upload
-    app.post('/image-upload', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/image-upload', UserAuth, upload.array("image"), isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.imageDetail = req.file;
             console.log("req.file", req.body)
-            const { data } = await service.CreateImage(req.body);
+            const data  = await service.CreateImage(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
 
-    app.post('/image-uploads', UserAuth, upload.array("image", 20), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/image-uploads', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;

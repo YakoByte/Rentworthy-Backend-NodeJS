@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "Pulling "
-git pull
+echo "Pulling from git"
+git push origin master
 
 echo "Building "
 docker-compose up -d build
