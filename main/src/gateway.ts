@@ -16,7 +16,7 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
 
 const userMicroservice: string =
   // process.env.USER_MICROSERVICE_URL ||
-  "http://user:5001";
+  "http://localhsot:5001";
 // const userMicroservice: string =
 //   // process.env.USER_MICROSERVICE_URL ||
 //   "http://localhost:5001";
@@ -28,7 +28,7 @@ const userMicroservice: string =
 // const chatMicroservice: string = "http://localhost:5006";
 const categoryMicroservice: string =
   // process.env.CATEGORY_MICROSERVICE_URL ||
-  "http://category:5002";
+  "http://localhsot:5002";
 const uploadMicroservice: string =
   // process.env.UPLOAD_MICROSERVICE_URL ||
   "http://upload:5003";
