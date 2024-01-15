@@ -15,7 +15,7 @@ export default (app: Express) => {
   const otpService = new OTPService();
 
   // API = create new admin
-  app.post('/admin/signup', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/signuup', async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "admin";
@@ -26,7 +26,7 @@ export default (app: Express) => {
     }
   });
   // API = create new user
-  app.post('/signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post('/signusup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "user";
@@ -39,11 +39,11 @@ export default (app: Express) => {
   });
 
   // API = login admin
-  app.post('/admin/login', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/logiin', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userDetail: userLoginRequest = req.body;
+      const userDetail = req.body;
       req.body.roleName = "admin";
-      const { data } = await adminService.SignIn(userDetail);
+      const data = await adminService.SignIn(userDetail);
       console.log("data", data)
       return res.json(data);
     } catch (err) {
@@ -52,14 +52,14 @@ export default (app: Express) => {
   });
 
   // API = login user
-  app.post('/login', async (req: any, res: Response, next: NextFunction) => {
+  app.post('/losgin', async (req: any, res: Response, next: NextFunction) => {
     try {
       // console.log("req.os", os.machine())
       req.body.os = req.clientPlatform;
       // console.log("clientPlatform", clientPlatform)
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "user";
-      const { data } = await adminService.SignIn(userDetail);
+      const data = await adminService.SignIn(userDetail);
       console.log("data", data)
       return res.json(data);
     } catch (err) {
@@ -67,19 +67,8 @@ export default (app: Express) => {
     }
   });
 
-  // API = create new otp
-  app.post('/createOtp', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      req.body.ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-      console.log("req.body", req.body)
-      const { data } = await otpService.CreateNewOTP(req.body);
-      return res.status(200).json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
   // varify otp
-  app.post('/verifyOtp', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/verifyotp', async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       const { data } = await otpService.VerifyOTP(req.body);
@@ -90,7 +79,7 @@ export default (app: Express) => {
   })
 
   // API = Check if the token has expired
-  app.post('/verifyTokenExpiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/verifytokenexpiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       let token: any = req.headers.authorization
@@ -102,7 +91,7 @@ export default (app: Express) => {
   })
 
   // API = reset password
-  app.put('/reset-password', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+  app.put('/resetpassword', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       // req.body._id = req.user._id;
@@ -117,31 +106,8 @@ export default (app: Express) => {
     }
   });
 
-  // API = sending password link
-  // app.post('/send-password-link', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     console.log("req.body", req.body)
-  //     const { data } = await adminService.SendPasswordLink(req.body);
-  //     return res.json(data);
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // });
-
-  // API = social signUp
-  app.post('/social-signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      console.log("req.body", req.body)
-      req.body.roleName = "user";
-      const { data } = await adminService.SocialSignUp(req.body);
-      return res.status(200).json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
-
   // API = social logIn
-  app.post('/social-login', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/sociallogin', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userDetail: socialUserLoginRequest = req.body;
       req.body.roleName = "user";
@@ -153,7 +119,7 @@ export default (app: Express) => {
     }
   });
 
-  app.get('/get-all-users', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/getallusers', async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
       console.log("clientPlatform", clientPlatform)
@@ -168,7 +134,7 @@ export default (app: Express) => {
   });
 
   // api = get Windows, Android, iOS, Linux, Other counts
-  app.get('/get-count', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/getcount', async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
       console.log("clientPlatform", clientPlatform)
