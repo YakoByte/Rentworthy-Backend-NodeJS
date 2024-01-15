@@ -15,27 +15,7 @@ export function setupSocketServer(io: Server) {
     const roomService = new RoomService();
     const chatService = new ChatService();
     // Authentication middleware that will be used to authenticate socket connections
-    io.use((socket, next) => {
-        const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
-        // console.log("token", token)
-        if (!token) {
-            return next(new Error('Authentication error. Token missing.'));
-        }
-
-        try {
-            const decoded = jwt.verify(token, SECRET_KEY as string) as JwtPayload;
-            // console.log("decoded", decoded)
-            // Wrapping the socket with user information
-            const authenticatedSocket: AuthenticatedSocket = Object.assign(socket, { user: decoded });
-
-            // Assign the modified socket back
-            socket = authenticatedSocket;
-
-            next();
-        } catch (error) {
-            return next(new Error('Authentication error. Invalid token.'));
-        }
-    });
+    
     // socket connection
     io.on('connection', (socket: any) => {
 

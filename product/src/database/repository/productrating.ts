@@ -22,9 +22,9 @@ class ProductRatingRepository {
         }
         let bookings = await axios.get("http://localhost:5000/app/api/v1/renting/get-booking",
             {
-                params: tempBody,
+                // params: tempBody,
                 headers: {
-                    'Authorization': productInputs.token
+                    'Authorization': productInputs.headers
                 }
             }
         )
