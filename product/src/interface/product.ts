@@ -47,14 +47,14 @@ export interface Product extends Document {
 
 export interface productRequest {
     _id?: "string"
-    name: string;
+    name: any;
     images: [string];
     description?: string;
     isShow?: boolean;
     userId: string;
-    quantity: number;
+    quantity: any;
     price: number;
-    thumbnail: Types.ObjectId
+    thumbnail: stirng;
     address: string
     location: {
         type: string;
