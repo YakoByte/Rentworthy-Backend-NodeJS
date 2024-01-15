@@ -34,17 +34,17 @@ export default (app: Express) => {
     const service = new CategoryService();
 
     // API = create new category
-    app.post('/create-category', UserAuth, isAdmin, upload.single('image'), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-categdfory', UserAuth, upload.array('image'), async (req: any, res: Response, next: NextFunction) => {
         try {
             console.log("req.file", req.file)
-            let authUser: any = req.user
-            req.body.userId = authUser._id;
+            let authUsser: any = req.unpipe
+            req.body.userId = authUsser._id;
             // req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-            req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
+            req.body.image = await uploadImageWithToken(req.file.filename, req.headers.token);
             
             // console.log("req.body", req.body)
             console.log("req.body", req.body)
-            const { data } = await service.CreateCategory(req.body);
+            const data = await service.CreateCategory(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -52,7 +52,7 @@ export default (app: Express) => {
     });
 
     // API = get category by id and search and all category
-    app.get('/get-category', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-catethtgory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             // let authUser: any = req.user
             // req.body.userId = authUser._id;
@@ -67,13 +67,13 @@ export default (app: Express) => {
     });
 
     // API = update category
-    app.put('/update-category', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-cathregory', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body._id = req.query._id;
             console.log("req.body", req.body)
-            const { data } = await service.updateCategory(req.body);
+            const data = await service.updateCategory(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -81,12 +81,12 @@ export default (app: Express) => {
     });
 
     // API = delete category
-    app.delete('/delete-category', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delhete-catetegory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const { data } = await service.deleteCategory(req.query);
+            const data = await service.deleteCategory(req.query);
             return res.json(data);
         } catch (err) {
             next(err);
