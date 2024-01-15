@@ -1,9 +1,10 @@
 // index.ts
 
 import express, { Express, Request, Response } from 'express';
-import { PORT } from './config';
 import { configureExpress } from './express-config.ts'; // Import the module
 import databaseConnection from './database/connection.ts';
+import { PORT as configPort } from './config';
+const PORT = 5040; // Update the value of PORT
 
 const StartServer = async (): Promise<void> => {
     const app: Express = express();
