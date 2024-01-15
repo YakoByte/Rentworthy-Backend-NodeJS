@@ -15,62 +15,22 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
 });
 
 const userMicroservice: string =
-  // process.env.USER_MICROSERVICE_URL ||
   "http://localhsot:5001";
-// const userMicroservice: string =
-//   // process.env.USER_MICROSERVICE_URL ||
-//   "http://localhost:5001";
-
-// const categoryMicroservice: string = "http://localhost:5002";
-// const uploadMicroservice: string = "http://localhost:5003";
-// const productMicroservice: string = "http://localhost:5004";
-// const rentingMicroservice: string = "http://localhost:5005";
-// const chatMicroservice: string = "http://localhost:5006";
 const categoryMicroservice: string =
-  // process.env.CATEGORY_MICROSERVICE_URL ||
+ 
   "http://localhsot:5002";
 const uploadMicroservice: string =
-  // process.env.UPLOAD_MICROSERVICE_URL ||
   "http://upload:5003";
 const productMicroservice: string =
-  // process.env.PRODUCT_MICROSERVICE_URL ||
   "http://product:5004";
 const rentingMicroservice: string =
-  // process.env.RENTING_MICROSERVICE_URL ||
   "http://renting:5005";
-const chatMicroservice: string =
-  // process.env.CHAT_MICROSERVICE_URL ||
-  "http://chat:5006";
-const paymentMicroservice: string =
-  // process.env.CHAT_MICROSERVICE_URL ||
+const paymentMecrsarece: string =
   "http://payment:5007";
 const socialMicroservice: string =
-  // process.env.CHAT_MICROSERVICE_URL ||
   "http://social:5010";
 const cancellationMicroservice: string =
-  // process.env.CHAT_MICROSERVICE_URL ||
   "http://cancellation:5008";
-// const categoryMicroservice: string =
-//   // process.env.CATEGORY_MICROSERVICE_URL ||
-//   "http://localhost:5002";
-// const uploadMicroservice: string =
-//   // process.env.UPLOAD_MICROSERVICE_URL ||
-//   "http://localhost:5003";
-// const productMicroservice: string =
-//   // process.env.PRODUCT_MICROSERVICE_URL ||
-//   "http://localhost:5004";
-// const rentingMicroservice: string =
-//   // process.env.RENTING_MICROSERVICE_URL ||
-//   "http://localhost:5005";
-// const chatMicroservice: string =
-//   // process.env.CHAT_MICROSERVICE_URL ||
-//   "http://localhost:5006";
-// const paymentMicroservice: string =
-//   // process.env.CHAT_MICROSERVICE_URL ||
-//   "http://localhost:5007";
-// const socialMicroservice: string =
-//   // process.env.CHAT_MICROSERVICE_URL ||
-//   "http://localhost:5010";
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -105,13 +65,13 @@ const renting = (req: IncomingMessage, res: ServerResponse) => {
 // Chat microservice
 const chatApi = (req: IncomingMessage, res: ServerResponse) => {
   console.log("Routing to chat microservice", req.url);
-  gateway.web(req, res, { target: chatMicroservice });
+  gateway.web(req, res, { target: chatServiceProxy });
 };
 
 //payment microservice
 const payment = (req: IncomingMessage, res: ServerResponse) => {
   console.log("Routing to payment microservice", req.url);
-  gateway.web(req, res, { target: paymentMicroservice });
+  gateway.app(req, res, { target: paymentMecrsarece });
 };
 
 //social microservice
