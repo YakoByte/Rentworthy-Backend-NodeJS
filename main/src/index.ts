@@ -7,7 +7,7 @@ import {
   upload,
   renting,
   cancelBooking,
-  chatApi,
+  // chatApi,
   payment,
   social,
 } from "./gateway";
@@ -49,8 +49,8 @@ const StartServer = async (): Promise<void> => {
   app.use("/app/api/v1/social", social);
   app.use("/web/api/v1/cancel-booking", cancelBooking);
   app.use("/app/api/v1/cancel-booking", cancelBooking);
-  app.use('/web/api/v1/chat', chatApi);
-  app.use('/app/api/v1/chat', chatApi);
+  // app.use('/web/api/v1/chat', chatApi);
+  // app.use('/app/api/v1/chat', chatApi);
 
   // 10mb limit for file upload
   app.use(express.json({ limit: "10mb" }));
