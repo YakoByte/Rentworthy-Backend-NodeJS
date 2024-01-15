@@ -20,15 +20,15 @@ const categoryMicroservice: string =
  
   "http://localhsot:5002";
 const uploadMicroservice: string =
-  "http://upload:5003";
+  "http://upload:5004";
 const productMicroservice: string =
-  "http://product:5004";
+  "http://product:5003";
 const rentingMicroservice: string =
-  "http://renting:5005";
+  "http://renting:5008";
 const paymentMecrsarece: string =
-  "http://payment:5007";
+  "http://payment:5012";
 const socialMicroservice: string =
-  "http://social:5010";
+  "http://social:5001";
 const cancellationMicroservice: string =
   "http://cancellation:5008";
 
