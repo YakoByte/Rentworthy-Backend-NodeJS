@@ -14,7 +14,7 @@ import axios from "axios";
 
 class ProductRatingRepository {
 
-    async CreateProductRating(productInputs: productRatingRequest, req: AuthenticatedRequest) {
+    async CreateProductRating(productInputs: any) {
         const findProduct = await productRatingModel.findOne({ productId: productInputs.productId, userId: productInputs.userId }).lean();
         let tempBody: any = {
             productId: productInputs.productId,
@@ -24,12 +24,12 @@ class ProductRatingRepository {
             {
                 params: tempBody,
                 headers: {
-                    'Authorization': req.headers.authorization
+                    'Authorization': productInputs.token
                 }
             }
         )
-        console.log('booking----', bookings.data.existingBooking.data.length)
-        if (bookings.data.existingBooking.data.length) {
+        console.log('booking----', bookings.data.data)
+        if (bookings.data.data.length) {
             if (findProduct) {
                 const updateRes = await productRatingModel.findOneAndUpdate({
                     _id: findProduct._id

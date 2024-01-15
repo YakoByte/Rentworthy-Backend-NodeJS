@@ -1,4 +1,4 @@
-import { productReviewModel, historyModel } from "../models";
+import { productReviewModel, historyModel, productRatingModel } from "../models";
 
 import {
     FormateData,
@@ -76,7 +76,21 @@ class ProductReviewRepository {
             searchQuery.productId = productInputs.productId
         }
         let getRes = await productReviewModel.find(searchQuery).lean()
-        return FormateData(getRes)
+        let getRating = await productRatingModel.find(searchQuery).lean()
+        console.log("getRating", getRating.length)
+        // merge getRating and getRes
+        let tempRes: any = []
+        getRes.forEach((element: any) => {
+            let tempRating = getRating.find((item: any) => item.productId.toString() == element.productId.toString() && item.userId.toString() == element.userId)
+            if (tempRating) {
+                console.log("tempRating", tempRating)
+                element.rating = tempRating.rating
+            }
+            console.log("element", element.rating)
+            tempRes.push(element)
+        });
+
+        return FormateData(tempRes)
     }
 }
 

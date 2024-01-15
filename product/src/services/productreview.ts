@@ -36,7 +36,7 @@ class productService {
                 productInputs
             );
 
-            return FormateData({ existingProduct });
+            return existingProduct;
 
         } catch (err: any) {
             throw new APIError("Data Not found", err);
