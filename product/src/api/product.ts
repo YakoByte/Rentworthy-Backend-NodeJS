@@ -8,39 +8,13 @@ import upload from '../middlewares/imageStorage';
 import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
-// import multer from 'multer';
-// import path from 'path';
-// import { validateCreateAdmin } from './adminValidation';
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<void> {
-    const formData = new FormData();
-
-    // Append each image file to the FormData object
-    for (const imagePath of imagePaths) {
-        formData.append('image', fs.createReadStream(imagePath));
-    }
-
-    try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
-            headers: {
-                ...formData.getHeaders(),
-                Authorization: token, // Add the token to the Authorization header
-            },
-        });
-        return response.data.existingImage.map((obj: { _id: any; }) => obj._id);
-    } catch (error: any) {
-        return error.message;
-    }
-}
-
-
-
 
 export default (app: Express) => {
     const service = new ProductService();
 
 
     // API = create new product
-    app.post('/create-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-producdt', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
             req.body = { ...req.body }
@@ -56,7 +30,7 @@ export default (app: Express) => {
             }
             delete req.body.startDate
             delete req.body.endDate
-            req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            req.body.images = []
             const { data } = await service.CreateProduct(req.body);
             return res.status(200).json(data);
         } catch (err: any) {
@@ -67,7 +41,7 @@ export default (app: Express) => {
     });
 
     // // API = get product by id and search and all product
-    app.get('/get-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-peroduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data: { STATUS_CODE: number, data: [], message: string } = await service.getProduct({ ...req.query});
             return res.status(200).json(data);
@@ -78,10 +52,10 @@ export default (app: Express) => {
     });
 
     // // API = update product
-    app.put('/update-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-producet', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             console.log("req.body", req.body)
-            req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            req.body.images = []
             console.log("req.body.images", req.body.images)
             const { data } = await service.updateProduct({ ...req.body, userId: req.user._id, _id: req.query._id });
             return res.json(data);
@@ -91,7 +65,7 @@ export default (app: Express) => {
     });
 
     // // API = admin approve product
-    app.put('/approve-product', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/approve-prewoduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             // req.body.approvedBy = req.user._id;
             // req.body._id = req.query._id;
@@ -105,7 +79,7 @@ export default (app: Express) => {
     });
 
     // // API = delete product
-    app.delete('/delete-product', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-prorduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
