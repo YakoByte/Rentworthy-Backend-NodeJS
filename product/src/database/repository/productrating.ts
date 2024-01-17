@@ -8,7 +8,7 @@ import {
     // ValidatePassword,
 } from '../../utils';
 
-import { productRatingRequest, getProductRatingRequest, AuthenticatedRequest } from "../../interface/productrating";
+import { productRatingRequest, getProductRatingRequest, AuthenticatedRequest, getAllProductRating } from "../../interface/productrating";
 import axios from "axios";
 
 
@@ -75,6 +75,86 @@ class ProductRatingRepository {
         let getRes = await productRatingModel.find(searchQuery).lean()
         return FormateData(getRes)
     }
+
+    async GetAllProductRating(productInputs: getAllProductRating) {
+        if(!productInputs.limit || !productInputs.page){
+            productInputs.limit = 0;
+            productInputs.page = 0;
+        }
+    
+        const findReview = await productRatingModel.aggregate([
+            { $match: { productId: productInputs.productId, isDeleted: false } },
+            { $skip: productInputs.page },
+            { $limit: productInputs.limit },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "productId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                    as: "userId"
+                }
+            }
+        ])
+        return FormateData(findReview);
+    }
+
+    async GetRatingCount(productInputs: getAllProductRating) {
+        try {
+            const countsPromises = Array.from({ length: 5 }, (_, index) =>
+                productRatingModel.countDocuments({
+                    productId: productInputs.productId,
+                    rating: index + 1,
+                    isDeleted: false
+                })
+            );
+    
+            // Wait for all count promises to resolve
+            const counts = await Promise.all(countsPromises);
+    
+            const [count1, count2, count3, count4, count5] = counts;
+            const count = counts.reduce((total, currentCount) => total + currentCount, 0);
+    
+            const averageRating = count > 0 ? (count1 + count2 * 2 + count3 * 3 + count4 * 4 + count5 * 5) / count : 0;
+    
+            const RatingData = {
+                totalRating: count || 0,
+                averageRating: averageRating || 0,
+                ratingDistribution: [
+                    { label: '5', value: count5 || 0 },
+                    { label: '4', value: count4 || 0 },
+                    { label: '3', value: count3 || 0 },
+                    { label: '2', value: count2 || 0 },
+                    { label: '1', value: count1 || 0 }
+                ]
+            };
+    
+            return FormateData(RatingData);
+        } catch (error) {
+            // Handle error appropriately (logging, returning a default value, etc.)
+            console.error('Error in GetRatingCount:', error);
+            return {
+                totalRating: 0,
+                averageRating: 0,
+                ratingDistribution: [
+                    { label: '5', value: 0 },
+                    { label: '4', value: 0 },
+                    { label: '3', value: 0 },
+                    { label: '2', value: 0 },
+                    { label: '1', value: 0 }
+                ]
+            };
+        }
+    }      
 }
 
 export default ProductRatingRepository;

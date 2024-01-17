@@ -10,6 +10,7 @@ import {
 
 import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest } from "../../interface/productreview";
 import axios from "axios";
+import { getAllProductLike } from "../../interface/productlike";
 
 
 class ProductReviewRepository {
@@ -91,6 +92,37 @@ class ProductReviewRepository {
         });
 
         return FormateData(tempRes)
+    }
+
+    async GetAllProductReview(productInputs: getAllProductLike) {
+        if(!productInputs.limit || !productInputs.page){
+            productInputs.limit = 0;
+            productInputs.page = 0;
+        }
+        const findReview = await productReviewModel.aggregate([
+            { $match: { productId: productInputs.productId, isDeleted: false } },
+            { $skip: productInputs.page },
+            { $limit: productInputs.limit },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "productId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                    as: "userId"
+                }
+            }
+        ])
+        return FormateData(findReview);
     }
 }
 

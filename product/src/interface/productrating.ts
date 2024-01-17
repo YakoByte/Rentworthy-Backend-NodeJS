@@ -25,3 +25,9 @@ export interface getProductRatingRequest {
     userId?: string;
     productId?: string;
 }
+
+export interface getAllProductRating {
+    page?: number;
+    limit?: number;
+    productId: string;
+}

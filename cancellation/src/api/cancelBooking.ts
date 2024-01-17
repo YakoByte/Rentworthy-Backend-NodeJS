@@ -75,4 +75,14 @@ export default (app: Express) => {
         }
     });
 
+    //API = count cancleBooking by every minutes   
+    app.get('/get-cancel-booking/per-day', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+            const data = await service.getCountOfCancellationPerDay();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    }); 
 };

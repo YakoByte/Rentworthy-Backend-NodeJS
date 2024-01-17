@@ -8,6 +8,7 @@ import productlike from './api/productlike.ts';
 import productrating from './api/productrating.ts';
 import productreview from './api/productreview.ts';
 import productreservation from './api/productreservation.ts';
+import Complain from './api/complain.ts';
 
 export const configureExpress = async (app: Express) => {
   app.use(express.json({ limit: '1mb' }));
@@ -23,6 +24,7 @@ export const configureExpress = async (app: Express) => {
   productrating(app);
   productreview(app);
   productreservation(app);
+  Complain(app);
 
   // Error handling
   app.use(HandleErrors);

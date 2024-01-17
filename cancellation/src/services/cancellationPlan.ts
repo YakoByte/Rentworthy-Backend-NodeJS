@@ -73,6 +73,16 @@ class cancellationPlanService {
         }
     }
 
+    async getCountOfCancellationPerDay() {
+        try {
+            const CancellationPlan: any = await this.repository.getCountOfCancellationPerDay();
+
+            return FormateData({ CancellationPlan });
+        } catch (err: any) {
+            console.log("err", err)
+            throw new APIError("Data Not found", err);
+        }
+    }
 }
 
 export = cancellationPlanService;

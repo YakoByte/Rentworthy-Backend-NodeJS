@@ -11,7 +11,7 @@ import {
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
-import { locationRequest } from "../../interface/location";
+import { CountlocationRequest, locationRequest } from "../../interface/location";
 class locationRepository {
     async CreateLocation(locationInputs: locationRequest) {
         // try {
@@ -108,7 +108,7 @@ class locationRepository {
             return FormateData({ message: "location deleted successfully" });
         }
     }
-
+    
 }
 
 export default locationRepository;

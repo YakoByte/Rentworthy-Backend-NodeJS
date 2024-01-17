@@ -35,7 +35,7 @@ EXPOSE 5010
 
 # Add a health check (customize the curl command as needed)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5010/ || exit 1
+  CMD curl -f http://localhost:5009/ || exit 1
 
 
 

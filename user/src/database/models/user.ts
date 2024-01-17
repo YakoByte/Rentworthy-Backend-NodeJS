@@ -68,6 +68,14 @@ const userSchema: Schema = new Schema<User>(
     os: {
       type: String,
     },
+    isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
+    isPhoneNoVerified: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

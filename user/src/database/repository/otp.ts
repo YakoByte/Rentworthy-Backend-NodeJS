@@ -1,4 +1,4 @@
-import { otpModel, historyModel } from "../models";
+import { otpModel, historyModel, userModel } from "../models";
 import {
     FormateData,
     GeneratePassword,
@@ -122,6 +122,13 @@ class OTPRepository {
                     },
                     { $set: { isUsed: true } }
                 );
+
+                if (otpInputs.email) {
+                    await userModel.updateOne({ email: existingOTP.email, isEmailVerified: true }, { new: true });
+                } else if (otpInputs.phoneNo) {
+                    await userModel.updateOne({ phoneNo: existingOTP.phoneNo, isPhoneNoVerified: true }, { new: true });
+                }                
+
                 console.log("otpResult", otpResult)
                 const token = await GenerateSignature({
                     user: otpInputs.email ? existingOTP.email : existingOTP.phoneNo,

@@ -28,6 +28,8 @@ export default (app: Express) => {
         //validate admin from token
         // let admin = await (req);
         // req.body._id = req.query._id
+        let authUser: any = req.user
+        req.body.userId = authUser._id;
         console.log("req.body", req.query)
         try {
             const data = await service.getAddressById(req.query);

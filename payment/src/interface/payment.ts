@@ -77,3 +77,8 @@ export interface PaymentMethodDetails {
         };
     };
 }
+
+export interface PaymentCount {
+    productId?: string;
+    userId?: string;
+}

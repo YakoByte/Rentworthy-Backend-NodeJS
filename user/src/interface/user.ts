@@ -23,6 +23,8 @@ export interface User extends Document {
     isDeleted?: boolean;
     loginType?: string;
     os?: string;
+    isEmailVerified?: boolean;
+    isPhoneNoVerified?: boolean;
 }
 export interface userSignRequest {
     // userName: string;

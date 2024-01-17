@@ -24,7 +24,7 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
             },
         });
         
-        return response.data.existingImage._id; // Assuming you are expecting a single image ID
+        return response.data.data.existingImage._id; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;
     }

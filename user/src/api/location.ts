@@ -26,6 +26,8 @@ export default (app: Express) => {
 
     // API = get location by id
     app.get('/get-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        let authUser: any = req.user
+        req.body.userId = authUser._id;
         //validate admin from token
         // let admin = await (req);
         // req.body._id = req.query._id

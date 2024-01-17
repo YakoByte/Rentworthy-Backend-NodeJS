@@ -25,3 +25,9 @@ export interface getProductReviewRequest {
     userId?: string;
     productId?: string;
 }
+
+export interface getAllProductReview {
+    page?: number;
+    limit?: number;
+    productId: string;
+}

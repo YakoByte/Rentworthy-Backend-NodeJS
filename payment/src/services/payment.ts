@@ -1,5 +1,5 @@
 import { stripe } from "../utils/stripe"
-import { PaymentConfirmDetails, PaymentDetails } from "../interface/payment"
+import { PaymentConfirmDetails, PaymentCount, PaymentDetails } from "../interface/payment"
 import paymentRepository from '../database/repository/payment';
 
 import { FormateData } from "../utils";
@@ -79,6 +79,29 @@ class PaymentService {
     //         console.error('Error deleting test customer:', error.message);
     //     }
     // }
+    
+    async getPaymentSum(payDetails: PaymentCount) {
+        try {
+            if(payDetails.productId){
+                const ProductPayment = await this.repository.getProductIdPaymentSum({
+                    productId: payDetails.productId
+                });
+        
+                return FormateData({ ProductPayment });
+            } else if (payDetails.userId){
+                const ProductPayment = await this.repository.getUserIdPaymentSum({
+                    userId: payDetails.productId
+                });
+        
+                return FormateData({ ProductPayment });
+            }
+        } catch (err) {
+            console.error("Error in getProductIdPaymentSum:", err);
+            // You may choose to handle or rethrow the error here
+            throw err;
+        }
+    }
+    
 
 
 }

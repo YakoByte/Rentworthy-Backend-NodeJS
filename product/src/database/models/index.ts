@@ -6,7 +6,7 @@ import productLikeModel from './productlike';
 import productRatingModel from './productrating';
 import productReviewModel from './productreview';
 import productReservationModel from './productreservation';
-// import imageModel from './image';
+import ComplainModel from './complain';
 
 // ... repeat for each model
 
@@ -17,5 +17,6 @@ export {
     productLikeModel,
     productRatingModel,
     productReviewModel,
-    productReservationModel
+    productReservationModel,
+    ComplainModel,
 };

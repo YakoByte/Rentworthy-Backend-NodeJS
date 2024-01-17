@@ -1,17 +1,13 @@
 import { cancellationPlanModel, productModel, historyModel } from "../models";
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../../utils';
+import moment from 'moment';
+import { FormateData } from '../../utils';
 import {
     APIError,
     BadRequestError,
     STATUS_CODES,
 } from "../../utils/app-error";
 import { cancellationPlanRequest, cancellationPlanGetRequest, cancellationPlanUpdateRequest, cancellationPlanDeleteRequest } from "../../interface/cancellationPlan";
+
 class CancellationPlanRepository {
     //create cancellationPlan
     async CreateCancellationPlan(cancellationPlanInputs: cancellationPlanRequest) {
@@ -64,6 +60,49 @@ class CancellationPlanRepository {
             return FormateData(cancellationPlanResult);
         }
     }
+
+    // get count of cancellation of plan in every day
+    async getCountOfCancellationPerDay() {
+        try {
+            // Set the startDate to the beginning of the day one year ago
+            let startDate = moment().subtract(1, 'years').startOf('day').toISOString();
+    
+            // Set the endDate to the end of the current day
+            let endDate = moment().endOf('day').toISOString();
+    
+            let result = await cancellationPlanModel.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+                        isDeleted: false
+                    }
+                },
+                {
+                    $project: {
+                        date: {
+                            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$date',
+                        total: { $sum: 1 }
+                    }
+                }
+            ]);
+    
+            let finalData = result.map(item => ({
+                date: item._id,
+                total: item.total
+            }));
+    
+            return finalData;
+        } catch (error) {
+            console.error('Error in getCountOfCancellationPerDay:', error);
+            return [];
+        }
+    }                                
 }
 
 export default CancellationPlanRepository;

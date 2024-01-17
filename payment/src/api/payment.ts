@@ -1,7 +1,7 @@
 import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
-import { postAuthenticatedRequest, confirmIntentRequest } from '../interface/payment';
+import { postAuthenticatedRequest, confirmIntentRequest, PaymentCount } from '../interface/payment';
 
 
 export default (app: Express) => {
@@ -42,6 +42,17 @@ export default (app: Express) => {
     app.post('/create-test-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const data = await service.createTestCustomer();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/get-payment-sum', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const productId = req.query.productId?.toString() || '';
+            const userId = req.query.userId?.toString() || '';
+            const data = await service.getPaymentSum({ productId: productId, userId: userId });
             return res.json(data);
         } catch (err) {
             next(err);

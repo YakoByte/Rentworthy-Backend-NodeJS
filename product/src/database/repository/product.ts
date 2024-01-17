@@ -1,17 +1,7 @@
 import { productModel, historyModel } from "../models";
 import { Types } from 'mongoose';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../../utils';
-import {
-    APIError,
-    BadRequestError,
-    STATUS_CODES,
-} from "../../utils/app-error";
+import { FormateData } from '../../utils';
+import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import { productRequest, productDeleteRequest, productUpdateRequest, productSorting, productGetRequest } from "../../interface/product";
 import { populate } from "dotenv";
 import productReservationService from "../../services/productreservation";
@@ -303,27 +293,38 @@ class ProductRepository {
     }
     //update product name, description, isActive, isShow, image
     async updateProduct(productInputs: productUpdateRequest) {
-        const findProduct = await productModel.findOne({ _id: productInputs._id, isDeleted: false });
-        console.log("findProduct", findProduct)
-        if (findProduct) {
-            const productResult = await productModel.updateOne({ _id: productInputs._id }, productInputs);
-            // console.log("productResult", productResult)
-            const history = new historyModel({
-                productId: productInputs._id,
-                log: [
-                    {
-                        objectId: productInputs._id,
-                        userId: productInputs.userId,
-                        action: `productName = ${productInputs.name} updated`,
-                        date: new Date().toISOString(),
-                        time: Date.now(),
-                    },
-                ],
-            });
-            await history.save();
-            return { STATUS_CODES: STATUS_CODES.OK, data: "Product Updated" };
+        try {
+            const productResult = await productModel.findOneAndUpdate(
+                { _id: productInputs._id, isDeleted: false },
+                productInputs,
+                { new: true } // Return the modified document
+            );
+    
+            if (productResult) {
+                const history = new historyModel({
+                    productId: productInputs._id,
+                    log: [
+                        {
+                            objectId: productInputs._id,
+                            userId: productInputs.userId,
+                            action: `productName = ${productInputs.name} updated`,
+                            date: new Date().toISOString(),
+                            time: Date.now(),
+                        },
+                    ],
+                });
+    
+                await history.save();
+                
+                return { STATUS_CODES: STATUS_CODES.OK, data: "Product Updated" };
+            } else {
+                return { STATUS_CODES: STATUS_CODES.NOT_FOUND, data: "Product not found or already deleted" };
+            }
+        } catch (error) {
+            console.error("Error updating product:", error);
+            return { STATUS_CODES: STATUS_CODES.INTERNAL_ERROR, data: "Error updating product" };
         }
-    }
+    }    
 
     async deleteProduct(productInputs: productDeleteRequest) {
         const findProduct = await productModel.findOne({ _id: productInputs._id, isDeleted: false });

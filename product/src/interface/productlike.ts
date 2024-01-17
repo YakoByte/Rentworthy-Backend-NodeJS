@@ -25,3 +25,9 @@ export interface getProductLikeRequest {
     userId?: string;
     productId?: string;
 }
+
+export interface getAllProductLike {
+    page?: number;
+    limit?: number;
+    productId: string;
+}

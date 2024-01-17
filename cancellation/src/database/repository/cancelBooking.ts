@@ -1,4 +1,5 @@
 import { cancelBookingModel, productModel, historyModel } from "../models";
+import moment from 'moment';
 import {
     FormateData,
     // GeneratePassword,
@@ -74,6 +75,48 @@ class CancelBookingRepository {
             return FormateData(cancelBookingResult);
         }
     }
+
+    async getCountOfCancellationPerDay() {
+        try {
+            // Set the startDate to the beginning of the day one year ago
+            let startDate = moment().subtract(1, 'years').startOf('day').toISOString();
+    
+            // Set the endDate to the end of the current day
+            let endDate = moment().endOf('day').toISOString();
+    
+            let result = await cancelBookingModel.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+                        isDeleted: false
+                    }
+                },
+                {
+                    $project: {
+                        date: {
+                            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$date',
+                        total: { $sum: 1 }
+                    }
+                }
+            ]);
+    
+            let finalData = result.map(item => ({
+                date: item._id,
+                total: item.total
+            }));
+    
+            return finalData;
+        } catch (error) {
+            console.error('Error in getCountOfCancellationPerDay:', error);
+            return [];
+        }
+    } 
 }
 
 export default CancelBookingRepository;

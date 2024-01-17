@@ -39,6 +39,7 @@ export default (app: Express) => {
     // API = update cancellationPlan by id
     app.put('/update-cancellationPlan-by-id', UserAuth, async (req: updateAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            let authUser: any = req.user
             const data = await service.updateCancellationPlanById({ ...req.body, ...req.query });
             return res.json(data);
         } catch (err) {
@@ -49,7 +50,7 @@ export default (app: Express) => {
     //API = delete cancellationPlan
     app.delete('/delete-cancellationPlan', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-
+            let authUser: any = req.user
             const data = await service.deleteCancellationPlan({ ...req.query });
             return res.json(data);
         } catch (err) {
@@ -57,4 +58,13 @@ export default (app: Express) => {
         }
     });
 
+    app.get('/get-cancellationPlan/per-day', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+            const data = await service.getCountOfCancellationPerDay();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 };

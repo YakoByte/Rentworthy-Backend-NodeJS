@@ -8,7 +8,7 @@ import {
     // ValidatePassword,
 } from '../../utils';
 
-import { productLikeRequest, getProductLikeRequest } from "../../interface/productlike";
+import { productLikeRequest, getProductLikeRequest, getAllProductLike } from "../../interface/productlike";
 
 
 class ProductLikeRepository {
@@ -58,6 +58,43 @@ class ProductLikeRepository {
         }
         let getRes = await productLikeModel.find(searchQuery).lean()
         return FormateData(getRes)
+    }
+
+    async GetAllProductLike(productInputs: getAllProductLike) {
+        if(!productInputs.limit || !productInputs.page){
+            productInputs.limit = 0;
+            productInputs.page = 0;
+        }
+        const findLike = await productLikeModel.aggregate([
+            { $match: { productId: productInputs.productId, isDeleted: false } },
+            { $skip: productInputs.page },
+            { $limit: productInputs.limit },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { path: 1, _id: 0 } }],
+                    as: "productId"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    pipeline: [{ $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } }],
+                    as: "userId"
+                }
+            }
+        ])
+        return FormateData(findLike);
+    }
+
+    async GetLikeCount(productInputs: getAllProductLike) {
+        let count = await productLikeModel.countDocuments({productId: productInputs.productId, isFav: true, isDeleted: false });
+        count = count ? count : 0;
+        return FormateData({ count });
     }
 }
 

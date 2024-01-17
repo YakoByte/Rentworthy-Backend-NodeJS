@@ -28,4 +28,25 @@ export default (app: Express) => {
             return res.status(err.STATUS_CODE).json(err);
         }
     });
+
+    app.get('/get-all-productrating', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const { productId } = req.query as { productId: string };
+            const { page = 0, limit = 0 } = req.query as { page?: number; limit?: number }; // Providing default values here
+            const data = await service.getAllProductRating({ productId, page, limit });
+            return res.json(data);
+        } catch (err: any) {
+            return res.status(err.STATUS_CODE).json(err);
+        }
+    });
+
+    app.get('/get-productrating/stastics', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const { productId } = req.query as { productId: string };
+            const data = await service.getProductRatingCount({ productId });
+            return res.json(data);
+        } catch (err: any) {
+            return res.status(err.STATUS_CODE).json(err);
+        }
+    });
 }

@@ -24,7 +24,6 @@ class AdminService {
     }
 
     async SignIn(userInputs: userLoginRequest) {
-        // const { email, password } = userInputs;
         try {
             const existingAdmin = await this.repository.FindMe(userInputs);
             const updateUser = await this.repository.UpdateUser(existingAdmin._id, { os: userInputs.os as string });
@@ -51,7 +50,7 @@ class AdminService {
                         roleName: existingAdmin.roleId.name,
                     });
 
-                    return FormateData({ id: existingAdmin._id, token });
+                    return FormateData({ id: existingAdmin._id, token, existingAdmin });
                 }
             }
 
@@ -152,7 +151,7 @@ class AdminService {
                     roleName: existingAdmin.roleId.name,
                 });
 
-                return FormateData({ id: existingAdmin._id, token });
+                return FormateData({ id: existingAdmin._id, token, existingAdmin });
             }
 
             return FormateData({ message: "Invalid Credentials" });

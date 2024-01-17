@@ -34,7 +34,7 @@ export interface Product extends Document {
     address: string
     location: {
         type: string;
-        coordinate: number[];
+        coordinates: number[];
     }
     link: string
     cancellationPolicyIds: Types.ObjectId[];
@@ -54,7 +54,7 @@ export interface productRequest {
     userId: string;
     quantity: any;
     price: number;
-    thumbnail: stirng;
+    thumbnail: string;
     address: string
     location: {
         type: string;
@@ -81,7 +81,7 @@ export interface productUpdateRequest {
     address?: string
     location?: {
         type?: string;
-        coordinate?: number[];
+        coordinates?: number[];
     }
     link?: string
 }

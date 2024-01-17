@@ -29,3 +29,11 @@ export interface locationRequest {
         coordinates: number[];
     };
 }
+
+export interface CountlocationRequest {
+    regionName?: {
+        type: string;
+        coordinates: number[];
+    };
+    regionType?: string
+}

@@ -1,5 +1,5 @@
 import productReviewRepository from '../database/repository/productreview';
-import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest } from "../interface/productreview";
+import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest, getAllProductReview } from "../interface/productreview";
 import {
     FormateData,
     // GeneratePassword,
@@ -35,6 +35,21 @@ class productService {
             const existingProduct: any = await this.repository.GetProductReview(
                 productInputs
             );
+
+            return existingProduct;
+
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
+
+    async getAllProductReview(productInputs: getAllProductReview) {
+        try {
+            const existingProduct: any = await this.repository.GetAllProductReview({
+                productId: productInputs.productId || '',
+                page: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+                limit: Number(productInputs.limit) || 10
+            });
 
             return existingProduct;
 
