@@ -1,7 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import RoomService from '../services/room';
 import ChatService from '../services/messages';
-import UserAuth from '../middlewares/auth';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SECRET_KEY } from '../config';
 import { AuthenticatedRequest, roomRequest, roomData, getRoomRequest, deleteRoomRequest } from '../interface/room'

@@ -114,24 +114,26 @@ class CategoryRepository {
     async getCategoryByName(categoryInputs: { name: string }) {
         // const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
         const findCategory = await categoryModel.aggregate([
-            { $match: { name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true } }, {
+            { $match: { name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true } },
+            {
                 $lookup: {
                     from: "images",
-                    localField: "images",
+                    localField: "image",
                     foreignField: "_id",
                     pipeline: [{ $project: { path: 1, _id: 0 } }],
-                    as: "images"
+                    as: "image"
                 }
             },
-            { $unwind: "$images" },
+            { $unwind: "$image" },
             {
                 $project: {
                     _id: 1,
                     name: 1,
                     description: 1,
-                    image: "$images.path"
+                    image: "$image.path"
                 }
-            },]);
+            }
+        ]);
         console.log("findCategory", findCategory)
         if (findCategory) {
             return FormateData(findCategory);

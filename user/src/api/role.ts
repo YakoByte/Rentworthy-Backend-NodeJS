@@ -7,7 +7,7 @@ import UserAuth from '../middlewares/auth';
 export default (app: Express) => {
     const service = new RoleService();
     // API = create new role
-    app.post('/role/createRole', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/role/createRole', async (req: Request, res: Response, next: NextFunction) => {
         //validate admin from token
         // let admin = await (req);
         console.log("req.body", req.body)

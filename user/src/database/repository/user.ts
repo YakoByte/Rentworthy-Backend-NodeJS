@@ -16,13 +16,15 @@ class AdminRepository {
     try {
       // check signup role
       console.log("userInputs", userInputs.roleName)
-      let roleId = await roleModel.findOne({ name: userInputs.roleName }).distinct('_id');
+      let roleId = await roleModel.findOne({ name: userInputs.roleName });
+      if (!roleId) {
+        console.error(`Role with name '${userInputs.roleName}' not found.`);
+      } else {
+        roleId = roleId._id;
+      }
+      
       console.log("roleId", roleId)
-      // console.log("role", role)
-      // if (!role || role?.name !== userInputs.roleName) {
-      //   return FormateData({ message: "Invalid Role" });
-      // }
-      // check if user already exist
+
       let query = {}
       if (userInputs.email) {
         query = { email: userInputs.email }
@@ -42,13 +44,13 @@ class AdminRepository {
 
       // create user
       const user = new userModel(
-        { ...userInputs, roleId: roleId[0] }
+        { ...userInputs, roleId: roleId }
       );
       console.log("user", user)
       const userResult = await user.save();
       console.log("userInputs", userInputs)
       if (user.email) {
-        OTPRep.CreateOTP({ email: user.email })
+        OTPRep.CreateOTP({ email: user.email, phoneNo: user.phoneNo })
       }
       // create history
       const history = new historyModel({

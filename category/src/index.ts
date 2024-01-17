@@ -3,19 +3,13 @@
 import express, { Express, Request, Response } from 'express';
 import { PORT } from './config';
 import { configureExpress } from './express-config.ts'; // Import the module
-import databaseConnection from './database/connection.ts';
+import { connectDB } from './database/index.ts';
 
 const StartServer = async (): Promise<void> => {
     const app: Express = express();
 
     // Connect to the database
-    try {
-        await databaseConnection(); // Assuming this function returns a promise
-        console.log('Database connected successfully');
-    } catch (error) {
-        console.error('Database connection error:', error);
-        process.exit(1);
-    }
+    await connectDB();
 
     // Configure Express app using the module
     await configureExpress(app);

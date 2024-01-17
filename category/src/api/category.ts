@@ -24,7 +24,11 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
                 Authorization: token,
             },
         });
-        return response.data.existingImage._id; // Assuming you are expecting a single image ID
+
+        console.log(response.data.data.existingImage._id);
+        
+
+        return response.data.data.existingImage._id; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;
     }
@@ -34,13 +38,12 @@ export default (app: Express) => {
     const service = new CategoryService();
 
     // API = create new category
-    app.post('/create-categdfory', UserAuth, upload.array('image'), async (req: any, res: Response, next: NextFunction) => {
+    app.post('/create-category', UserAuth, upload.single('image'), async (req: any, res: Response, next: NextFunction) => {
         try {
-            console.log("req.file", req.file)
-            let authUsser: any = req.unpipe
-            req.body.userId = authUsser._id;
-            // req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-            req.body.image = await uploadImageWithToken(req.file.filename, req.headers.token);
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
+         
+            req.body.image = await uploadImageWithToken(req.file.path, req.headers.authorization);
             
             // console.log("req.body", req.body)
             console.log("req.body", req.body)
@@ -52,10 +55,10 @@ export default (app: Express) => {
     });
 
     // API = get category by id and search and all category
-    app.get('/get-catethtgory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-category', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            // let authUser: any = req.user
-            // req.body.userId = authUser._id;
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
             console.log("req.body", req.query)
 
             const { data } = await service.getCategory(req.query);
@@ -67,7 +70,7 @@ export default (app: Express) => {
     });
 
     // API = update category
-    app.put('/update-cathregory', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-category', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
@@ -81,7 +84,7 @@ export default (app: Express) => {
     });
 
     // API = delete category
-    app.delete('/delhete-catetegory', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-category', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;

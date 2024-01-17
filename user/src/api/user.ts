@@ -15,7 +15,7 @@ export default (app: Express) => {
   const otpService = new OTPService();
 
   // API = create new admin
-  app.post('/admin/signuup', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log("req.body", req.body)
       req.body.roleName = "admin";
@@ -39,7 +39,7 @@ export default (app: Express) => {
   });
 
   // API = login admin
-  app.post('/admin/logiin', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userDetail = req.body;
       req.body.roleName = "admin";
@@ -52,7 +52,7 @@ export default (app: Express) => {
   });
 
   // API = login user
-  app.post('/losgin', async (req: any, res: Response, next: NextFunction) => {
+  app.post('/login', async (req: any, res: Response, next: NextFunction) => {
     try {
       // console.log("req.os", os.machine())
       req.body.os = req.clientPlatform;

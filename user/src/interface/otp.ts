@@ -2,7 +2,7 @@ import { Request } from 'express';
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface Otp extends Document {
-    otp: number;
+    otp: string;
     email: any;
     phoneNo?: any
     expireTime: Date;
@@ -14,6 +14,6 @@ export interface Otp extends Document {
 export interface otpRequest {
     otp?: number;
     email: any;
-    phoneNo: string;
+    phoneNo: any;
     ipAddress?: string;
 }

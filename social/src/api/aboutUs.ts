@@ -15,7 +15,7 @@ import FormData from 'form-data';
 async function uploadImageWithToken(imagePath: string, token: string): Promise<string> {
     const formData = new FormData();
     formData.append('image', fs.createReadStream(imagePath));
-    console.log("formData", imagePath)
+    
     try {
         const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
             headers: {
@@ -23,7 +23,7 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
                 Authorization: token,
             },
         });
-        console.log("response", response)
+        
         return response.data.existingImage._id; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;

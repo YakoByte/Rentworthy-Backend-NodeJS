@@ -2,6 +2,7 @@
 
 import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
+import { GOOGLE_EMAIL, GOOGLE_PASS } from '../config';
 
 interface EmailOptions {
     toUser: string;
@@ -10,6 +11,8 @@ interface EmailOptions {
 }
 
 export function sendEmail(options: EmailOptions): void {
+    console.log(GOOGLE_EMAIL, GOOGLE_PASS);
+    
     // Read the HTML email template from the file
     // const emailTemplate = fs.readFileSync("", 'utf-8');
 
@@ -17,14 +20,14 @@ export function sendEmail(options: EmailOptions): void {
     const transporter = nodemailer.createTransport({
         service: 'Gmail', // e.g., 'Gmail'
         auth: {
-            user: 'bhavdip.gadara762@gmail.com',
-            pass: 'nheu qhyc cbjg lttp'
+            user: GOOGLE_EMAIL,
+            pass: GOOGLE_PASS
         }
     });
 
     // Define the email content with template variables
     const mailOptions = {
-        from: 'bhavdip.gadara762@gmail.com',
+        from: GOOGLE_EMAIL,
         to: options.toUser,
         subject: options.subject,
         html: `<!DOCTYPE html>
@@ -81,9 +84,10 @@ export function sendEmail(options: EmailOptions): void {
                 
                 <p>If you did not initiate this request, or if you have any concerns regarding the security of your account, please contact our support team immediately at <a href="mailto:[Customer Support Email]" class="contact">[Customer Support Email]</a> or <span class="contact">[Customer Support Phone Number]</span>.</p>
                 
-                <p>Thank you for choosing <span class="highlight">[Your Company Name]</span> for your <span class="highlight">[Specify Service/Product]</span>. We appreciate your trust in us, and we are here to assist you with any questions or concerns you may have.</p>
+                <p>Thank you for choosing <span class="highlight">RentWorthy</span> for your <span class="highlight">Rent Lead Enjoy</span>. We appreciate your trust in us, and we are here to assist you with any questions or concerns you may have.</p>
                 
-                <p>Best regards,<br>
+                <p>Best regards,</p>
+                <p>RentWorthy team<p>
             </div>
         </body>
         </html>`

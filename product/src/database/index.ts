@@ -1,11 +1,11 @@
+import databaseConnection from "./connection";
 
-export = {
-    databaseConnection: require('./connection').default,
-    CategoryRepository: require('./repository/category').default,
-    SubCategoryRepository: require('./repository/subcategory').default,
-    ProductRepository: require('./repository/product').default,
-    UserRepository: require('./repository/user').default,
-    HistoryRepository: require('./repository/history').default,
-    // ImageRepository: require('./repository/image').default,
+export const connectDB = async (): Promise<void> => {
+    try {
+        await databaseConnection();
+        console.log('Database connected successfully');
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+        process.exit(1);
+    }
 };
-

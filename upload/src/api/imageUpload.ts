@@ -10,7 +10,7 @@ export default (app: Express) => {
     const service = new ImageService();
 
     // API = create new image-upload
-    app.post('/image-upload', UserAuth, upload.array("image"), isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/image-upload', UserAuth, upload.single("image"), isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
@@ -23,7 +23,7 @@ export default (app: Express) => {
         }
     });
 
-    app.post('/image-uploads', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/image-uploads', UserAuth, upload.array("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
