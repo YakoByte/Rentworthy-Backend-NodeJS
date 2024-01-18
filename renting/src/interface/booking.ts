@@ -9,9 +9,8 @@ export interface postAuthenticatedRequest extends Request {
     headers: any;
     files?: any;
     body: {
+        _id?: string;
         productId: string;
-        // paymentMethodId: string
-        // paymentIntentId: string
         preRentalScreening: {
             question: string;
             answer: string;
@@ -100,8 +99,6 @@ export interface Booking extends Document {
 export interface bookingRequest {
     _id?: string;
     productId: string;
-    // paymentMethodId: string
-    // paymentIntentId: string
     status?: string;
     startDate: Date;
     endDate: Date;

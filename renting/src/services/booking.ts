@@ -31,6 +31,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+    
     // get recent booking 
     async getRecentBooking(bookingInputs: recentBookingGetRequest) {
         try {
@@ -60,6 +61,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // add images to booking
     async addImagesToBooking(bookingInputs: bookingRequest) {
         try {
@@ -73,6 +75,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // remove images from booking
     async removeImagesFromBooking(bookingInputs: bookingRequest) {
         try {
@@ -86,6 +89,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // approve booking
     async approveBooking(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
         try {
@@ -107,6 +111,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // update booking by id
     async updateBookingById(bookingInputs: bookingRequest) {
         try {
@@ -120,6 +125,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // update preRentalScreening by id
     async updatePreRentalScreeningById(bookingInputs: bookingRequest) {
         try {
@@ -133,6 +139,7 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // delete booking by id  (soft delete)
     async deleteBooking(bookingInputs: bookingDeleteRequest) {
         try {
