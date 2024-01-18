@@ -41,37 +41,55 @@ export default (app: Express) => {
     });
 
     // API = update location by id
-    // app.put('/update-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    //     //validate admin from token
-    //     // let admin = await (req);
-    //     let authUser: any = req.user
-    //     req.body.userId = authUser._id;
-    //     if (req.file) {
-    //         req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-    //     }
-    //     console.log("req.body", req.body)
-    //     try {
-    //         const { data } = await service.updateLocationById(req.body);
-    //         return res.json(data);
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // });
+    app.put('/update-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        // validate admin from token
+        // let admin = await (req);
+        let authUser: any = req.user
+        req.body.userId = authUser._id;
+        // if (req.file) {
+        //     req.body.image = `http://localhost:4000/images/${req.file.filename}`;
+        // }
+        console.log("req.body", req.body)
+        try {
+            const { data } = await service.updateLocationById(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 
     // // API = delete location by id
-    // app.delete('/delete-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    //     //validate admin from token
-    //     // let admin = await (req);
-    //     let authUser: any = req.user
-    //     req.body.userId = authUser._id;
+    app.delete('/delete-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        //validate admin from token
+        // let admin = await (req);
+        let authUser: any = req.user
+        req.body.userId = authUser._id;
 
-    //     console.log("req.body", req.body)
-    //     try {
-    //         const { data } = await service.deleteLocationById(req.body);
-    //         return res.json(data);
-    //     } catch (err) {
-    //         next(err);
-    //     }
-    // });
+        console.log("req.body", req.body)
+        try {
+            const { data } = await service.deleteLocationById(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 
+    // API = count location coordinate
+    app.get("/count-location", UserAuth, async(req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { data } = await service.countCordinate();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    })
+
+    app.get("/count-continent", UserAuth, async(req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { data } = await service.countContinentCoordinate();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    })
 };

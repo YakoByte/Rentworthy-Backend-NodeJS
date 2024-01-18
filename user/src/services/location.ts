@@ -90,6 +90,26 @@ class LocationService {
         }
     }
 
+    async countCordinate() {
+        try {
+            const Location: any = await this.repository.countCordinate();
+
+            return FormateData({ Location });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
+
+    async countContinentCoordinate() {
+        try {
+            const Location: any = await this.repository.countContinentCoordinate();
+
+            return FormateData({ Location });
+        } catch (err: any) {
+            throw new APIError("Data Not found", err);
+        }
+    }
+
 
     // async locationValidation(locationName: string, locationId: string) {
     //     try {
