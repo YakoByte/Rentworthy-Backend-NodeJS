@@ -7,6 +7,7 @@ export interface postAuthenticatedRequest extends Request {
         _id: string;
     };
     headers: any;
+    files?: any;
     body: {
         productId: string;
         // paymentMethodId: string

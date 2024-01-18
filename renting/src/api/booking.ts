@@ -9,27 +9,26 @@ import fs from 'fs';
 import FormData from 'form-data';
 import { FormateData } from '../utils';
 
-// import multer from 'multer';
-// import path from 'path';
-// import { validateCreateAdmin } from './adminValidation';
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<void> {
+async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
     const formData = new FormData();
 
-    // Append each image file to the FormData object
     for (const imagePath of imagePaths) {
         formData.append('image', fs.createReadStream(imagePath));
     }
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
+        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
-                Authorization: token, // Add the token to the Authorization header
+                Authorization: token,
             },
         });
-        return response.data.existingImage.map((obj: { _id: any; }) => obj._id);
+
+        const paths: string[] = response.data.existingImage.map((element: any) => element._id);
+
+        return paths;
     } catch (error: any) {
-        return error.message;
+        return [error.message]; // Return an array to match the Promise<string[]> type
     }
 }
 
@@ -38,28 +37,13 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+        const response = await axios.post("http://localhost:5003/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
         return response.data.existingImage._id; // Assuming you are expecting a single image ID
-    } catch (error: any) {
-        return error.message;
-    }
-}
-
-async function deleteImageWithToken(id: string, token: string): Promise<string> {
-    try {
-        console.log(id, token);
-
-        const response = await axios.delete(`http://localhost:5000/app/api/v1/upload/image-delete/${id}`, {
-            headers: {
-                Authorization: token,
-            },
-        });
-        return response.data; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;
     }
@@ -74,12 +58,12 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
 
-            if (req.file) {
-                req.body.images = await uploadImageWithToken(req.file.path, req.headers.authorization) as any;
+            if (req.files.length > 0) {
+                req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             } else {
                 return res.status(400).json({ error: "No file provided" });
             }
-            console.log("req.body", req.body)
+            
             const data = await service.CreateBooking(req.body, req);
             return res.json(data);
         } catch (err) {
@@ -145,7 +129,6 @@ export default (app: Express) => {
             { name: 'preRentalScreening[0][images]', maxCount: 10 },
             { name: 'preRentalScreening[1][images]', maxCount: 10 },
             { name: 'preRentalScreening[2][images]', maxCount: 10 },
-            // Add more as needed for each object in the preRentalScreening array
         ]),
         async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
             try {
@@ -159,12 +142,7 @@ export default (app: Express) => {
                         return res.status(400).json({ error: "No file provided" });
                     }
                 }
-                // if (images['preRentalScreening[0][images]']) {
 
-                //     // req.body.images = await uploadImageWithToken(req.file.path, req.headers.authorization) as any;
-                // } else {
-                //     return res.status(400).json({ error: "No file provided" });
-                // }
                 // call image upload api
                 let authUser: any = req.user
                 req.body.userId = authUser._id;

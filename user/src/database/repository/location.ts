@@ -1,7 +1,8 @@
 import { locationModel, historyModel, profileModel } from "../models";
 import { FormateData } from "../../utils";
 import { locationRequest } from "../../interface/location";
-const getContinentName = require('continent-by-coordinates');
+import { GEOLOCATION_API_KEY } from "../../config";
+const { geocode } = require('opencage-api-client');
 
 class locationRepository {
   async CreateLocation(locationInputs: locationRequest) {
@@ -132,44 +133,52 @@ class locationRepository {
   }
 
   async countContinentCoordinate() {
-    try {
-      const count = await locationModel.aggregate([
+    const count = await locationModel.aggregate([
         {
-          $group: {
-            _id: {
-              latitude: { $arrayElemAt: ["$location.coordinates", 0] },
-              longitude: { $arrayElemAt: ["$location.coordinates", 1] },
+            $group: {
+                _id: {
+                    latitude: { $arrayElemAt: ["$location.coordinates", 0] },
+                    longitude: { $arrayElemAt: ["$location.coordinates", 1] },
+                },
+                count: { $sum: 1 },
             },
-            count: { $sum: 1 },
-          },
         },
-      ]);
-  
-      const formattedData = await Promise.all(
-        count.map(async (item) => {
-          const { latitude, longitude } = item._id;
-  
-          const continentName = getContinentName(latitude, longitude);
-  
-          return {
-            latitude,
-            longitude,
-            count: item.count,
-            continent: continentName || 'Unknown',
-          };
-        })
-      );
-  
-      return FormateData({ count: formattedData });
-    } catch (error) {
-      console.error(error);
-      // Handle errors accordingly
-      return FormateData({
-        error: 'An error occurred while processing the data.',
-      });
-    }
-  }
-  
+    ]);
+
+    const coordinates = count.map(item => ({
+        count: item.count,
+        latitude: item._id.latitude,
+        longitude: item._id.longitude,
+    }));
+
+    let data: any = []
+
+    await Promise.all(coordinates.map(async coord => {
+        try {
+            const response = await geocode({
+                key: GEOLOCATION_API_KEY,
+                q: `${coord.latitude},${coord.longitude}`,
+            });
+            const { components } = response.results[0];
+
+            data.push({
+              count: coord.count || 0,
+              latitude: coord.latitude || null,
+              longitude: coord.longitude || null,
+              country: components.country || null,
+              countryCode: components.country_code || null,
+              continent: components.continent || null,
+            })
+
+            return response;
+        } catch (error) {
+            console.error("Error fetching continent name:", error);
+            return null;
+        }
+    }));
+
+    return FormateData({ data });
+}
 }
 
 export default locationRepository;

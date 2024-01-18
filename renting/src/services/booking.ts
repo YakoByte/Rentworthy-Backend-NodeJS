@@ -20,7 +20,6 @@ class bookingService {
     // create booking
     async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
         try {
-            console.log("bookingInputs", bookingInputs)
             const existingBooking: any = await this.repository.CreateBooking(
                 bookingInputs,
                 req

@@ -78,7 +78,6 @@ const bookingSchema: Schema = new Schema<Booking>(
             images: [{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "image",
-                // required: true,
             }],
         }],
         status: {
