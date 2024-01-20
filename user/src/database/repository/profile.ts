@@ -49,19 +49,10 @@ class profileRepository {
         await history.save();
 
         return profileResult;
-        // } catch (err) {
-        //     throw new APIError(
-        //         "API Error",
-        //         STATUS_CODES.INTERNAL_ERROR,
-        //         "Unable to Create User"
-        //     );
-        // }
     }
 
     //get all profile active or inactive blocked or unblocked
     async getAllProfile(profileInputs: getProfileRequest) {
-        // const findProfile = await profileModel.find(profileInputs)
-        //     .populate([{ path: "userId", select: "userName email phoneNo bussinessType" }, { path: "locationId", select: "location" }]);
         const findProfile = await profileModel.aggregate([
             {
                 $match: { ...profileInputs, isDeleted: false, isBlocked: false }

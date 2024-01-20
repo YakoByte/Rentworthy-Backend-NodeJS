@@ -100,10 +100,7 @@ class PaymentService {
             // You may choose to handle or rethrow the error here
             throw err;
         }
-    }
-    
-
-
+    }  
 }
 
 export = PaymentService;

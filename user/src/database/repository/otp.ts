@@ -16,9 +16,6 @@ import { sendEmail } from "../../template/emailTemplate";
 class OTPRepository {
     //create otp
     async CreateOTP(otpInputs: otpRequest) {
-
-        // try {
-
         // check 5 time get otp from same ip and (email or phoneNo)
         const findOTP = await otpModel.find({
             $or:
@@ -59,7 +56,7 @@ class OTPRepository {
             }
             const options: EmailOptions = {
                 toUser: otpInputs.email,
-                subject: "otp varifation",
+                subject: "OTP Verification",
                 templateVariables: { otp: newOtp.toString() }
             }
             sendEmail(options)
@@ -83,15 +80,6 @@ class OTPRepository {
         await history.save();
 
         return otpResult;
-
-
-        // } catch (err) {
-        //     throw new APIError(
-        //         "API Error",
-        //         STATUS_CODES.INTERNAL_ERROR,
-        //         "Unable to Create User"
-        //     );
-        // }
     }
 
     //verify otp

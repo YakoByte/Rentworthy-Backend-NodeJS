@@ -12,7 +12,6 @@ const userSchema: Schema = new Schema<User>(
     // },
     phoneNo: {
       type: Number,
-      // unique: true,
       default: null,
     },
     phoneCode: {
@@ -20,13 +19,12 @@ const userSchema: Schema = new Schema<User>(
     },
     email: {
       type: String,
-      // unique: true,
+      unique: true,
       lowercase: true,
       default: null,
     },
     password: {
       type: String,
-      // required: true,
     },
     stripe: {
       type: String,

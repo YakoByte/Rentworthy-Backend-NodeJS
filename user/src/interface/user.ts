@@ -34,7 +34,7 @@ export interface userSignRequest {
     email?: string;
     password: string;
     stripe?: string;
-    // roleId: string;
+    roleId?: string;
     appleId?: string;
     location?: string;
     isGuest?: boolean;
@@ -71,7 +71,7 @@ export interface socialUserSignRequest {
     bussinessType?: string;
     email?: string;
     stripe?: string;
-    // roleId: string;
+    roleId?: string;
     appleId?: string;
     location?: string;
     isGuest?: boolean;

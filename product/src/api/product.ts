@@ -66,7 +66,7 @@ export default (app: Express) => {
     });
 
     // // API = get product by id and search and all product
-    app.get('/get-peroduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data: { STATUS_CODE: number, data: [], message: string } = await service.getProduct({ ...req.query});
             return res.status(200).json(data);
@@ -77,7 +77,7 @@ export default (app: Express) => {
     });
 
     // // API = update product
-    app.put('/update-producet', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/update-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
@@ -101,7 +101,7 @@ export default (app: Express) => {
     });
 
     // // API = admin approve product
-    app.put('/approve-prewoduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/approve-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             // req.body.approvedBy = req.user._id;
             // req.body._id = req.query._id;
@@ -115,7 +115,7 @@ export default (app: Express) => {
     });
 
     // // API = delete product
-    app.delete('/delete-prorduct', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;

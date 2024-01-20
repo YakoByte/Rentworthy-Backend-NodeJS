@@ -65,6 +65,7 @@ export function sendEmail(options: EmailOptions): void {
                     background-color: #f7c44d;
                     padding: 5px;
                     border-radius: 5px;
+                    font-weight: bold;
                 }
                 .contact {
                     color: #0078d4;
@@ -80,11 +81,11 @@ export function sendEmail(options: EmailOptions): void {
                 <p>To proceed with your request, we have generated a One-Time Password (OTP) for you. Please find your OTP details below:</p>
                 <p class="otp">Your OTP: <span class="highlight">${options.templateVariables.otp}</span></p>
                 
-                <p>This OTP is valid for a single use and will expire in <span class="highlight">[Expiration Time, e.g., 5 minutes]</span>. Please do not share this OTP with anyone, as it is a critical component of your account security.</p>
+                <p>This OTP is valid for a single use and will expire in <span class="highlight">24 hours</span>. Please do not share this OTP with anyone, as it is a critical component of your account security.</p>
                 
                 <p>If you did not initiate this request, or if you have any concerns regarding the security of your account, please contact our support team immediately at <a href="mailto:[Customer Support Email]" class="contact">[Customer Support Email]</a> or <span class="contact">[Customer Support Phone Number]</span>.</p>
                 
-                <p>Thank you for choosing <span class="highlight">RentWorthy</span> for your <span class="highlight">Rent Lead Enjoy</span>. We appreciate your trust in us, and we are here to assist you with any questions or concerns you may have.</p>
+                <p>Thank you for choosing <span class="highlight">RentWorthy</span> for your <span class="highlight">Rent <b>•</b> Lead <b>•</b> Enjoy</span>. We appreciate your trust in us, and we are here to assist you with any questions or concerns you may have.</p>
                 
                 <p>Best regards,</p>
                 <p>RentWorthy team<p>

@@ -23,6 +23,7 @@ export default (app: Express) => {
       next(err);
     }
   });
+
   // API = create new user
   app.post('/signusup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -63,6 +64,17 @@ export default (app: Express) => {
       const data = await adminService.SignIn(userDetail);
       console.log("data", data)
       return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // create otp
+  app.post('/createOtp', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log("req.body", req.body)
+      const { data } = await otpService.CreateNewOTP(req.body);
+      return res.status(200).json(data);
     } catch (err) {
       next(err);
     }

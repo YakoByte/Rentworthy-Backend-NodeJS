@@ -13,13 +13,17 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+        const response = await axios.post("http://localhost:5003/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
-        return response.data.existingImage._id; // Assuming you are expecting a single image ID
+
+        console.log(response.data.data.existingImage._id);
+        
+
+        return response.data.data.existingImage._id; // Assuming you are expecting a single image ID
     } catch (error: any) {
         return error.message;
     }
@@ -29,10 +33,6 @@ export default (app: Express) => {
     const service = new ProfileService();
     // API = create new profile
     app.post('/create-profile', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        //validate admin from token
-        // let admin = await (req);
-    
-            // Check if req.file is defined before accessing its properties
         let authUser: any = req.user
         req.body.userId = authUser._id;
         console.log("req.file", req.file)

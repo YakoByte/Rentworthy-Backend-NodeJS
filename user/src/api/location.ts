@@ -10,11 +10,8 @@ export default (app: Express) => {
     const service = new LocationService();
     // API = create new location
     app.post('/create-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        //validate admin from token
-        // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        // req.body.image = `http://localhost:4000/images/${req.file.filename}`;
         console.log("req.body", req.body)
         try {
             const { data } = await service.CreateLocation(req.body);
@@ -28,9 +25,6 @@ export default (app: Express) => {
     app.get('/get-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        //validate admin from token
-        // let admin = await (req);
-        // req.body._id = req.query._id
         console.log("req.body", req.query)
         try {
             const data = await service.getLocationById(req.query);
@@ -42,13 +36,8 @@ export default (app: Express) => {
 
     // API = update location by id
     app.put('/update-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        // validate admin from token
-        // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        // if (req.file) {
-        //     req.body.image = `http://localhost:4000/images/${req.file.filename}`;
-        // }
         console.log("req.body", req.body)
         try {
             const { data } = await service.updateLocationById(req.body);
@@ -60,8 +49,6 @@ export default (app: Express) => {
 
     // // API = delete location by id
     app.delete('/delete-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        //validate admin from token
-        // let admin = await (req);
         let authUser: any = req.user
         req.body.userId = authUser._id;
 
