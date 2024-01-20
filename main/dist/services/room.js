@@ -18,7 +18,7 @@ class roomService {
             return existingRoom;
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // get room
@@ -28,7 +28,7 @@ class roomService {
             return existingRoom;
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // get rooms
@@ -38,7 +38,7 @@ class roomService {
             return existingRoom;
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // delete room
@@ -48,7 +48,7 @@ class roomService {
             return (0, utils_1.FormateData)(existingRoom);
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
 }

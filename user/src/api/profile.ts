@@ -3,7 +3,6 @@ import ProfileService from '../services/profile';
 import UserAuth from '../middlewares/auth';
 import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest, getProfileRequest } from '../interface/profile';
-// import { validateCreateAdmin } from './adminValidation';
 import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
@@ -41,7 +40,7 @@ export default (app: Express) => {
         }
         console.log("req.body", req.body)
         try {
-            const { data } = await service.CreateProfile(req.body);
+            const data = await service.CreateProfile(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -82,7 +81,7 @@ export default (app: Express) => {
         }
         console.log("req.body", req.body)
         try {
-            const { data } = await service.updateProfileById(req.body);
+            const data = await service.updateProfileById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -93,7 +92,7 @@ export default (app: Express) => {
     app.put('/update-level', async (req: Request, res: Response, next: NextFunction) => {
         console.log("req.body", req.body)
         try {
-            const { data } = await service.updateLevel(req.body);
+            const data = await service.updateLevel(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -110,7 +109,7 @@ export default (app: Express) => {
 
         console.log("req.body", req.body)
         try {
-            const { data } = await service.deleteProfileById(req.body);
+            const data = await service.deleteProfileById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

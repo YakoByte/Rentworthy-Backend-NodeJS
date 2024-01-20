@@ -8,7 +8,7 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 export interface User extends Document {
-    // userName: string;
+    // userName?: string;
     phoneNo?: number;
     phoneCode?: string;
     email?: string;
@@ -27,7 +27,7 @@ export interface User extends Document {
     isPhoneNoVerified?: boolean;
 }
 export interface userSignRequest {
-    // userName: string;
+    // userName?: string;
     phoneNo?: number;
     phoneCode?: string;
     bussinessType?: string;
@@ -65,7 +65,7 @@ export interface findMe {
 }
 
 export interface socialUserSignRequest {
-    // userName: string;
+    // userName?: string;
     phoneNo?: number;
     phoneCode?: string;
     bussinessType?: string;
@@ -88,4 +88,5 @@ export interface socialUserLoginRequest {
     bussinessType?: string;
     roleName: string;
     loginType?: string;
+    os?: string;
 }

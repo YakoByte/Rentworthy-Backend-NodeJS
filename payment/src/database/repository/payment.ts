@@ -8,12 +8,8 @@ import {
     // GenerateSignature,
     // ValidatePassword,
 } from '../../utils';
-import {
-    APIError,
-    BadRequestError,
-    STATUS_CODES,
-} from "../../utils/app-error";
 import { PaymentConfirmDetails, PaymentCount } from "../../interface/payment";
+
 class PaymentRepository {
 
     async CreatePayment(PaymentInputs: PaymentConfirmDetails) {

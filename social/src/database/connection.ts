@@ -1,8 +1,6 @@
 import mongoose, { ConnectOptions } from "mongoose";
 import { DATABASE } from "../config";
 
-
-
 const databaseConnection = async (): Promise<void> => {
     try {
         await mongoose.connect(DATABASE || '', {

@@ -18,7 +18,7 @@ class messageService {
             return existingMessage;
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // group message in multiple room
@@ -39,7 +39,7 @@ class messageService {
             return (0, utils_1.FormateData)({ message: "Message sent" });
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // get message
@@ -49,7 +49,7 @@ class messageService {
             return (0, utils_1.FormateData)({ existingMessage });
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // get messages
@@ -59,7 +59,7 @@ class messageService {
             return existingMessage;
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
     // delete message
@@ -69,7 +69,7 @@ class messageService {
             return (0, utils_1.FormateData)({ existingMessage });
         }
         catch (err) {
-            throw new app_error_1.APIError("Data Not found", err);
+            throw new app_error_1.Error("Data Not found", err);
         }
     }
 }

@@ -1,13 +1,5 @@
 import { businessModel, userModel } from "../models";
 import {
-  FormateData,
-  // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from "../../utils";
-import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
-import {
   BusinessRequest,
   BusinessAppRequest,
   BusinessGetRequest,
@@ -37,10 +29,10 @@ class AdminRepository {
       } else {
         returnVal = await businessModel.create(businessInputs);
       }
-      return FormateData(returnVal);
+      return returnVal;
     } catch (err) {
-      console.log("err", err);
-      return err;
+      console.log("error", err);
+      throw new Error("Unable to Create Business");
     }
   }
 
@@ -52,7 +44,7 @@ class AdminRepository {
         })
         .lean();
       if (!findRec) {
-        FormateData({ message: "business info does not exists." });
+        return false
       }
 
       let returnVal = await businessModel.findOneAndUpdate(
@@ -80,10 +72,10 @@ class AdminRepository {
           }
         );
       }
-      return FormateData(returnVal);
+      return returnVal;
     } catch (err) {
-      console.log("err", err);
-      return err;
+      console.log("error", err);
+      throw new Error("Unable to Approved/Reject Business");
     }
   }
 
@@ -104,10 +96,10 @@ class AdminRepository {
         query["isApproved"] = businessInputs.status;
       }
       returnVal = await businessModel.find(query).lean();
-      return FormateData(returnVal);
+      return returnVal;
     } catch (err) {
-      console.log("err", err);
-      return err;
+      console.log("error", err);
+      throw new Error("Unable to Get Business");
     }
   }
 }

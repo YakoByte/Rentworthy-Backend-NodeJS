@@ -1,60 +1,60 @@
 import { roleModel, historyModel } from "../models";
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../../utils';
-import {
-    APIError,
-    BadRequestError,
-    STATUS_CODES,
-} from "../../utils/app-error";
 import { roleRequest } from "../../interface/role";
+
 class RoleRepository {
-    async CreateRole(roleInputs: roleRequest) {
-        // try {
-        const findRole = await roleModel.findOne({ name: roleInputs.name });
-        console.log("findRole", findRole)
-        if (findRole) {
-            return FormateData({ id: findRole._id, name: findRole.name });
-        }
+  async CreateRole(roleInputs: roleRequest) {
+    try {
+      const findRole = await roleModel.findOne({ name: roleInputs.name });
+      console.log("findRole", findRole);
+      if (findRole) {
+        const data = {
+          id: findRole._id,
+          name: findRole.name,
+        };
 
-        const role = new roleModel(roleInputs);
-        const roleResult = await role.save();
+        return data;
+      }
 
-        const history = new historyModel({
-            roleId: roleResult._id,
-            log: [
-                {
-                    objectId: roleResult._id,
-                    action: `roleName = ${roleInputs.name} created`,
-                    date: new Date().toISOString(),
-                    time: Date.now(),
-                },
-            ],
-        });
-        await history.save();
+      const role = new roleModel(roleInputs);
+      const roleResult = await role.save();
 
-        return roleResult;
-        // } catch (err) {
-        //     throw new APIError(
-        //         "API Error",
-        //         STATUS_CODES.INTERNAL_ERROR,
-        //         "Unable to Create User"
-        //     );
-        // }
+      const history = new historyModel({
+        roleId: roleResult._id,
+        log: [
+          {
+            objectId: roleResult._id,
+            action: `roleName = ${roleInputs.name} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
+          },
+        ],
+      });
+      await history.save();
+
+      return roleResult;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to Create Role");
     }
+  }
 
-    async getRoleById(roleInputs: roleRequest) {
-        const findRole = await roleModel.findOne({ _id: roleInputs._id });
-        console.log("findRole", findRole)
-        if (findRole) {
-            return FormateData({ id: findRole._id, name: findRole.name });
-        }
+  async getRoleById(roleInputs: roleRequest) {
+    try {
+      const findRole = await roleModel.findOne({ _id: roleInputs._id });
+      console.log("findRole", findRole);
+      if (findRole) {
+        const data = {
+          id: findRole._id,
+          name: findRole.name,
+        };
+
+        return data;
+      }
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to Get role by Id User");
     }
-
+  }
 }
 
 export default RoleRepository;

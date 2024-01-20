@@ -1,13 +1,5 @@
 import OTPRepository from '../database/repository/otp';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
-
+import { FormateData, FormateError } from '../utils';
 import { otpRequest } from '../interface/otp';
 
 // All Business logic will be here
@@ -28,9 +20,15 @@ class OTPService {
             const existingOTP: any = await this.repository.CreateOTP(
                 otpInputs
             );
-            return FormateData({ existingOTP });
+
+            if(!existingOTP){
+                throw Error('Something went wrong while creating OTP');
+            }
+
+
+            return FormateData(existingOTP);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Create OTP" });
         }
     }
     
@@ -45,9 +43,14 @@ class OTPService {
             const existingOTP: any = await this.repository.VerifyOTP(
                 otpInputs
             );
-            return FormateData({ existingOTP });
+
+            if(!existingOTP){
+                throw new Error('Verification Failed')
+            }
+
+            return FormateData({ message: "OTP is verified", token: existingOTP });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Verify OTP" });
         }
     }
 }

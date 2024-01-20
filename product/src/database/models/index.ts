@@ -7,6 +7,7 @@ import productRatingModel from './productrating';
 import productReviewModel from './productreview';
 import productReservationModel from './productreservation';
 import ComplainModel from './complain';
+import Bookings from './booking';
 
 // ... repeat for each model
 
@@ -19,4 +20,5 @@ export {
     productReviewModel,
     productReservationModel,
     ComplainModel,
+    Bookings,
 };

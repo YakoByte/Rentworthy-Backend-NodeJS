@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "../interface/user";
-// import RoleRepository from '../../../user/src/database/repository/role';
-// import UserSchema from '../../../user/src/database/models/user';
-// import RoleSchema from '../../../user/src/database/models/role';
 
 export async function isAdmin(
   req: AuthenticatedRequest,

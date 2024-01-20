@@ -14,7 +14,7 @@ export default (app: Express) => {
         req.body.userId = authUser._id;
         console.log("req.body", req.body)
         try {
-            const { data } = await service.CreateLocation(req.body);
+            const data = await service.CreateLocation(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -40,7 +40,7 @@ export default (app: Express) => {
         req.body.userId = authUser._id;
         console.log("req.body", req.body)
         try {
-            const { data } = await service.updateLocationById(req.body);
+            const data = await service.updateLocationById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -54,7 +54,7 @@ export default (app: Express) => {
 
         console.log("req.body", req.body)
         try {
-            const { data } = await service.deleteLocationById(req.body);
+            const data = await service.deleteLocationById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -64,7 +64,7 @@ export default (app: Express) => {
     // API = count location coordinate
     app.get("/count-location", UserAuth, async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const { data } = await service.countCordinate();
+            const data = await service.countCordinate();
             return res.json(data);
         } catch (err) {
             next(err);
@@ -73,7 +73,7 @@ export default (app: Express) => {
 
     app.get("/count-continent", UserAuth, async(req: Request, res: Response, next: NextFunction) => {
         try {
-            const { data } = await service.countContinentCoordinate();
+            const data = await service.countContinentCoordinate();
             return res.json(data);
         } catch (err) {
             next(err);

@@ -1,13 +1,5 @@
 import LocationRepository from '../database/repository/location';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
-
+import { FormateData, FormateError } from '../utils';
 import { locationRequest } from '../interface/location';
 
 // All Business logic will be here
@@ -23,9 +15,14 @@ class LocationService {
             const existingLocation: any = await this.repository.CreateLocation(
                 locationInputs
             );
-            return FormateData({ existingLocation });
+
+            if(!existingLocation){
+                throw Error('Failed to create the location');
+            }
+
+            return FormateData(existingLocation);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Create Location" });
         }
     }
 
@@ -36,32 +33,38 @@ class LocationService {
                 locationInputs
             );
 
-            return FormateData({ existingLocation });
+            if(!existingLocation) {
+                throw Error("No Locations Found");
+            }
+
+            return FormateData(existingLocation);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
     //get location by id
     async getLocationById(locationInputs: locationRequest) {
-        // try {
+        try {
         let existingLocation: any
         if (locationInputs.userId) {
             existingLocation = await this.repository.getLocationByUserId(
                 locationInputs
             );
-
-
         } else if (locationInputs._id) {
             existingLocation = await this.repository.getLocationById(
                 locationInputs
             );
-
         }
+
+        if(!existingLocation){
+            throw new Error('Location Not Found')
+        }
+
         return existingLocation;
-        // } catch (err: any) {
-        //     throw new APIError("Data Not found", err);
-        // }
+        } catch (err: any) {
+            return FormateError({ error: "Data Not found" });
+        }
     }
 
     //update location
@@ -71,9 +74,13 @@ class LocationService {
                 locationInputs
             );
 
-            return FormateData({ existingLocation });
+            if(!existingLocation) {
+                throw new Error("Update Failed");
+            }
+
+            return FormateData(existingLocation);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Update Location" });
         }
     }
 
@@ -84,9 +91,13 @@ class LocationService {
                 locationInputs
             );
 
-            return FormateData({ existingLocation });
+            if(!existingLocation) {
+                throw new Error("Delete Failed, Location not found!");
+            }
+
+            return FormateData(existingLocation);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Delete Location" });
         }
     }
 
@@ -94,9 +105,13 @@ class LocationService {
         try {
             const Location: any = await this.repository.countCordinate();
 
-            return FormateData({ Location });
+            if(!Location) {
+                throw new Error('Count failed');
+            }
+
+            return FormateData(Location);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
@@ -104,9 +119,13 @@ class LocationService {
         try {
             const Location: any = await this.repository.countContinentCoordinate();
 
-            return FormateData({ Location });
+            if(!Location){
+                throw new Error(`Not Found Continents Data`);
+            }
+
+            return FormateData(Location);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
@@ -118,9 +137,9 @@ class LocationService {
     //             locationId
     //         );
 
-    //         return FormateData({ existingLocation });
+    //         return FormateData(existingLocation);
     //     } catch (err: any) {
-    //         throw new APIError("Data Not found", err);
+    //         throw new Error("Data Not found", err);
     //     }
     // }
 

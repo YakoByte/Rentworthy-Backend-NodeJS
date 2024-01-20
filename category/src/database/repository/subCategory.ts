@@ -42,7 +42,7 @@ class SubCategoryRepository {
 
         return subCategoryResult;
         // } catch (err) {
-        //     throw new APIError(
+        //     throw new Error(
         //         "API Error",
         //         STATUS_CODES.INTERNAL_ERROR,
         //         "Unable to Create User"

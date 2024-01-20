@@ -1,15 +1,5 @@
 import AdminRepository from '../database/repository/business';
-// import jwt from 'jsonwebtoken';
-// import RoleRepository from '../database/repository/role';
-// import {roleValidation} from '../';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 import { BusinessGetRequest, BusinessAppRequest, BusinessRequest } from '../interface/business';
 
 // All Business logic will be here
@@ -28,10 +18,13 @@ class AdminService {
                 businessInputs
             );
 
-            return existingBusiness;
+            if(!existingBusiness){
+                throw Error('Failed to Create Business');
+            }
 
+            return FormateData(existingBusiness);
         } catch (err: any) {
-            return err
+            return FormateError({ error:  "Failed to Create Business" });
         }
     }
     async approveRejectBusiness(businessInputs: BusinessAppRequest) {
@@ -41,10 +34,14 @@ class AdminService {
                 businessInputs
             );
 
-            return existingBusiness;
+            if(!existingBusiness){
+                throw Error(`Unable to approved/reject the Business`);
+            }
+
+            return FormateData(existingBusiness);
 
         } catch (err: any) {
-            return err
+            return FormateError({ error: "Unable to approved/reject the Business" });
         }
     }
     async getBusiness(businessInputs: BusinessGetRequest) {
@@ -54,10 +51,14 @@ class AdminService {
                 businessInputs
             );
 
-            return existingBusiness ;
+            if(!existingBusiness){
+                throw Error("No Business Found");
+            }
+
+            return FormateData(existingBusiness);
 
         } catch (err: any) {
-            return err
+            return FormateError({ error: "Data Not found" });
         }
     }
 }

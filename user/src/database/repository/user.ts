@@ -1,57 +1,58 @@
 import { userModel, roleModel, historyModel } from "../models";
-import { FormateData, GeneratePassword, GenerateSalt, GenerateSignature, ValidatePassword, } from '../../utils';
-import { APIError, BadRequestError, STATUS_CODES, } from "../../utils/app-error";
-import { userSignRequest, userLoginRequest, socialUserSignRequest, findMe } from "../../interface/user";
-import { roleRequest } from "../../interface/role";
+import {
+  GeneratePassword,
+  GenerateSalt,
+} from "../../utils";
+import {
+  userSignRequest,
+  socialUserSignRequest,
+  findMe,
+} from "../../interface/user";
 import OTPRepository from "./otp";
-const OTPRep = new OTPRepository()
-
-
-
-
+const OTPRep = new OTPRepository();
 
 class AdminRepository {
-
   async CreateUser(userInputs: userSignRequest) {
     try {
       // check signup role
-      console.log("userInputs", userInputs.roleName)
+      console.log("userInputs", userInputs.roleName);
       let roleId = await roleModel.findOne({ name: userInputs.roleName });
       if (!roleId) {
         console.error(`Role with name '${userInputs.roleName}' not found.`);
       } else {
         roleId = roleId._id;
       }
-      
-      console.log("roleId", roleId)
 
-      let query = {}
+      console.log("roleId", roleId);
+
+      let query = {};
       if (userInputs.email) {
-        query = { email: userInputs.email }
+        query = { email: userInputs.email };
       } else if (userInputs.phoneNo) {
-        query = { phoneNo: userInputs.phoneNo }
+        query = { phoneNo: userInputs.phoneNo };
       }
+
       const findUser = await userModel.findOne(query);
-      console.log(findUser, "user")
+      console.log(findUser, "user");
+
       if (findUser) {
-        return FormateData({ message: "User already exist" });
+        return true;
       }
+
       // generate salt and password
       let salt = await GenerateSalt();
       let userPassword = await GeneratePassword(userInputs.password, salt);
-      console.log("userPassword", userPassword)
+      console.log("userPassword", userPassword);
       userInputs.password = userPassword;
 
       // create user
-      const user = new userModel(
-        { ...userInputs, roleId: roleId }
-      );
-      console.log("user", user)
+      const user = new userModel({ ...userInputs, roleId: roleId });
       const userResult = await user.save();
-      console.log("userInputs", userInputs)
+
       if (user.email) {
-        OTPRep.CreateOTP({ email: user.email, phoneNo: user.phoneNo })
+        await OTPRep.CreateOTP({ email: user.email, phoneNo: user.phoneNo });
       }
+
       // create history
       const history = new historyModel({
         userId: userResult._id,
@@ -65,150 +66,64 @@ class AdminRepository {
         ],
       });
       await history.save();
-      console.log("userResult", userResult)
+      console.log("userResult", userResult);
 
       // return userResult;
       return userResult;
     } catch (err) {
-      console.log("err", err)
+      console.log("err", err);
+      throw new Error("Unable to Create User");
     }
   }
-
-  // async CreateAdmin({ username, email, phoneNo, password }: { username: string; email: string; phoneNo: string; password: string }) {
-  //   try {
-  //     const admin = new userModel({
-  //       username,
-  //       contact: [{ phoneNo, email }],
-  //       isVerified: false, // Assuming this field's type
-  //     });
-  //     const adminResult = await admin.save();
-
-  //     const history = new historyModel({
-  //       userId: adminResult._id,
-  //       log: [
-  //         {
-  //           objectId: adminResult._id,
-  //           action: "admin created",
-  //           date: new Date().toISOString(),
-  //           time: Date.now(),
-  //         },
-  //       ],
-  //     });
-  //     await history.save();
-
-  //     return adminResult;
-  //   } catch (error) {
-  //     throw new APIError(
-  //       "API Error",
-  //       STATUS_CODES.INTERNAL_ERROR,
-  //       "Error on Create Admin"
-  //     );
-  //   }
-  // }
-
-  // async CreateAddress({
-  //   userId,
-  //   address1,
-  //   address2,
-  //   city,
-  //   state,
-  //   postalCode,
-  //   country,
-  // }: { userId: string; address1: string; address2: string; city: string; state: string; postalCode: string; country: string }) {
-  //   try {
-  //     const user = await userModel.findById(userId);
-
-  //     if (user) {
-  //       const Address = new addressModel({
-  //         address1,
-  //         address2,
-  //         city,
-  //         state,
-  //         postalCode,
-  //         country,
-  //       });
-  //       const addressResult = await Address.save();
-
-  //       const history = await historyModel.findOne({ userId });
-  //       if (history) {
-  //         history.log.push({
-  //           objectId: addressResult._id,
-  //           action: "address created",
-  //           date: new Date().toISOString(),
-  //           time: Date.now(),
-  //         });
-  //         await history.save();
-  //       }
-
-  //       return addressResult;
-  //     }
-  //   } catch (err) {
-  //     throw new APIError(
-  //       "API Error",
-  //       STATUS_CODES.INTERNAL_ERROR,
-  //       "Error on Create Address"
-  //     );
-  //   }
-  // }
 
   async FindMe(userInputs: findMe) {
     try {
-      let query = {}
+      let query = {};
       if (userInputs.email) {
-        query = { email: userInputs.email }
+        query = { email: userInputs.email };
       } else if (userInputs.phoneNo) {
-        query = { phoneNo: userInputs.phoneNo }
+        query = { phoneNo: userInputs.phoneNo };
       }
-      console.log("query", query)
+      console.log("query", query);
+
       const userResult: any = await userModel.findOne(query).populate("roleId");
-      // check role 
-      // let role: any = await roleModel.findOne({ _id: userResult?.roleId });
-      // if (role || role?.name === userInputs.roleName) {
-      console.log("userResult", userResult)
+      console.log("userResult", userResult);
+
       return userResult;
-      // }
-      // return FormateData({ message: "Invalid Role" });
     } catch (error) {
-      console.log("error", error)
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Error on Find User"
-      );
+      console.log("error", error);
+      throw new Error("Error on Find User");
     }
   }
+
   async FindUserById(userId: string) {
     try {
       const user = await userModel.findById(userId);
-      // const address = await addressModel.findOne({ userId });
-      const profile = await userModel.findOne({ _id: userId });
-      // const password = await passwordModel.findOne({ userId });
-
-      const userResult = {
-        profileData: profile,
-        // passwordSecurityData: password,
-        // addressData: address,
-      };
-      return userResult;
+      return user;
     } catch (error) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Error on Find User by ID"
-      );
+      console.log("err", error);
+      throw new Error("Error on Find User by ID");
     }
   }
 
   async checkRole(roleName: string, roleId: string) {
-    const findRole = await roleModel.findOne({ _id: roleId, name: roleName });
-    console.log("findRole", findRole)
-    if (findRole) {
-      return FormateData({ id: findRole._id, name: findRole.name });
-    } else {
-      return FormateData({ message: "Invalid Role" });
+    try {
+      const findRole = await roleModel.findOne({ _id: roleId, name: roleName });
+      if (!findRole) {
+        return false;
+      }
+
+      const data = {
+        id: findRole._id,
+        name: findRole.name,
+      };
+
+      return data;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Check Role");
     }
   }
-
 
   async UpdateUser(userId: string, data: object) {
     try {
@@ -219,59 +134,48 @@ class AdminRepository {
       );
       return user;
     } catch (error) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Error on Update User"
-      );
+      console.log("err", error);
+      throw new Error("Error on Update User");
     }
   }
 
   async SocialCreateUser(userInputs: socialUserSignRequest) {
     try {
       // check signup role
-      console.log("userInputs", userInputs.roleName)
-      let roleId = await roleModel.findOne({ name: userInputs.roleName }).distinct('_id');
-      console.log("roleId", roleId)
-      // console.log("role", role)
-      // if (!role || role?.name !== userInputs.roleName) {
-      //   return FormateData({ message: "Invalid Role" });
-      // }
+      console.log("userInputs", userInputs.roleName);
+      let roleId = await roleModel
+        .findOne({ name: userInputs.roleName })
+        .distinct("_id");
+      console.log("roleId", roleId);
+
       // check if user already exist
-      let findUser
+      let findUser;
       if (userInputs.email) {
-        findUser = await userModel.findOne(
-          {
-            $or: [
-              { email: userInputs.email },
-              // { phoneNo: userInputs.phoneNo },
-            ]
-          });
+        findUser = await userModel.findOne({
+          $or: [
+            { email: userInputs.email },
+            // { phoneNo: userInputs.phoneNo },
+          ],
+        });
       } else if (userInputs.phoneNo) {
-        findUser = await userModel.findOne(
-          {
-            $or: [
-              // { email: userInputs.email },
-              { phoneNo: userInputs.phoneNo },
-            ]
-          });
+        findUser = await userModel.findOne({
+          $or: [
+            // { email: userInputs.email },
+            { phoneNo: userInputs.phoneNo },
+          ],
+        });
       }
-      console.log(findUser, "user")
+      console.log(findUser, "user");
       if (findUser) {
-        return FormateData({ message: "User already exist" });
+        return true;
       }
 
       // create user
-      const user = new userModel(
-        { ...userInputs, roleId: roleId[0] }
-      );
-      console.log("user", user)
-      // if (userInputs.loginType === "google") {
-      //   // check token and get data from that token
+      const user = new userModel({ ...userInputs, roleId: roleId[0] });
+      console.log("user", user);
 
-      // }
       const userResult = await user.save();
-      console.log("userInputs", userInputs)
+      console.log("userInputs", userInputs);
 
       // create history
       const history = new historyModel({
@@ -286,12 +190,13 @@ class AdminRepository {
         ],
       });
       await history.save();
-      console.log("userResult", userResult)
+      console.log("userResult", userResult);
 
       // return userResult;
       return userResult;
     } catch (err) {
-      console.log("err", err)
+      console.log("err", err);
+      throw new Error(" Unable to Social Create User");
     }
   }
 
@@ -300,12 +205,8 @@ class AdminRepository {
       const users = await userModel.find();
       return users;
     } catch (error) {
-      return FormateData(
-        {
-          status: STATUS_CODES.INTERNAL_ERROR,
-          message: "Error on Find All Users"
-        }
-      );
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
     }
   }
 
@@ -314,26 +215,21 @@ class AdminRepository {
       const users = await userModel.aggregate([
         {
           // _id = null is not needed
-          $match: { os: { $exists: true } }
+          $match: { os: { $exists: true } },
         },
         {
           $group: {
-            _id: '$os',
-            count: { $sum: 1 }
-          }
-        }
+            _id: "$os",
+            count: { $sum: 1 },
+          },
+        },
       ]);
       return users;
     } catch (error) {
-      return FormateData(
-        {
-          status: STATUS_CODES.INTERNAL_ERROR,
-          message: "Error on Find All Users"
-        });
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
     }
   }
 }
-
-
 
 export default AdminRepository;

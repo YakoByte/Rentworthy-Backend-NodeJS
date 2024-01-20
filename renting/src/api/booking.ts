@@ -53,6 +53,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+
     //API = get recent booking
     app.get('/get-recent-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -65,6 +66,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+
     // API = get booking by id and search and all booking
     app.get('/get-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -77,6 +79,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+
     // API = add images to booking
     app.post('/add-images-to-booking', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -95,6 +98,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+
     // API = remove images from booking
     app.post('/remove-images-from-booking', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -207,5 +211,4 @@ export default (app: Express) => {
             next(err);
         }
     });
-
 };

@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
-import { SECRET_KEY } from "../config/index";
-import e from "express";
-let secret_key: string = "YAKOBYTE";
+import { SECRET_KEY } from "../config";
+
+const secret_key: string = SECRET_KEY || "";
+
 // Utility functions
 export const GenerateSalt = async (): Promise<string> => {
     return await bcrypt.genSalt(10);
@@ -43,10 +44,20 @@ export const ValidateSignature = async (req: any): Promise<boolean> => {
     }
 };
 
-export const FormateData = (data: any) => {
-    if (data) {
-        return { data };
-    } else {
-        throw new Error("Data Not found!");
-    }
-};
+interface FormatData {
+    data: any;
+    success: boolean;
+}
+
+interface ErrorFormat {
+    error: any;
+    success: boolean;
+}
+
+export const FormateData = (data: any): FormatData => {
+    return data
+}
+
+export const FormateError = (error: any): ErrorFormat => {
+    return error
+}

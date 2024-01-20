@@ -53,6 +53,7 @@ class CategoryRepository {
             );
         }
     }
+    
     //get category by id
     async getCategoryById(categoryInputs: { _id: string }) {
         // const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true }, { _id: 1, name: 1, description: 1, image: 1 });
@@ -82,6 +83,7 @@ class CategoryRepository {
             return FormateData(findCategory);
         }
     }
+
     //get all category
     async getAllCategory({ skip, limit }: { skip: number, limit: number }) {
         const findCategory = await categoryModel.aggregate([
@@ -110,6 +112,7 @@ class CategoryRepository {
             return FormateData(findCategory);
         }
     }
+
     // get category by name and search using regex
     async getCategoryByName(categoryInputs: { name: string }) {
         // const findCategory = await categoryModel.find({ name: { $regex: categoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
@@ -139,6 +142,7 @@ class CategoryRepository {
             return FormateData(findCategory);
         }
     }
+
     //update category name, description, isActive, isShow, image
     async updateCategory(categoryInputs: categoryUpdateRequest) {
         const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false });
@@ -162,6 +166,7 @@ class CategoryRepository {
             return FormateData({ message: "Category Updated" });
         }
     }
+
     //delete category also delete his subcategory
     async deleteCategory(categoryInputs: categoryDeleteRequest) {
         const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false });

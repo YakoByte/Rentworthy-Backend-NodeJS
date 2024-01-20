@@ -35,7 +35,5 @@ let fileFilter = async (req: any, file: any, cb: any) => {
 let upload = multer({ storage: storage, fileFilter: fileFilter });
 
 
-
-
 export default upload;
 

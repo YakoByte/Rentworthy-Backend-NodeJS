@@ -1,12 +1,5 @@
 import ProfileRepository from '../database/repository/profile';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { profileRequest, getProfileRequest } from '../interface/profile';
 
@@ -24,9 +17,13 @@ class ProfileService {
                 profileInputs
             );
 
-            return FormateData({ existingProfile });
+            if(!existingProfile) {
+                throw Error('Failed to create user profile');
+            }
+
+            return FormateData(existingProfile);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Create Profile" });
         }
     }
 
@@ -37,9 +34,13 @@ class ProfileService {
                 profileInputs
             );
 
+            if(!existingProfile) {
+                throw Error('No data Found');
+            }
+
             return FormateData(existingProfile);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
@@ -50,9 +51,13 @@ class ProfileService {
                 profileInputs
             );
 
+            if(!existingProfile) {
+                throw Error("User not Found");
+            }
+
             return FormateData(existingProfile);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
@@ -63,9 +68,13 @@ class ProfileService {
                 profileInputs
             );
 
-            return FormateData({ existingProfile });
+            if(!existingProfile){
+                throw new Error("User not Found");
+            }
+
+            return FormateData(existingProfile);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Update Profile" });
         }
     }
 
@@ -75,9 +84,13 @@ class ProfileService {
                 profileInputs
             );
 
-            return FormateData({ existingProfile });
+            if(!existingProfile){
+                throw new Error(`Level Updation Failed`)
+            }
+
+            return FormateData(existingProfile);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Update Level" });
         }
     }
 
@@ -88,9 +101,13 @@ class ProfileService {
                 profileInputs
             );
 
-            return FormateData({ existingProfile });
+            if(!existingProfile) {
+                throw new Error('No User Profile Found');
+            }
+
+                return FormateData({ message: "Profile Successfully Deleted" });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Delete Profile" });
         }
     }
 
@@ -102,9 +119,9 @@ class ProfileService {
     //             profileId
     //         );
 
-    //         return FormateData({ existingProfile });
+    //         return FormateData(existingProfile);
     //     } catch (err: any) {
-    //         throw new APIError("Data Not found", err);
+    //         throw new Error("Data Not found", err);
     //     }
     // }
 

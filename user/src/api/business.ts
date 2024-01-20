@@ -14,7 +14,7 @@ export default (app: Express) => {
         req.body.userId = authUser._id;
         console.log("req.body", req.body)
         try {
-            const { data } = await service.createBusiness(req.body);
+            const data = await service.createBusiness(req.body);
             return res.json(data);
         } catch (err) {
             console.log(err)
@@ -28,7 +28,7 @@ export default (app: Express) => {
      app.put('/approval-business', UserAuth,isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         console.log("req.body", req.body)
         try {
-            const { data } = await service.approveRejectBusiness(req.body);
+            const data = await service.approveRejectBusiness(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -39,7 +39,7 @@ export default (app: Express) => {
      app.get('/get-business', UserAuth, isAdmin,async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         console.log("req.body", req.query)
         try {
-            const { data } = await service.getBusiness(req.query);
+            const data = await service.getBusiness(req.query);
             return res.json(data);
         } catch (err) {
             next(err);

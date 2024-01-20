@@ -16,7 +16,7 @@ export default (app: Express) => {
         // req.body.image = `http://localhost:4000/images/${req.file.filename}`;
         console.log("req.body", req.body)
         try {
-            const { data } = await service.CreateAddress(req.body);
+            const data = await service.CreateAddress(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -48,7 +48,7 @@ export default (app: Express) => {
         req.body.userId = authUser._id;
         console.log("req.body", req.body)
         try {
-            const { data } = await service.updateAddressById(req.body);
+            const data = await service.updateAddressById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -65,7 +65,7 @@ export default (app: Express) => {
 
         console.log("req.body", req.body)
         try {
-            const { data } = await service.deleteAddressById(req.body);
+            const data = await service.deleteAddressById(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

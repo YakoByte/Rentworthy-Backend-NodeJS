@@ -1,13 +1,5 @@
 import AddressRepository from '../database/repository/address';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
-
+import { FormateData, FormateError } from '../utils';
 import { addressRequest, getAddressRequest } from '../interface/address';
 
 // All Business logic will be here
@@ -24,24 +16,32 @@ class AddressService {
                 addressInputs
             );
 
-            return FormateData({ existingAddress });
+            if(!existingAddress){
+                throw Error('Failed to create the address');
+            }
+
+            return FormateData(existingAddress);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to create the address" });
         }
     }
 
     //get address by user id
-    // async getAddressByUserId(addressInputs: getAddressRequest) {
-    //     try {
-    //         const existingAddress: any = await this.repository.getAddressByUserId(
-    //             addressInputs
-    //         );
+    async getAddressByUserId(addressInputs: getAddressRequest) {
+        try {
+            const existingAddress: any = await this.repository.getAddressByUserId(
+                addressInputs
+            );
 
-    //         return FormateData({ existingAddress });
-    //     } catch (err: any) {
-    //         throw new APIError("Data Not found", err);
-    //     }
-    // }
+            if(!existingAddress){
+                throw Error("No addresses found");
+            }
+
+            return FormateData(existingAddress);
+        } catch (err: any) {
+            return FormateError({ error: "Data Not found" });
+        }
+    }
 
     //get address by id
     async getAddressById(addressInputs: getAddressRequest) {
@@ -51,17 +51,20 @@ class AddressService {
                 existingAddress = await this.repository.getAddressByUserId(
                     addressInputs
                 );
-                // return FormateData({ existingAddress });
+
             } else if (addressInputs._id) {
                 existingAddress = await this.repository.getAddressById(
                     addressInputs
                 );
-                // return FormateData({ existingAddress });
             }
 
-            return existingAddress;
+            if(!existingAddress){
+                throw new Error("Address not Found");
+            }
+
+            return FormateData(existingAddress);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data Not found" });
         }
     }
 
@@ -72,9 +75,13 @@ class AddressService {
                 addressInputs
             );
 
-            return FormateData({ existingAddress });
+            if(!existingAddress){
+                throw new Error('Failed to Update Address');
+            }
+
+            return FormateData(existingAddress);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Update Address" });
         }
     }
 
@@ -85,9 +92,13 @@ class AddressService {
                 addressInputs
             );
 
-            return FormateData({ existingAddress });
+            if(!existingAddress){
+                throw new Error("Address not Deleted");
+            }
+
+            return FormateData(existingAddress);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);  
+            return FormateError({ error: "Failed to Delete Address" });
         }
     }
 
@@ -99,9 +110,9 @@ class AddressService {
     //             addressId
     //         );
 
-    //         return FormateData({ existingAddress });
+    //         return FormateData(existingAddress);
     //     } catch (err: any) {
-    //         throw new APIError("Data Not found", err);
+    //         throw new Error("Data Not found", err);
     //     }
     // }
 

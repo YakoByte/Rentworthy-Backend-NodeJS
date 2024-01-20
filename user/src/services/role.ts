@@ -1,13 +1,5 @@
 import RoleRepository from '../database/repository/role';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
-
+import { FormateData, FormateError } from '../utils';
 import { roleRequest } from '../interface/role';
 
 // All Business logic will be here
@@ -24,9 +16,13 @@ class RoleService {
                 roleInputs
             );
 
-            return FormateData({ existingRole });
+            if(!existingRole) {
+                throw Error('Failed to create the role');
+            }
+
+            return FormateData(existingRole);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed To Create Role" });
         }
     }
 
@@ -37,9 +33,9 @@ class RoleService {
     //             roleId
     //         );
 
-    //         return FormateData({ existingRole });
+    //         return FormateData(existingRole);
     //     } catch (err: any) {
-    //         throw new APIError("Data Not found", err);
+    //         throw new Error("Data Not found", err);
     //     }
     // }
 

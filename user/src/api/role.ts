@@ -12,7 +12,7 @@ export default (app: Express) => {
         // let admin = await (req);
         console.log("req.body", req.body)
         try {
-            const { data } = await service.CreateRole(req.body);
+            const data = await service.CreateRole(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
