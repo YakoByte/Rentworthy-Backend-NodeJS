@@ -48,14 +48,14 @@ services:
       - "5005"
     env_file:
       - ./renting/.env
-  # chat:
-  #   build: ./chat
-  #   container_name: chat
-  #   restart: unless-stopped
-  #   expose:
-  #     - "5006"
-  #   env_file:
-  #     - ./chat/.env
+  chat:
+    build: ./chat
+    container_name: chat
+    restart: unless-stopped
+    expose:
+      - "5006"
+    env_file:
+      - ./chat/.env
   payment:
     build: ./payment
     container_name: payment

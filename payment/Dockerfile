@@ -24,6 +24,11 @@ FROM node:18.17.1
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
+
+# Install nodemon globally
+RUN npm install -g nodemon ts-node
+
+
 # Copy the built application from the previous stage
 COPY --from=builder /usr/src/app .
 
