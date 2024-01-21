@@ -36,6 +36,8 @@ export interface Product extends Document {
         type: string;
         coordinates: number[];
     }
+    isDeliverable?: boolean;
+    Distance?: number; 
     link: string
     cancellationPolicyIds: Types.ObjectId[];
     rentingDate: {
@@ -60,6 +62,8 @@ export interface productRequest {
         type: string;
         coordinates: number[];
     }
+    isDeliverable?: boolean;
+    Distance?: number; 
     rentingDate: {
         startDate: string;
         endDate: string;
@@ -83,6 +87,8 @@ export interface productUpdateRequest {
         type?: string;
         coordinates?: number[];
     }
+    isDeliverable?: boolean;
+    Distance?: number; 
     link?: string
 }
 

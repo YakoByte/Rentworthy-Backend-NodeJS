@@ -68,7 +68,6 @@ const categorySchema: Schema = new Schema<Product>(
     },
     brand: {
       type: String,
-      // required: true,
     },
     approvedBy: {
       type: Schema.Types.ObjectId,
@@ -104,13 +103,7 @@ const categorySchema: Schema = new Schema<Product>(
     address: {
       type: String,
     },
-    // pickupOnly: {
-    //   type: Boolean,
-    //   default: false,
-    // },
     location: {
-      // type: "Point",
-      // coordinate: [Number]
       type: {
         type: String,
         enum: ["Point"],
@@ -120,6 +113,14 @@ const categorySchema: Schema = new Schema<Product>(
         type: [Number],
         required: true,
       },
+    },
+    isDeliverable: {
+      type: Boolean,
+      default: false,
+    },
+    Distance: {
+      type: Number,
+      default: 0,
     },
     viewCount: {
       type: Number,

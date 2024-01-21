@@ -17,7 +17,7 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
     }
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
+        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
@@ -51,6 +51,11 @@ export default (app: Express) => {
                 startDate: req.body.startDate,
                 endDate: req.body.endDate
             }
+            
+            if (!req.body.isDeliverable || req.body.isDeliverable === "false") {
+                delete req.body.Distance;
+            }
+            
             delete req.body.startDate
             delete req.body.endDate
             req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);

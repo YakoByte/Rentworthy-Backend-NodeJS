@@ -1,7 +1,7 @@
 import { productModel, historyModel, Bookings } from "../models";
 import { Types } from "mongoose";
 import { FormateData } from "../../utils";
-import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
+import { BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import {
   productRequest,
   productDeleteRequest,
@@ -9,9 +9,9 @@ import {
   productSorting,
   productGetRequest,
 } from "../../interface/product";
-import { populate } from "dotenv";
 import productReservationService from "../../services/productreservation";
 const ResRepo = new productReservationService();
+
 class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
