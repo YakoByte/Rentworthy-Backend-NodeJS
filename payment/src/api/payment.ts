@@ -1,7 +1,7 @@
 import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
-import { postAuthenticatedRequest, confirmIntentRequest, PaymentCount } from '../interface/payment';
+import { postAuthenticatedRequest, confirmIntentRequest, PaymentCount, AuthenticatedRequest } from '../interface/payment';
 
 
 export default (app: Express) => {
@@ -29,9 +29,10 @@ export default (app: Express) => {
     });
 
     // API = verify stripe Id
-    app.get('/verify-stripe-id/:stripeId', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/verify-stripe-id/:stripeId', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.VerifyStripeId(req.params.stripeId);
+            let userId:any = req.user?._id
+            const data = await service.VerifyStripeId(req.params.stripeId, userId);
             return res.json(data);
         } catch (err) {
             next(err);

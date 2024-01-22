@@ -12,24 +12,26 @@ import FormData from 'form-data';
 // import path from 'path';
 // import { validateCreateAdmin } from './adminValidation';
 
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<void> {
+async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
     const formData = new FormData();
 
-    // Append each image file to the FormData object
     for (const imagePath of imagePaths) {
         formData.append('image', fs.createReadStream(imagePath));
     }
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-uploads", formData, {
+        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
-                Authorization: token, // Add the token to the Authorization header
+                Authorization: token,
             },
         });
-        return response.data.existingImage.map((obj: { _id: any; }) => obj._id);
+
+        const paths: string[] = response.data.existingImage.map((element: any) => element._id);
+
+        return paths;
     } catch (error: any) {
-        return error.message;
+        return [error.message]; 
     }
 }
 
@@ -65,6 +67,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+    
     // API = add images to ads
     app.post('/add-images-to-ads', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

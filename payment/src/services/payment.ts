@@ -48,10 +48,13 @@ class PaymentService {
 
     // verify stripe Id
 
-    async VerifyStripeId(stripeId: string) {
+    async VerifyStripeId(stripeId: string, userId: string) {
         try {
             const customer = await stripe.customers.retrieve(stripeId);
             console.log('Stripe ID is valid:', customer.id);
+            if(customer){
+                await this.repository.VerifyStripeId(stripeId, userId);
+            }
             return FormateData({ customer });
         } catch (error: any) {
             console.error('Error verifying Stripe ID:', error.message);
