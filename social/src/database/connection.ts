@@ -1,12 +1,9 @@
-import mongoose, { ConnectOptions } from "mongoose";
+import mongoose from "mongoose";
 import { DATABASE } from "../config";
 
 const databaseConnection = async (): Promise<void> => {
     try {
-        await mongoose.connect(DATABASE || '', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        } as ConnectOptions);
+        await mongoose.connect(DATABASE || '');
         console.log('MongoDB connected successfully');
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
@@ -23,7 +20,5 @@ export const disconnectDB = async (): Promise<void> => {
         process.exit(1);
     }
 };
-
-
 
 export default databaseConnection;
