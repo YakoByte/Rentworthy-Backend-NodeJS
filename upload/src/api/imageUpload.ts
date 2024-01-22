@@ -15,7 +15,6 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.imageDetail = req.file;
-            console.log("req.file", req.body)
             const data  = await service.CreateImage(req.body);
             return res.json(data);
         } catch (err) {
@@ -27,10 +26,8 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.files)
             req.body.imageDetails = req.files;
-            // console.log("req.body", req.body)
-            const { data } = await service.CreateImages(req.body);
+            const data = await service.CreateImages(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -40,9 +37,7 @@ export default (app: Express) => {
     // API = image delete
     app.delete('/image-delete/:id', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            console.log(req.params.id);
-
-            const { data } = await service.DeleteImage(req.params.id);
+            const data = await service.DeleteImage(req.params.id);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -50,9 +45,9 @@ export default (app: Express) => {
     });
 
     // API = image delete by imageName url
-    app.delete('/image-delete', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/image-name-delete', UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { data } = await service.DeleteImageByName(req.body.imageName);
+            const data = await service.DeleteImageByName(req.body.imageName);
             return res.json(data);
         } catch (err) {
             next(err);

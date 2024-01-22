@@ -1,12 +1,5 @@
 import imageRepository from '../database/repository/imageUpload';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { imageRequest, imageRequests } from '../interface/imageUpload';
 import { deleteS3File, uploadS3File } from '../utils/aws';
@@ -23,8 +16,9 @@ class imageService {
     async CreateImage(imageInputs: imageRequest) {
         try {
             if (imageInputs.imageDetail.mimetype !== "image/jpeg" && imageInputs.imageDetail.mimetype !== "image/png") {
-                return FormateData({ message: "Invalid Image Type" });
+                return FormateError({ error: "Invalid Image Type" });
             }
+
             console.log("imageInputs", imageInputs)
             const imagePath = imageInputs.imageDetail.path;
             const imageMimetype = imageInputs.imageDetail.mimetype;
@@ -46,9 +40,9 @@ class imageService {
                 path: newImagePath,
             });
 
-            return FormateData({ existingImage });
+            return FormateData(existingImage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to create the image" });
         }
     }
 
@@ -57,7 +51,7 @@ class imageService {
             let imagePayload: any = [];
             for (let i = 0; i < imageInputs.imageDetails.length; i++) {
                 if (imageInputs.imageDetails[i].mimetype !== "image/jpeg" && imageInputs.imageDetails[i].mimetype !== "image/png") {
-                    return FormateData({ message: "Invalid Image Type" });
+                    return FormateError({ error: "Invalid Image Type" });
                 }
                 const imagePath = imageInputs.imageDetails[i].path;
                 const imageMimetype = imageInputs.imageDetails[i].mimetype;
@@ -83,9 +77,9 @@ class imageService {
 
             const existingImage: any = await this.repository.CreateImages(imagePayload);
 
-            return FormateData({ existingImage });
+            return FormateData(existingImage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to create the multiple images" });
         }
     }
 
@@ -93,11 +87,11 @@ class imageService {
     async DeleteImage(id: string) {
         try {
             const existingImage: any = await this.repository.DeleteImageById(id);
-            const ImageKey = existingImage.path.split('/').pop();
+            const ImageKey = existingImage.imageName;
             await deleteS3File(ImageKey);
-            return FormateData({ existingImage });
+            return FormateData(existingImage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete the images" });
         }
     }
 
@@ -105,11 +99,10 @@ class imageService {
     async DeleteImageByName(imageName: string) {
         try {
             const existingImage: any = await this.repository.DeleteImageByName(imageName);
-            const ImageKey = existingImage.path.split('/').pop();
-            await deleteS3File(ImageKey);
-            return FormateData({ existingImage });
+            await deleteS3File(imageName);
+            return FormateData(existingImage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete the images By Name" });
         }
     }
 }

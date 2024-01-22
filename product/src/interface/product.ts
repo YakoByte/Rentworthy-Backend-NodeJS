@@ -44,7 +44,7 @@ export interface Product extends Document {
         startDate: Date;
         endDate: Date;
     };
-
+    cancellationTimeLimit?: number;
 }
 
 export interface productRequest {
@@ -68,7 +68,8 @@ export interface productRequest {
         startDate: string;
         endDate: string;
     };
-    link: string
+    link: string;
+    cancellationTimeLimit?: number;
 }
 export interface productUpdateRequest {
     _id: string
@@ -89,7 +90,8 @@ export interface productUpdateRequest {
     }
     isDeliverable?: boolean;
     Distance?: number; 
-    link?: string
+    link?: string;
+    cancellationTimeLimit?: number;
 }
 
 // for approve Product
@@ -112,6 +114,7 @@ export interface productGetRequest {
     long?: string;
     sort?: string;
     price?: string;
+    cancellationTimeLimit?: number;
 }
 
 export interface productSorting {

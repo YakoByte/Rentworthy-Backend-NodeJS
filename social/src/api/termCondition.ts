@@ -17,13 +17,14 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+        const response = await axios.post("http://localhost:5003/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
-        return response.data.existingImage._id; // Assuming you are expecting a single image ID
+
+        return response.data._id;
     } catch (error: any) {
         return error.message;
     }
@@ -33,7 +34,7 @@ async function deleteImageWithToken(id: string, token: string): Promise<string> 
     try {
         console.log(id, token);
 
-        const response = await axios.delete(`http://localhost:5000/app/api/v1/upload/image-delete/${id}`, {
+        const response = await axios.delete(`http://localhost:5003/image-delete/${id}`, {
             headers: {
                 Authorization: token,
             },

@@ -26,12 +26,12 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
                 Authorization: token,
             },
         });
-
-        const paths: string[] = response.data.existingImage.map((element: any) => element._id);
+    
+        const paths: string[] = response.data.map((element: any) => element._id);
 
         return paths;
     } catch (error: any) {
-        return [error.message]; 
+        return [error.message]; // Return an array to match the Promise<string[]> type
     }
 }
 

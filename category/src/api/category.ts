@@ -18,17 +18,14 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+        const response = await axios.post("http://localhost:5003/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
 
-        console.log(response.data.data.existingImage._id);
-        
-
-        return response.data.data.existingImage._id; // Assuming you are expecting a single image ID
+        return response.data._id;
     } catch (error: any) {
         return error.message;
     }
