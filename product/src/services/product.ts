@@ -18,6 +18,7 @@ class productService {
     constructor() {
         this.repository = new productRepository();
     }
+    
     // create product   
     async CreateProduct(productInputs: productRequest) {
         try {
@@ -30,29 +31,30 @@ class productService {
             return { STATUS_CODE: STATUS_CODES.BAD_REQUEST, data: err.message }
         }
     }
+
     // get product by id , search or all product
     async getProduct(productInputs: productGetRequest) {
         try {
             let existingProduct: any
             if (productInputs._id) {
                 existingProduct = await this.repository.getProductById(
-                    { _id: productInputs._id }
+                    { _id: productInputs._id, userId: productInputs.userId || '' }
                 );
             } else if (productInputs.search) {
                 existingProduct = await this.repository.getProductByName(
-                    { name: productInputs.search }
+                    { name: productInputs.search, userId: productInputs.userId || '' }
                 );
             } else if (productInputs.categoryId) {
                 existingProduct = await this.repository.getProductByCategoryId(
-                    { categoryId: productInputs.categoryId }
+                    { categoryId: productInputs.categoryId, userId: productInputs.userId || '' }
                 );
             } else if (productInputs.subCategoryId) {
                 existingProduct = await this.repository.getProductBySubCategoryId(
-                    { subCategoryId: productInputs.subCategoryId }
+                    { subCategoryId: productInputs.subCategoryId, userId: productInputs.userId || '' }
                 );
             } else if (productInputs.lat && productInputs.long) {
                 existingProduct = await this.repository.getProductByLocation(
-                    { lat: Number(productInputs.lat), long: Number(productInputs.long) }
+                    { lat: Number(productInputs.lat), long: Number(productInputs.long), userId: productInputs.userId || '' }
                 );
             } else if (productInputs.price) {
                 existingProduct = await this.repository.getProductPriceSortingWise(
@@ -61,15 +63,18 @@ class productService {
             } else {
                 existingProduct = await this.repository.getAllProduct({
                     skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
-                    limit: Number(productInputs.limit) || 10
+                    limit: Number(productInputs.limit) || 10,
+                    userId: productInputs.userId || ''
                 });
             }
+
             return existingProduct;
         } catch (err: any) {
             console.log("err", err.message)
             return new BadRequestError("Data Not found", err);
         }
     }
+
     // update product
     async updateProduct(productInputs: productUpdateRequest) {
         try {
@@ -87,7 +92,7 @@ class productService {
     async approveProduct(productInputs: productUpdateRequest) {
         try {
             // check product is exist or not
-            const existingProduct: any = await this.repository.getProductById(
+            const existingProduct: any = await this.repository.getProductApprovedById(
                 { _id: productInputs._id }
             );
             if (!existingProduct) {
@@ -110,7 +115,6 @@ class productService {
             return ({ STATUS_CODE: STATUS_CODES.NOT_FOUND, data: err.message })
         }
     }
-
 
     // delete product
     async deleteProduct(productInputs: productDeleteRequest) {

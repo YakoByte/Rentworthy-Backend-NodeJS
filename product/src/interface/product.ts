@@ -122,6 +122,7 @@ export interface productSorting {
     price?: string;
     quantity?: string;
     createdAt?: string;
+    userId?: string;
 }
 
 // for delete Product

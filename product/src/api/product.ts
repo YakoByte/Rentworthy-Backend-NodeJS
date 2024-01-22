@@ -39,7 +39,8 @@ export default (app: Express) => {
     // API = create new product
     app.post('/create-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            req.body.userId = req.user._id;
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
             req.body = { ...req.body }
             let coordinate = JSON.parse(req.body['location.coordinates'])
             delete req.body['location.coordinates']
@@ -71,8 +72,10 @@ export default (app: Express) => {
     });
 
     // // API = get product by id and search and all product
-    app.get('/get-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            let authUser: any = req.user
+            req.query.userId = authUser._id;
             const data: { STATUS_CODE: number, data: [], message: string } = await service.getProduct({ ...req.query});
             return res.status(200).json(data);
         } catch (err: any) {
@@ -98,7 +101,7 @@ export default (app: Express) => {
                 req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             }
             
-            const { data } = await service.updateProduct({ ...req.body, userId: req.user._id, _id: req.query._id });
+            const { data } = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });
             return res.json(data);
         } catch (err) {
             next(err);
@@ -106,12 +109,12 @@ export default (app: Express) => {
     });
 
     // // API = admin approve product
-    app.put('/approve-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/approve-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            // req.body.approvedBy = req.user._id;
-            // req.body._id = req.query._id;
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const data = await service.approveProduct({ _id: req.query._id as string, isVerified: req.query.isVerified as string, approvedBy: req.user._id, });
+            const data = await service.approveProduct({ _id: req.query._id as string, isVerified: req.query.isVerified as string, approvedBy: authUser._id, });
             console.log("data", data)
             return res.status(data.STATUS_CODES).json(data);
         } catch (err) {
@@ -120,7 +123,7 @@ export default (app: Express) => {
     });
 
     // // API = delete product
-    app.delete('/delete-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.delete('/delete-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
