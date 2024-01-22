@@ -1,21 +1,12 @@
 import { bookingModel, productModel, historyModel } from "../models";
 import axios from 'axios';
-
+import { ObjectId } from 'mongodb';
 import { Types } from 'mongoose';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../../utils';
-import {
-    APIError,
-    BadRequestError,
-    STATUS_CODES,
-} from "../../utils/app-error";
+import { FormateData } from '../../utils';
 import { bookingRequest, bookingGetRequest, bookingUpdateRequest, postAuthenticatedRequest, recentBookingGetRequest, approveAuthenticatedRequest, bookingRequestWithPayment } from "../../interface/booking";
 import booking from "../../api/booking";
+import { sendEmail } from "../../template/emailTemplate";
+
 class BookingRepository {
     //create booking
     async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
@@ -35,7 +26,7 @@ class BookingRepository {
             console.log("product", product)
 
             // call updateLevel api 
-            let updateProfile = await axios.put("http://localhost:5000/app/api/v1/user/update-level", {
+            let updateProfile = await axios.put("http://localhost:5001/update-level", {
                 userId: product.userId
             })
             console.log("updateProfile", updateProfile)
@@ -80,17 +71,31 @@ class BookingRepository {
                     startDate: bookingInputs.startDate,
                     endDate: bookingInputs.endDate,
                 }
-                await axios.post("http://localhost:5000/app/api/v1/product/update-productreservation", tempBody, {
+                await axios.post("http://localhost:5004/update-productreservation", tempBody, {
                     headers: {
                         'Authorization': req.headers.authorization,
                         'Content-Type': 'application/json',
                     }
                 })
             }
+
+            const findUser = await bookingModel.aggregate([
+                { $match: { _id: new ObjectId(bookingResult._id,), isDeleted: false } },
+                { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userId" } },
+                { $unwind: "$userId" }
+            ])
+
+            if (findUser[0].userId.email) {
+                const emailOptions = {
+                    toUser: findUser[0].userId.email,
+                    subject: "Booking Initiated",
+                    templateVariables: { action: "Booking Initiated" },
+                };
+    
+                sendEmail(emailOptions);
+            }
+
             return bookingResult;
-            // } else {
-            //     return FormateData({ message: "Something went wrong with the payment." });
-            // }
         } catch (err) {
             console.log("err", err)
             return err;
@@ -614,6 +619,23 @@ class BookingRepository {
             { isAccepted: true, acceptedBy: bookingInputs.acceptedBy },
             { new: true });
         if (bookingResult) {
+
+            const findUser = await bookingModel.aggregate([
+                { $match: { _id: new ObjectId(bookingResult._id,), isDeleted: false } },
+                { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userId" } },
+                { $unwind: "$userId" }
+            ])
+
+            if (findUser[0].userId.email) {
+                const emailOptions = {
+                    toUser: findUser[0].userId.email,
+                    subject: "Booking Approved",
+                    templateVariables: { action: "Booking Approved" },
+                };
+    
+                sendEmail(emailOptions);
+            }
+
             return FormateData(bookingResult);
         }
     }
@@ -648,11 +670,28 @@ class BookingRepository {
                 startDate: bookingResult.startDate.toISOString().split("T")[0],
                 endDate: bookingResult.endDate.toISOString().split("T")[0],
             }
-            await axios.post("http://localhost:5004/app/api/v1/product/update-relieveproductreservation", tempBody, {
+            await axios.post("http://localhost:5004/update-relieveproductreservation", tempBody, {
                 headers: {
                     Authorization: req.headers.token
                 }
             })
+
+            const findUser = await bookingModel.aggregate([
+                { $match: { _id: new ObjectId(bookingResult._id,), isDeleted: false } },
+                { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "userId" } },
+                { $unwind: "$userId" }
+            ])
+
+            if (findUser[0].userId.email) {
+                const emailOptions = {
+                    toUser: findUser[0].userId.email,
+                    subject: "Booking Rejected",
+                    templateVariables: { action: "Booking Rejected" },
+                };
+    
+                sendEmail(emailOptions);
+            }
+
             return FormateData(bookingResult);
         }
     }
