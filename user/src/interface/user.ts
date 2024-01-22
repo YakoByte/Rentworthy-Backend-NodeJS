@@ -25,6 +25,8 @@ export interface User extends Document {
     os?: string;
     isEmailVerified?: boolean;
     isPhoneNoVerified?: boolean;
+    stripeId?: string;
+    isStripIdVerified?: boolean;
 }
 export interface userSignRequest {
     // userName?: string;

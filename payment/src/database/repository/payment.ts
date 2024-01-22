@@ -1,13 +1,7 @@
-import { paymentModel } from "../models";
+import { UserModel, paymentModel } from "../models";
 import axios from 'axios';
 
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../../utils';
+import { FormateData } from '../../utils';
 import { PaymentConfirmDetails, PaymentCount } from "../../interface/payment";
 
 class PaymentRepository {
@@ -21,6 +15,20 @@ class PaymentRepository {
             return err;
         }
     }
+
+    async VerifyStripeId(stripeId: string, userId: string) {
+        try {
+            let response = await UserModel.findOneAndUpdate(
+                { userId, isStripeIdVerified: false },
+                { isStripeIdVerified: true, stripeId: stripeId },
+                { new: true }
+            );
+            return FormateData(response);
+        } catch (err) {
+            console.error("Error:", err);
+            return err;
+        }
+    }    
 
     async getProductIdPaymentSum(paymentInput: PaymentCount) {
         const productId = paymentInput.productId;
