@@ -8,4 +8,7 @@ export const SECRET_KEY: string | undefined = process.env.SECRET_KEY || '';
 export const GOOGLE_PASS: string | undefined = process.env.GOOGLE_PASS || '';
 export const GOOGLE_EMAIL: string | undefined = process.env.GOOGLE_EMAIL || '';
 
+export const STRIPE_SECRET_KEY: string | undefined = process.env.STRIPE_SECRET_KEY || '';
+export const VENDOR_STRIPE_ACCOUNT_ID: string | undefined = process.env.VENDOR_STRIPE_ACCOUNT_ID || '';
+
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';

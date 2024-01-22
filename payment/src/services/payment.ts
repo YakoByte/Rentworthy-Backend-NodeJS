@@ -3,6 +3,7 @@ import { PaymentConfirmDetails, PaymentCount, PaymentDetails } from "../interfac
 import paymentRepository from '../database/repository/payment';
 
 import { FormateData } from "../utils";
+import { VENDOR_STRIPE_ACCOUNT_ID } from "../config";
 
 class PaymentService {
 
@@ -41,13 +42,12 @@ class PaymentService {
         const transfer = await stripe.transfers.create({
             amount: PaymentDetails.vendorAmount,
             currency: 'usd',
-            destination: 'VENDOR_STRIPE_ACCOUNT_ID',
+            destination: VENDOR_STRIPE_ACCOUNT_ID || '',
         });
         return FormateData({ transfer });
     }
 
     // verify stripe Id
-
     async VerifyStripeId(stripeId: string, userId: string) {
         try {
             const customer = await stripe.customers.retrieve(stripeId);
@@ -65,6 +65,7 @@ class PaymentService {
     async createTestCustomer() {
         try {
             const customer = await stripe.customers.create({
+                name: 'test',
                 email: 'test@example.com',
             });
             console.log('Test Customer ID:', customer.id);
