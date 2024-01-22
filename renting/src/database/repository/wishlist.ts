@@ -98,10 +98,10 @@ class WishlistRepository {
     }
     //update wishlist products
     async updateWishlist(wishlistRequest: wishlistUpdateRequest, wishlistInputs: wishlistUpdatePayload) {
-        const findWishlist = await wishlistModel.findOne({ _id: wishlistRequest._id, isDeleted: false });
+        const findWishlist = await wishlistModel.findOne({ userId: wishlistRequest.userId, isDeleted: false });
         console.log("findWishlist", findWishlist)
         if (findWishlist) {
-            const wishlistResult = await wishlistModel.updateOne({ _id: wishlistRequest._id }, wishlistInputs);
+            const wishlistResult = await wishlistModel.updateOne({ userId: wishlistRequest.userId }, wishlistInputs);
             console.log("wishlistResult", wishlistResult)
             return FormateData({ message: "Wishlist Updated" });
         }
@@ -116,7 +116,6 @@ class WishlistRepository {
             return FormateData({ message: "Wishlist Deleted" });
         }
     }
-
 }
 
 export default WishlistRepository;

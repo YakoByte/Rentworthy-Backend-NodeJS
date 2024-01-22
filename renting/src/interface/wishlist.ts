@@ -15,12 +15,13 @@ export interface Wishlist extends Document {
 }
 
 export interface wishlistRequest {
-    _id: string;
+    _id?: string;
     productIds: string;
-    userId?: string;
+    userId: string;
 }
 export interface wishlistUpdateRequest {
-    _id: string
+    _id?: string;
+    userId: string;
 }
 export interface wishlistUpdatePayload {
     $push?: { productIds: string };

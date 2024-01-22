@@ -57,7 +57,7 @@ class wishlistService {
     async addProductToWishlist(wishlistInputs: wishlistRequest) {
         try {
             const existingWishlist: any = await this.repository.updateWishlist(
-                { _id: wishlistInputs._id }, { $push: { productIds: wishlistInputs.productIds } }
+                { userId: wishlistInputs.userId }, { $push: { productIds: wishlistInputs.productIds } }
             );
             return FormateData({ existingWishlist });
         } catch (err: any) {
@@ -69,7 +69,7 @@ class wishlistService {
     async removeProductFromWishlist(wishlistInputs: wishlistRequest) {
         try {
             const existingWishlist: any = await this.repository.updateWishlist(
-                { _id: wishlistInputs._id }, { $pull: { productIds: wishlistInputs.productIds } }
+                { userId: wishlistInputs.userId }, { $pull: { productIds: wishlistInputs.productIds } }
             );
             return FormateData({ existingWishlist });
         } catch (err: any) {
