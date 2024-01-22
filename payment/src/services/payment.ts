@@ -1,9 +1,9 @@
 import { stripe } from "../utils/stripe"
-import { PaymentConfirmDetails, PaymentCount, PaymentDetails } from "../interface/payment"
+import { PaymentConfirmDetails, PaymentCount, PaymentDetails, PaymentMethodDetails } from "../interface/payment"
 import paymentRepository from '../database/repository/payment';
 
 import { FormateData } from "../utils";
-import { VENDOR_STRIPE_ACCOUNT_ID } from "../config";
+import { GOOGLE_EMAIL, VENDOR_STRIPE_ACCOUNT_ID } from "../config";
 
 class PaymentService {
 
@@ -12,10 +12,11 @@ class PaymentService {
     constructor() {
         this.repository = new paymentRepository();
     }
+
     async createPaymentIntent(PaymentDetails: PaymentDetails) {
         const { client_secret } = await stripe.paymentIntents.create({
             amount: PaymentDetails.amount,
-            currency: "usd",
+            currency: PaymentDetails.currency,
             payment_method_types: ['card'],
         });
         return FormateData({ client_secret });
@@ -41,7 +42,7 @@ class PaymentService {
     async PaymentTransfer(PaymentDetails: PaymentConfirmDetails) {
         const transfer = await stripe.transfers.create({
             amount: PaymentDetails.vendorAmount,
-            currency: 'usd',
+            currency: 'USD',
             destination: VENDOR_STRIPE_ACCOUNT_ID || '',
         });
         return FormateData({ transfer });
@@ -62,11 +63,11 @@ class PaymentService {
         }
     }
 
-    async createTestCustomer() {
+    async createCustomer(name: string, email: string) {
         try {
             const customer = await stripe.customers.create({
-                name: 'test',
-                email: 'test@example.com',
+                name: name,
+                email: email,
             });
             console.log('Test Customer ID:', customer.id);
             return FormateData({ customer });
@@ -75,14 +76,40 @@ class PaymentService {
         }
     }
 
-    // async deleteTestCustomer(customerId) {
-    //     try {
-    //         const deletedCustomer = await stripe.customers.del(customerId);
-    //         console.log('Test Customer Deleted:', deletedCustomer.id);
-    //     } catch (error) {
-    //         console.error('Error deleting test customer:', error.message);
-    //     }
-    // }
+    async addNewCard(paymentDetails: PaymentMethodDetails) {
+        try {
+            const token = await stripe.tokens.create({
+                card: paymentDetails.card
+              });
+    
+            const addedCard = await stripe.customers.createSource(paymentDetails.customer_id, {
+                source: token.id,
+            });
+    
+            console.log('Added Card ID:', addedCard.id);
+            return FormateData({ card: addedCard });
+        } catch (error) {
+            console.error('Error adding new card:', error);
+            throw error;
+        }
+    }    
+
+    async createCharges(amount: number, card_id: string, customer_id: string) {
+        try {
+            const createCharge = await stripe.charges.create({
+                receipt_email: GOOGLE_EMAIL,
+                amount: Math.floor(amount * 100),
+                currency: 'USD',
+                customer: customer_id,
+                // card: card_id
+            });
+    
+            return FormateData({ createCharge });
+        } catch (error) {
+            console.error('Error creating charge:', error);
+            throw error;
+        }
+    }
     
     async getPaymentSum(payDetails: PaymentCount) {
         try {

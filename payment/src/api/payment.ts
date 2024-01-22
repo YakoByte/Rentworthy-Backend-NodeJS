@@ -1,7 +1,7 @@
 import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
-import { postAuthenticatedRequest, confirmIntentRequest, PaymentCount, AuthenticatedRequest } from '../interface/payment';
+import { postAuthenticatedRequest, confirmIntentRequest, AuthenticatedRequest } from '../interface/payment';
 
 
 export default (app: Express) => {
@@ -10,8 +10,6 @@ export default (app: Express) => {
     // API = create new payment intent
     app.post('/create-payment-intent', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
-            console.log("req.body", req.body)
             const data = await service.createPaymentIntent(req.body);
             return res.json(data);
         } catch (err) {
@@ -28,6 +26,15 @@ export default (app: Express) => {
         }
     });
 
+    app.post('/transfer-payment', UserAuth, async (req: confirmIntentRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.PaymentTransfer(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    })
+
     // API = verify stripe Id
     app.get('/verify-stripe-id/:stripeId', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -39,10 +46,28 @@ export default (app: Express) => {
         }
     });
 
-    // API = create test customer
-    app.post('/create-test-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    // API = create customer
+    app.post('/create-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data = await service.createTestCustomer();
+            const data = await service.createCustomer(req.body.name, req.body.email);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/add-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.addNewCard(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/create-charge', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.createCharges(req.body.amount, req.body.card_id, req.body.customer_id);
             return res.json(data);
         } catch (err) {
             next(err);

@@ -51,7 +51,7 @@ export interface PaymentConfirmDetails {
     paymentMethodId: string;
     vendorAmount?: number;
     productId: Types.ObjectId;
-    paymentIntentId: string
+    paymentIntentId: string;
     userId: Types.ObjectId;
     quantity: number;
     price: number;
@@ -59,11 +59,13 @@ export interface PaymentConfirmDetails {
 
 export interface PaymentMethodDetails {
     card: {
+        name: string;
         number: string;
-        exp_month: number;
-        exp_year: number;
+        exp_month: string;
+        exp_year: string;
         cvc: string;
     };
+    customer_id: string;
     billing_details: {
         name: string;
         email: string;
