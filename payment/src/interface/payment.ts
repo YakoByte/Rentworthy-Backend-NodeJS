@@ -8,6 +8,15 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 
+export interface getCountAuthenticatedRequest extends Request {
+    user?: {
+        _id: string;
+    };
+    query: {
+        criteria: string,
+    }
+}
+
 export interface Payment extends Document {
     productId: Types.ObjectId;
     bookingId: Types.ObjectId;
@@ -15,7 +24,8 @@ export interface Payment extends Document {
     paymentMethodId: string
     userId: Types.ObjectId;
     quantity: number;
-    price: number;
+    amount: number;
+    isDeleted: boolean;
 }
 
 export interface postAuthenticatedRequest extends Request {
@@ -34,11 +44,11 @@ export interface confirmIntentRequest extends Request {
     };
     body: {
         paymentMethodId: string;
-        productId: Types.ObjectId;
         paymentIntentId: string
+        productId: Types.ObjectId;
         userId: Types.ObjectId;
+        amount: number;
         quantity: number;
-        price: number;
         currency: string;
     }
 }
@@ -50,17 +60,16 @@ export interface PaymentDetails {
 
 export interface PaymentConfirmDetails {
     paymentMethodId: string;
-    vendorAmount?: number;
-    productId: Types.ObjectId;
     paymentIntentId: string;
+    amount: number;
+    productId: Types.ObjectId;
     userId: Types.ObjectId;
     quantity: number;
-    price: number;
     currency: string;
 }
 
 export interface PaymentMethodDetails {
-    card: {
+    card?: {
         name: string;
         number: string;
         exp_month: string;
@@ -68,18 +77,13 @@ export interface PaymentMethodDetails {
         cvc: string;
     };
     customer_id: string;
-    billing_details: {
-        name: string;
-        email: string;
-        address: {
-            line1: string;
-            line2?: string;
-            city: string;
-            state: string;
-            postal_code: string;
-            country: string;
-        };
-    };
+}
+
+export interface PaymentChargeDetails {
+    email?: string;
+    customer_id: string;
+    amount: number;
+    currency?: string;
 }
 
 export interface PaymentCount {

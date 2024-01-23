@@ -143,7 +143,7 @@ class ProductRepository {
   }
 
   //get product by id
-  async getProductById(productInputs: { _id: string, userId: string }) {
+  async getProductById(productInputs: { _id: string; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -188,38 +188,47 @@ class ProductRepository {
         { $inc: { viewCount: 1 } }
       );
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
 
-      let productBooking = await Bookings.find({
-        productId: productInputs._id,
-        endDate: {
-          $gte: today, // Greater than or equal to the beginning of today
-        },
-      }).select({
-        _id: 1,
-        startDate: 1,
-        endDate: 1,
-        quantity: 1,
-        status: 1,
-      });
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
 
-      let productData = [];
-      let bookingData = [];
-
-      productData.push(...findProduct);
-
-      if (productBooking.length > 0) {
-        bookingData.push(...productBooking);
-      }
-
-      const wishlistData = await Wishlists.find({ userId: productInputs.userId })
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
 
       return {
         STATUS_CODE: STATUS_CODES.OK,
-        data: productData,
-        bookingData: bookingData,
-        wishlistData: wishlistData,
+        data: await Promise.all(wishlistPromises),
       };
     } catch (err: any) {
       return {
@@ -264,16 +273,49 @@ class ProductRepository {
           },
         },
       ]);
-      // const findProduct = await productModel.find({ categoryId: productInputs.categoryId, isDeleted: false, isActive: true }).populate("images");
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        const wishlistData = await Wishlists.find({ userId: productInputs.userId })
-        const data = {
-          data: findProduct,
-          wishlistData: wishlistData
-        }
-        return FormateData(data);
-      }
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
     } catch (err: any) {
       return new BadRequestError("Data Not found", err);
     }
@@ -281,52 +323,97 @@ class ProductRepository {
 
   // get product by subcategory id
   async getProductBySubCategoryId(productInputs: productGetRequest) {
-    console.log("skip", productInputs.page, "limit", productInputs.limit);
-    const findProduct = await productModel.aggregate([
-      {
-        $match: {
-          subCategoryId: new Types.ObjectId(productInputs.subCategoryId),
-          isDeleted: false,
-          isActive: true,
+    try {
+      console.log("skip", productInputs.page, "limit", productInputs.limit);
+      const findProduct = await productModel.aggregate([
+        {
+          $match: {
+            subCategoryId: new Types.ObjectId(productInputs.subCategoryId),
+            isDeleted: false,
+            isActive: true,
+          },
         },
-      },
-      // { $skip: productInputs.page as number },
-      // { $limit: productInputs.limit },
-      {
-        $lookup: {
-          from: "images",
-          localField: "images",
-          foreignField: "_id",
-          pipeline: [{ $project: { path: 1, _id: 0 } }],
-          as: "images",
+        // { $skip: productInputs.page as number },
+        // { $limit: productInputs.limit },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            as: "images",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          pipeline: [
-            { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
-          ],
-          as: "userId",
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+            ],
+            as: "userId",
+          },
         },
-      },
-    ]);
-    // const findProduct = await productModel.find({ subCategoryId: productInputs.subCategoryId, isDeleted: false, isActive: true }).populate("images");
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      const wishlistData = await Wishlists.find({ userId: productInputs.userId })
-        const data = {
-          data: findProduct,
-          wishlistData: wishlistData
-        }
-        return FormateData(data);
+      ]);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err: any) {
+      return new BadRequestError("Data Not found", err);
     }
   }
 
   //get all product
-  async getAllProduct({ skip, limit, userId }: { skip: number; limit: number, userId: string }) {
+  async getAllProduct({
+    skip,
+    limit,
+    userId,
+  }: {
+    skip: number;
+    limit: number;
+    userId: string;
+  }) {
     try {
       console.log("skip", skip, "limit", limit);
       const findProduct = await productModel.aggregate([
@@ -354,11 +441,49 @@ class ProductRepository {
           },
         },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        const wishlistData = await Wishlists.find({ userId: userId })
-        return { STATUS_CODE: STATUS_CODES.OK, data: findProduct, wishlistData: wishlistData };
-      }
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
     } catch (err: any) {
       return {
         STATUS_CODE: STATUS_CODES.NOT_FOUND,
@@ -396,22 +521,60 @@ class ProductRepository {
         },
         { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        const wishlistData = await Wishlists.find({ userId: productInputs.userId })
-        const data = {
-          data: findProduct,
-          wishlistData: wishlistData
-        }
-        return FormateData(data);
-      }
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
     } catch (err: any) {
       return new BadRequestError("Data Not found", err);
     }
   }
 
   // get product by location
-  async getProductByLocation(productInputs: { lat: number; long: number, userId: string }) {
+  async getProductByLocation(productInputs: {
+    lat: number;
+    long: number;
+    userId: string;
+  }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -447,62 +610,133 @@ class ProductRepository {
           },
         },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        const wishlistData = await Wishlists.find({ userId: productInputs.userId });
-        const data = {
-        data: findProduct,
-        wishlistData: wishlistData
-        }
-        return FormateData(data);
-      }
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
     } catch (err: any) {
       return new BadRequestError("Data Not found", err);
     }
   }
 
   // get product by name and search using regex
-  async getProductByName(productInputs: { name: string, userId: string }) {
-    // const findProduct = await productModel.find({ name: { $regex: productInputs.name, $options: 'i' }, isDeleted: false, isActive: true }).populate("images");
-    const findProduct = await productModel.aggregate([
-      {
-        $match: {
-          name: { $regex: productInputs.name, $options: "i" },
-          isDeleted: false,
-          isActive: true,
+  async getProductByName(productInputs: { name: string; userId: string }) {
+    try {
+      const findProduct = await productModel.aggregate([
+        {
+          $match: {
+            name: { $regex: productInputs.name, $options: "i" },
+            isDeleted: false,
+            isActive: true,
+          },
         },
-      },
-      // { $skip: productInputs.skip },
-      // { $limit: productInputs.limit },
-      {
-        $lookup: {
-          from: "images",
-          localField: "images",
-          foreignField: "_id",
-          pipeline: [{ $project: { path: 1, _id: 0 } }],
-          as: "images",
+        // { $skip: productInputs.skip },
+        // { $limit: productInputs.limit },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            as: "images",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          pipeline: [
-            { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
-          ],
-          as: "userId",
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+            ],
+            as: "userId",
+          },
         },
-      },
-    ]);
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      const wishlistData = await Wishlists.find({ userId: productInputs.userId })
-      const data = {
-        data: findProduct,
-        wishlistData: wishlistData
-      }
-      return FormateData(data);
+      ]);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            const wishlistData = await Wishlists.findOne({
+              userId: productInputs.userId,
+              productIds: element._id,
+            });
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        STATUS_CODE: STATUS_CODES.OK,
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err: any) {
+      return new BadRequestError("Data Not found", err);
     }
   }
 

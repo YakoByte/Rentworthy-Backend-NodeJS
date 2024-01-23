@@ -1,7 +1,7 @@
 import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
-import { postAuthenticatedRequest, confirmIntentRequest, AuthenticatedRequest } from '../interface/payment';
+import { postAuthenticatedRequest, confirmIntentRequest, AuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/payment';
 
 
 export default (app: Express) => {
@@ -67,7 +67,7 @@ export default (app: Express) => {
 
     app.post('/create-charge', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data = await service.createCharges(req.body.amount, req.body.card_id, req.body.customer_id);
+            const data = await service.createCharges(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -79,6 +79,18 @@ export default (app: Express) => {
             const productId = req.query.productId?.toString() || '';
             const userId = req.query.userId?.toString() || '';
             const data = await service.getPaymentSum({ productId: productId, userId: userId });
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    //API = count payment by every minutes   
+    app.get('/get-payment-booking/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+            let criteria = req.query.criteria
+            const data = await service.getCountOfPayment(criteria);
             return res.json(data);
         } catch (err) {
             next(err);

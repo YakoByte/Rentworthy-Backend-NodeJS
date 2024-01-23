@@ -153,7 +153,6 @@ class bookingService {
             throw new APIError("Data Not found", err);
         }
     }
-
 }
 
 export = bookingService;

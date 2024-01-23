@@ -27,6 +27,7 @@ export interface postAuthenticatedRequest extends Request {
         totalAmount: string;
         isAccepted?: boolean;
         acceptedBy?: string;
+        status?: string;
     }
 
 }
@@ -39,6 +40,7 @@ export interface approveAuthenticatedRequest extends Request {
         isAccepted: boolean;
         _id: string,
         acceptedBy?: string
+        status?: string; 
     }
 }
 
@@ -48,6 +50,7 @@ export interface deleteAuthenticatedRequest extends Request {
     };
     query: {
         _id: string,
+        status?: string;
     }
 }
 

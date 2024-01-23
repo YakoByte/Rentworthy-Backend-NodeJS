@@ -40,7 +40,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-
+            req.body.status = 'Processing'
             if (req.files.length > 0) {                
                 req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             } else {
@@ -112,6 +112,11 @@ export default (app: Express) => {
     // API = update booking by id
     app.put('/update-booking-by-id', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            if(req.body.isAccepted === true){
+                req.body.status = 'Approved'
+            } else {
+                req.body.status = 'Rejected';
+            }
             const data = await service.updateBookingById(req.body);
             return res.json(data);
         } catch (err) {
@@ -194,6 +199,11 @@ export default (app: Express) => {
     app.put('/approve-reject-booking', UserAuth, async (req: approveAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
+            if(req.body.isAccepted === true){
+                req.body.status = 'Approved'
+            } else {
+                req.body.status = 'Rejected';
+            }
             const data = await service.approveBooking({ ...req.body, acceptedBy: authUser._id }, req);
             return res.json(data);
         } catch (err) {
@@ -204,7 +214,7 @@ export default (app: Express) => {
     //API = delete booking
     app.delete('/delete-booking', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-
+            req.query.status = 'Canceled'
             const data = await service.deleteBooking({ ...req.query });
             return res.json(data);
         } catch (err) {

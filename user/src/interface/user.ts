@@ -7,6 +7,16 @@ export interface AuthenticatedRequest extends Request {
         _id: string;
     };
 }
+
+export interface getCountAuthenticatedRequest extends Request {
+    user?: {
+        _id: string;
+    };
+    query: {
+        criteria: string,
+    }
+}
+
 export interface User extends Document {
     // userName?: string;
     phoneNo?: number;

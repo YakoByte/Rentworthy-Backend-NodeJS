@@ -1,7 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/user';
 import UserAuth from '../middlewares/auth';
-import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLoginRequest } from '../interface/user';
+import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLoginRequest, getCountAuthenticatedRequest } from '../interface/user';
 // import { validateCreateAdmin, validateLoginUser } from './userValidation';
 import RoleService from '../services/role';
 import OTPService from '../services/otp';
@@ -156,4 +156,16 @@ export default (app: Express) => {
       next(err);
     }
   });
+
+  //API = count visitor by every minutes   
+  app.get('/get-visitor/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        let authUser: any = req.user
+        let criteria = req.query.criteria
+        const data = await adminService.getCountOfPayment(criteria);
+        return res.json(data);
+    } catch (err) {
+        next(err);
+    }
+});
 };

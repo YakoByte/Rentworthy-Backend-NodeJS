@@ -50,7 +50,11 @@ const cancelBookingSchema: Schema = new Schema<CancelBooking>(
         },
         isApproved: {
             type: Boolean,
-            // required: true,
+            default: false,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false,
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,

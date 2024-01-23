@@ -46,6 +46,15 @@ export interface deleteAuthenticatedRequest extends Request {
     }
 }
 
+export interface getCountAuthenticatedRequest extends Request {
+    user?: {
+        _id: string;
+    };
+    query: {
+        criteria: string,
+    }
+}
+
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
     user?: {
@@ -77,6 +86,7 @@ export interface CancelBooking extends Document {
     cancellationAmount: string;
     status: string;
     isApproved: boolean;
+    isDeleted: boolean;
     approvedBy: Types.ObjectId;
 }
 export interface approveAuthenticatedRequest extends Request {

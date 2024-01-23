@@ -17,6 +17,7 @@ class cancelBookingService {
     constructor() {
         this.repository = new cancelBookingRepository();
     }
+    
     // create cancelBooking
     async CreateCancelBooking(cancelBookingInputs: cancelBookingRequest) {
         try {
@@ -31,6 +32,7 @@ class cancelBookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // get cancelBooking by id , userId or all cancelBooking
     async getCancelBooking(cancelBookingInputs: cancelBookingGetRequest) {
         try {
@@ -45,6 +47,7 @@ class cancelBookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // update cancelBooking by id
     async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
         console.log("cancelBookingInputs", cancelBookingInputs)
@@ -59,6 +62,7 @@ class cancelBookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     //  approve and reject cancelBooking
     async approveCancelBooking(cancelBookingInputs: cancelBookingApproveRequest) {
         try {
@@ -72,6 +76,7 @@ class cancelBookingService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // delete cancelBooking by id  (soft delete)
     async deleteCancelBooking(cancelBookingInputs: cancelBookingDeleteRequest) {
         try {
@@ -86,11 +91,23 @@ class cancelBookingService {
         }
     }
 
-    async getCountOfCancellationPerDay() {
+    async getCountOfCancellation(criteria: string) {
         try {
-            const CancelBooking: any = await this.repository.getCountOfCancellationPerDay();
+            if(criteria === 'month'){
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerMonth();
+                
+                return FormateData({ CancelBooking });
+            } else if(criteria === 'week') {
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerWeek();
+                
+                return FormateData({ CancelBooking });
+            }
+            else {
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerDay();
+                
+                return FormateData({ CancelBooking });
+            }
 
-            return FormateData({ CancelBooking });
         } catch (err: any) {
             console.log("err", err)
             throw new APIError("Data Not found", err);
