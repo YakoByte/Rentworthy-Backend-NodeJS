@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, S3ClientConfig, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 
@@ -12,7 +12,8 @@ const s3Client = new S3Client({
     secretAccessKey: AWS_SECRET_ACCESS_KEY || '',
   },
   region: AWS_BUCKET_REGION || '',
-});
+  signatureVersion: "v4",
+}as S3ClientConfig);
 
 const bucketName = AWS_BUCKET_NAME || '';
 
@@ -22,7 +23,7 @@ async function generatePresignedUrl(key: string): Promise<string> {
     Key: key,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 3153600000 });
+  const url = await getSignedUrl(s3Client, command);
 
   return url;
 }
