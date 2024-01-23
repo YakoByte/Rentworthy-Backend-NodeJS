@@ -12,15 +12,15 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
   res.end("Proxy error: " + err.message);
 });
 
-const userMicroservice: string = "http://localhost:5001";
-const categoryMicroservice: string = "http://localhost:5002";
-const uploadMicroservice: string = "http://localhost:5003";
-const productMicroservice: string = "http://localhost:5004";
-const rentingMicroservice: string = "http://localhost:5005";
-const chatMicroservice: string = "http://localhost:5006";
-const paymentMicroservice: string = "http://localhost:5007";
-const cancellationMicroservice: string = "http://localhost:5008";
-const socialMicroservice: string = "http://localhost:5009";
+const userMicroservice: string = "http://user:5001";
+const categoryMicroservice: string = "http://category:5002";
+const uploadMicroservice: string = "http://upload:5003";
+const productMicroservice: string = "http://product:5004";
+const rentingMicroservice: string = "http://renting:5005";
+const chatMicroservice: string = "http://chat:5006";
+const paymentMicroservice: string = "http://payment:5007";
+const cancellationMicroservice: string = "http://cancellation:5008";
+const socialMicroservice: string = "http://social:5009";
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
