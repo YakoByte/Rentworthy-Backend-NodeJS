@@ -39,6 +39,7 @@ export interface confirmIntentRequest extends Request {
         userId: Types.ObjectId;
         quantity: number;
         price: number;
+        currency: string;
     }
 }
 
@@ -55,6 +56,7 @@ export interface PaymentConfirmDetails {
     userId: Types.ObjectId;
     quantity: number;
     price: number;
+    currency: string;
 }
 
 export interface PaymentMethodDetails {

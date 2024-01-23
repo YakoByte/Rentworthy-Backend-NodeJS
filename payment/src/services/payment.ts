@@ -14,12 +14,27 @@ class PaymentService {
     }
 
     async createPaymentIntent(PaymentDetails: PaymentDetails) {
-        const { client_secret } = await stripe.paymentIntents.create({
+        const client_secret = await stripe.paymentIntents.create({
             amount: PaymentDetails.amount,
             currency: PaymentDetails.currency,
             payment_method_types: ['card'],
         });
-        return FormateData({ client_secret });
+        return FormateData(client_secret);
+    }
+
+    // verify stripe Id
+    async VerifyStripeId(stripeId: string, userId: string) {
+        try {
+            const customer = await stripe.paymentIntents.capture(stripeId);
+            console.log('Stripe ID is valid:', customer.id);
+            if(customer){
+                await this.repository.VerifyStripeId(stripeId, userId);
+            }
+            return FormateData({ customer });
+        } catch (error: any) {
+            console.error('Error verifying Stripe ID:', error.message);
+            return FormateData({ message: error.message });
+        }
     }
 
     async confirmPaymentIntent(PaymentDetails: PaymentConfirmDetails) {
@@ -42,25 +57,10 @@ class PaymentService {
     async PaymentTransfer(PaymentDetails: PaymentConfirmDetails) {
         const transfer = await stripe.transfers.create({
             amount: PaymentDetails.vendorAmount,
-            currency: 'USD',
+            currency: PaymentDetails.currency,
             destination: VENDOR_STRIPE_ACCOUNT_ID || '',
         });
         return FormateData({ transfer });
-    }
-
-    // verify stripe Id
-    async VerifyStripeId(stripeId: string, userId: string) {
-        try {
-            const customer = await stripe.customers.retrieve(stripeId);
-            console.log('Stripe ID is valid:', customer.id);
-            if(customer){
-                await this.repository.VerifyStripeId(stripeId, userId);
-            }
-            return FormateData({ customer });
-        } catch (error: any) {
-            console.error('Error verifying Stripe ID:', error.message);
-            return FormateData({ message: error.message });
-        }
     }
 
     async createCustomer(name: string, email: string) {
