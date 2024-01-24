@@ -17,7 +17,7 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
     }
 
     try {
-        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
+        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
@@ -62,7 +62,7 @@ export default (app: Express) => {
             req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             console.log(req.body.images);
             
-            const { data } = await service.CreateProduct(req.body);
+            const data = await service.CreateProduct(req.body);
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went like this-----', err)
@@ -76,7 +76,7 @@ export default (app: Express) => {
         try {
             // let authUser: any = req.user
             // req.query.userId = authUser._id;
-            const data: { STATUS_CODE: number, data: [], message: string } = await service.getProduct({ ...req.query});
+            const data = await service.getProduct({ ...req.query});
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went in',err)
@@ -101,7 +101,7 @@ export default (app: Express) => {
                 req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             }
             
-            const { data } = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });
+            const data = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });
             return res.json(data);
         } catch (err) {
             next(err);
@@ -116,7 +116,7 @@ export default (app: Express) => {
             console.log("req.body", req.query)
             const data = await service.approveProduct({ _id: req.query._id as string, isVerified: req.query.isVerified as string, approvedBy: authUser._id, });
             console.log("data", data)
-            return res.status(data.STATUS_CODES).json(data);
+            return res.json(data);
         } catch (err) {
             next(err);
         }
@@ -128,7 +128,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const { data } = await service.deleteProduct(req.query);
+            const data = await service.deleteProduct(req.query);
             return res.json(data);
         } catch (err) {
             next(err);

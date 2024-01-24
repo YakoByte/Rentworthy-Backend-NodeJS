@@ -1,6 +1,5 @@
 import AboutUSRepository from '../database/repository/aboutUs';
-import { FormateData } from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { aboutUSRequest, aboutUSUpdateRequest, aboutUSGetRequest, aboutUSDeleteRequest } from '../interface/aboutUs';
 
@@ -19,10 +18,9 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return FormateData({ existingAboutUS });;
+            return FormateData(existingAboutUS);;
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create aboutUs" });
         }
     }
     // get AboutUS by id
@@ -58,12 +56,12 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return FormateData({ existingAboutUS });
+            return FormateData(existingAboutUS);
         } catch (err: any) {
-            console.log("err", err)
-            return FormateData(err)
+            return FormateError({ error: "Failed to Get aboutUs" });
         }
     }
+
     // add images to AboutUS
     async addImagesToAboutUS(AboutUSInputs: aboutUSUpdateRequest) {
         try {
@@ -71,10 +69,9 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return FormateData({ existingAboutUS });
+            return FormateData(existingAboutUS);
         } catch (err: any) {
-            console.log("err", err)
-            return FormateData(err)
+            return FormateError({ error: "Failed to add image aboutUs" });
         }
     }
     // update AboutUS by id
@@ -84,12 +81,12 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return FormateData({ existingAboutUS });
+            return FormateData(existingAboutUS);
         } catch (err: any) {
-            console.log("err", err)
-            return FormateData(err)
+            return FormateError({ error: "Failed to update aboutUs" });
         }
     }
+
     // delete AboutUS by id  (soft delete)
     async deleteAboutUS(AboutUSInputs: aboutUSDeleteRequest) {
         try {
@@ -97,10 +94,9 @@ class AboutUSService {
                 AboutUSInputs
             );
 
-            return FormateData({ existingAboutUS });
+            return FormateData(existingAboutUS);
         } catch (err: any) {
-            console.log("err", err)
-            return FormateData(err)
+            return FormateError({ error: "Failed to Delete aboutUs" });
         }
     }
 

@@ -1,12 +1,5 @@
 import bookingRepository from '../database/repository/booking';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { bookingRequest, bookingUpdateRequest, bookingGetRequest, recentBookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
 
@@ -25,10 +18,9 @@ class bookingService {
                 req
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Create Booking" });
         }
     }
     
@@ -40,10 +32,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Booking" });
         }
     }
 
@@ -57,8 +48,7 @@ class bookingService {
 
             return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Booking" });
         }
     }
 
@@ -69,10 +59,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to add image to Booking" });
         }
     }
 
@@ -83,10 +72,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Remove Booking" });
         }
     }
 
@@ -105,10 +93,9 @@ class bookingService {
                 );
             }
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to approve Booking" });
         }
     }
 
@@ -119,10 +106,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update Booking" });
         }
     }
 
@@ -133,10 +119,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update pre rental Screening Booking" });
         }
     }
 
@@ -147,10 +132,9 @@ class bookingService {
                 bookingInputs
             );
 
-            return FormateData({ existingBooking });
+            return FormateData(existingBooking);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Delete Booking" });
         }
     }
 }

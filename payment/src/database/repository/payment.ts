@@ -1,16 +1,15 @@
 import { UserModel, paymentModel } from "../models";
 import moment from "moment";
-import { FormateData } from "../../utils";
 import { PaymentConfirmDetails, PaymentCount } from "../../interface/payment";
 
 class PaymentRepository {
   async CreatePayment(PaymentInputs: PaymentConfirmDetails) {
     try {
       let response = await paymentModel.create(PaymentInputs);
-      return FormateData(response);
+      return response;
     } catch (err) {
-      console.log("err", err);
-      return err;
+      console.log("error", err);
+      throw new Error("Unable to Create Payment");
     }
   }
 
@@ -21,18 +20,16 @@ class PaymentRepository {
         { isStripIdVerified: true, stripeId: stripeId },
         { new: true }
       );
-      return FormateData(response);
+      return response;
     } catch (err) {
-      console.error("Error:", err);
-      return err;
+      console.log("error", err);
+      throw new Error("Unable to Verify StripeId");
     }
   }
 
   async getProductIdPaymentSum(paymentInput: PaymentCount) {
-    const productId = paymentInput.productId;
-    console.log(productId);
-
     try {
+      const productId = paymentInput.productId;
       const result = await paymentModel.aggregate([
         { $match: { productId: productId } },
         {
@@ -46,10 +43,10 @@ class PaymentRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return FormateData(totalAmount);
-    } catch (error) {
-      console.error("Error in getProductIdPaymentSum:", error);
-      return 0;
+      return totalAmount;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to fetch payment Sum of productId");
     }
   }
 
@@ -70,10 +67,10 @@ class PaymentRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return FormateData(totalAmount);
+      return totalAmount;
     } catch (error) {
-      console.error("Error in getUserIdPaymentSum:", error);
-      return 0;
+      console.log("error", error);
+      throw new Error("Unable to fetch payment Sum of userId");
     }
   }
 
@@ -91,10 +88,10 @@ class PaymentRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return FormateData(totalAmount);
+      return totalAmount;
     } catch (error) {
-      console.error("Error in getUserIdPaymentSum:", error);
-      return 0;
+      console.log("error", error);
+      throw new Error("Unable to fetch payment Sum");
     }
   }
 
@@ -138,7 +135,7 @@ class PaymentRepository {
 
       return finalData;
     } catch (error) {
-      console.log("Error in getting count of previous years weeks : ", error);
+      console.log("Error in getting count of payment of day : ", error);
       return [];
     }
   }
@@ -183,7 +180,7 @@ class PaymentRepository {
 
       return finalData;
     } catch (error) {
-      console.log("Error in getting count of previous years weeks : ", error);
+      console.log("Error in getting count of payment of Month : ", error);
       return [];
     }
   }
@@ -228,7 +225,7 @@ class PaymentRepository {
 
       return finalData;
     } catch (error) {
-      console.log("Error in getting count of previous years weeks : ", error);
+      console.log("Error in getting count of payment of week : ", error);
       return [];
     }
   }

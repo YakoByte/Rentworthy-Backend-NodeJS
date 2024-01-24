@@ -1,12 +1,5 @@
 import adsRepository from '../database/repository/ads';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { adsRequest, adsUpdateRequest, adsGetRequest, adsDeleteRequest } from '../interface/ads';
 
@@ -25,10 +18,9 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create ads" });
         }
     }
     // get ads by id , userId or all ads
@@ -39,10 +31,9 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to get ads" });
         }
     }
     // add images to ads
@@ -52,10 +43,9 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to add image ads" });
         }
     }
     // approve ads
@@ -72,10 +62,10 @@ class adsService {
                 );
             }
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to approve ads" });
         }
     }
     // update ads by id
@@ -85,10 +75,9 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update ads" });
         }
     }
     // delete ads by id  (soft delete)
@@ -98,10 +87,9 @@ class adsService {
                 adsInputs
             );
 
-            return FormateData({ existingAds });
+            return FormateData(existingAds);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete ads" });
         }
     }
 

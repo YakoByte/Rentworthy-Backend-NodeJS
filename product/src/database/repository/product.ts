@@ -1,7 +1,5 @@
 import { productModel, historyModel, Bookings, Wishlists } from "../models";
 import { Types } from "mongoose";
-import { FormateData } from "../../utils";
-import { BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import {
   productRequest,
   productDeleteRequest,
@@ -15,47 +13,44 @@ const ResRepo = new productReservationService();
 class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
-    // try {
-    const findProduct = await productModel.findOne({
-      name: productInputs.name,
-    });
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      return FormateData({ id: findProduct._id, name: findProduct.name });
-    }
+    try {
+      const findProduct = await productModel.findOne({
+        name: productInputs.name,
+      });
+      console.log("findProduct", findProduct);
+      if (findProduct) {
+        return { id: findProduct._id, name: findProduct.name };
+      }
 
-    const product = new productModel(productInputs);
-    const productResult = await product.save();
-    let resObj = {
-      productId: productResult._id.toString(),
-      startDate: productInputs.rentingDate.startDate,
-      endDate: productInputs.rentingDate.endDate,
-    };
-    ResRepo.CreateProductReservation(resObj);
-    const history = new historyModel({
-      productId: productResult._id,
-      log: [
-        {
-          objectId: productResult._id,
-          data: {
-            userId: productInputs.userId,
+      const product = new productModel(productInputs);
+      const productResult = await product.save();
+      let resObj = {
+        productId: productResult._id.toString(),
+        startDate: productInputs.rentingDate.startDate,
+        endDate: productInputs.rentingDate.endDate,
+      };
+      ResRepo.CreateProductReservation(resObj);
+      const history = new historyModel({
+        productId: productResult._id,
+        log: [
+          {
+            objectId: productResult._id,
+            data: {
+              userId: productInputs.userId,
+            },
+            action: `productName = ${productInputs.name} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
           },
-          action: `productName = ${productInputs.name} created`,
-          date: new Date().toISOString(),
-          time: Date.now(),
-        },
-      ],
-    });
-    await history.save();
+        ],
+      });
+      await history.save();
 
-    return productResult;
-    // } catch (err) {
-    //     throw new APIError(
-    //         "API Error",
-    //         STATUS_CODES.INTERNAL_ERROR,
-    //         "Unable to Create User"
-    //     );
-    // }
+      return productResult;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Create Product");
+    }
   }
 
   async getProductApprovedById(productInputs: { _id: string }) {
@@ -91,11 +86,7 @@ class ProductRepository {
       ]);
 
       if (findProduct.length === 0) {
-        return {
-          STATUS_CODE: STATUS_CODES.NOT_FOUND,
-          data: [],
-          message: "Product not found",
-        };
+        return { message: "Product not found" };
       }
 
       await productModel.updateOne(
@@ -129,16 +120,12 @@ class ProductRepository {
       }
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
-        data: productData,
-        bookingData: bookingData,
+        data: productData || [],
+        bookingData: bookingData || [],
       };
-    } catch (err: any) {
-      return {
-        STATUS_CODE: STATUS_CODES.INTERNAL_ERROR,
-        data: [],
-        message: err.message,
-      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -176,11 +163,7 @@ class ProductRepository {
       ]);
 
       if (findProduct.length === 0) {
-        return {
-          STATUS_CODE: STATUS_CODES.NOT_FOUND,
-          data: [],
-          message: "Product not found",
-        };
+        return { message: "Product not found" };
       }
 
       await productModel.updateOne(
@@ -227,15 +210,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return {
-        STATUS_CODE: STATUS_CODES.INTERNAL_ERROR,
-        data: [],
-        message: err.message,
-      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -250,8 +229,6 @@ class ProductRepository {
             isActive: true,
           },
         },
-        // { $skip: productInputs.page as number },
-        // { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -313,11 +290,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -396,11 +373,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -481,15 +458,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return {
-        STATUS_CODE: STATUS_CODES.NOT_FOUND,
-        data: [],
-        message: err.message,
-      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -561,11 +534,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -650,11 +623,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -669,8 +642,6 @@ class ProductRepository {
             isActive: true,
           },
         },
-        // { $skip: productInputs.skip },
-        // { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -732,11 +703,11 @@ class ProductRepository {
       );
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
         data: await Promise.all(wishlistPromises),
       };
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -765,52 +736,51 @@ class ProductRepository {
 
         await history.save();
 
-        return { STATUS_CODES: STATUS_CODES.OK, data: "Product Updated" };
+        return { message: "Product Updated" };
       } else {
-        return {
-          STATUS_CODES: STATUS_CODES.NOT_FOUND,
-          data: "Product not found or already deleted",
-        };
+        return { message: "Product not found or already deleted" };
       }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      return {
-        STATUS_CODES: STATUS_CODES.INTERNAL_ERROR,
-        data: "Error updating product",
-      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Update Product");
     }
   }
 
   async deleteProduct(productInputs: productDeleteRequest) {
-    const findProduct = await productModel.findOne({
-      _id: productInputs._id,
-      isDeleted: false,
-    });
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      // soft delete product
-      const productResult = await productModel.updateOne(
-        { _id: productInputs._id },
-        { isDeleted: true }
-      );
-      // soft delete subproduct
-      // const subproductResult = await subProductModel.updateMany({ productId: productInputs._id }, { isDeleted: true });
-      // console.log("subproductResult", subproductResult)
-      //create history
-      const history = new historyModel({
-        productId: productInputs._id,
-        log: [
-          {
-            objectId: productInputs._id,
-            userId: productInputs.userId,
-            action: `productName = ${findProduct.name} deleted and subproduct also deleted`,
-            date: new Date().toISOString(),
-            time: Date.now(),
-          },
-        ],
+    try {
+      const findProduct = await productModel.findOne({
+        _id: productInputs._id,
+        isDeleted: false,
       });
-      await history.save();
-      return FormateData({ message: "Product Deleted" });
+      console.log("findProduct", findProduct);
+      if (findProduct) {
+        // soft delete product
+        const productResult = await productModel.updateOne(
+          { _id: productInputs._id },
+          { isDeleted: true }
+        );
+        // soft delete subproduct
+        // const subproductResult = await subProductModel.updateMany({ productId: productInputs._id }, { isDeleted: true });
+        // console.log("subproductResult", subproductResult)
+        //create history
+        const history = new historyModel({
+          productId: productInputs._id,
+          log: [
+            {
+              objectId: productInputs._id,
+              userId: productInputs.userId,
+              action: `productName = ${findProduct.name} deleted and subproduct also deleted`,
+              date: new Date().toISOString(),
+              time: Date.now(),
+            },
+          ],
+        });
+        await history.save();
+        return { message: "Product Deleted" };
+      }
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Update Product");
     }
   }
 }

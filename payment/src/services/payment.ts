@@ -8,7 +8,7 @@ import {
 } from "../interface/payment";
 import paymentRepository from "../database/repository/payment";
 
-import { FormateData } from "../utils";
+import { FormateData, FormateError } from "../utils";
 import { VENDOR_STRIPE_ACCOUNT_ID } from "../config";
 
 class PaymentService {
@@ -19,14 +19,19 @@ class PaymentService {
   }
 
   async createPaymentIntent(PaymentDetails: PaymentDetails) {
-    const client_secret = await stripe.paymentIntents.create({
-      amount: Math.floor(PaymentDetails.amount * 100),
-      currency: PaymentDetails.currency,
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
-    return FormateData(client_secret);
+    try {
+      const client_secret = await stripe.paymentIntents.create({
+        amount: Math.floor(PaymentDetails.amount * 100),
+        currency: PaymentDetails.currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      return FormateData(client_secret);
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to create the Payment Intent" });
+    }
   }
 
   // verify stripe Id
@@ -39,48 +44,60 @@ class PaymentService {
       }
       return FormateData({ customer });
     } catch (error: any) {
-      console.error("Error verifying Stripe ID:", error.message);
-      return FormateData({ message: error.message });
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Verify the striprID" });
     }
   }
 
   async confirmPaymentIntent(PaymentDetails: PaymentConfirmDetails) {
-    const paymentIntent = await stripe.paymentIntents.confirm(
-      PaymentDetails.paymentIntentId,
-      {
-        payment_method: PaymentDetails.paymentMethodId,
+    try {
+      const paymentIntent = await stripe.paymentIntents.confirm(
+        PaymentDetails.paymentIntentId,
+        {
+          payment_method: PaymentDetails.paymentMethodId,
+        }
+      );
+      if (paymentIntent.status === "succeeded") {
+        // Payment succeeded
+        let payDetails: any = await this.repository.CreatePayment(
+          PaymentDetails
+        );
+        return FormateData({
+          message: "Payment succeeded!",
+          payStatus: paymentIntent.status,
+          paymentId: payDetails._id,
+        });
+      } else if (paymentIntent.status === "requires_action") {
+        // Payment requires additional action (e.g., 3D Secure authentication)
+        return FormateData({
+          message: "Additional action required for payment!",
+          payStatus: paymentIntent.status,
+        });
+      } else {
+        // Payment failed or requires a different payment method
+        return FormateData({
+          message: "Payment failed or requires a different payment method!",
+          payStatus: paymentIntent.status,
+        });
       }
-    );
-    if (paymentIntent.status === "succeeded") {
-      // Payment succeeded
-      let payDetails: any = await this.repository.CreatePayment(PaymentDetails);
-      return FormateData({
-        message: "Payment succeeded!",
-        payStatus: paymentIntent.status,
-        paymentId: payDetails._id,
-      });
-    } else if (paymentIntent.status === "requires_action") {
-      // Payment requires additional action (e.g., 3D Secure authentication)
-      return FormateData({
-        message: "Additional action required for payment!",
-        payStatus: paymentIntent.status,
-      });
-    } else {
-      // Payment failed or requires a different payment method
-      return FormateData({
-        message: "Payment failed or requires a different payment method!",
-        payStatus: paymentIntent.status,
-      });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Confirm the payment Intent" });
     }
   }
 
   async PaymentTransfer(PaymentDetails: PaymentConfirmDetails) {
-    const transfer = await stripe.transfers.create({
-      amount: PaymentDetails.amount,
-      currency: PaymentDetails.currency,
-      destination: VENDOR_STRIPE_ACCOUNT_ID || "",
-    });
-    return FormateData({ transfer });
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: PaymentDetails.amount,
+        currency: PaymentDetails.currency,
+        destination: VENDOR_STRIPE_ACCOUNT_ID || "",
+      });
+      return FormateData(transfer);
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Payment transfer" });
+    }
   }
 
   async createCustomer(name: string, email: string) {
@@ -90,9 +107,10 @@ class PaymentService {
         email: email,
       });
       console.log("Test Customer ID:", customer.id);
-      return FormateData({ customer });
+      return FormateData(customer);
     } catch (error: any) {
-      console.error("Error creating test customer:", error.message);
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to create Customer" });
     }
   }
 
@@ -112,8 +130,8 @@ class PaymentService {
       console.log("Added Card ID:", addedCard.id);
       return FormateData({ card: addedCard });
     } catch (error) {
-      console.error("Error adding new card:", error);
-      throw error;
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to add new Card" });
     }
   }
 
@@ -129,8 +147,8 @@ class PaymentService {
 
       return FormateData({ createCharge });
     } catch (error) {
-      console.error("Error creating charge:", error);
-      throw error;
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to create charge" });
     }
   }
 
@@ -153,10 +171,9 @@ class PaymentService {
 
         return FormateData({ ProductPayment });
       }
-    } catch (err) {
-      console.error("Error in getProductIdPaymentSum:", err);
-      // You may choose to handle or rethrow the error here
-      throw err;
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to get payment sum" });
     }
   }
 
@@ -175,9 +192,9 @@ class PaymentService {
 
         return FormateData({ Payment });
       }
-    } catch (err: any) {
-      console.log("error", err);
-      throw err;
+    } catch (error: any) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to get payment" });
     }
   }
 }

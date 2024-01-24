@@ -15,7 +15,7 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
     }
 
     try {
-        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
+        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
@@ -26,7 +26,7 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
 
         return paths;
     } catch (error: any) {
-        return [error.message]; // Return an array to match the Promise<string[]> type
+        return [error.message];
     }
 }
 
@@ -54,7 +54,7 @@ export default (app: Express) => {
             req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             console.log(req.body.images);
             
-            const { data } = await service.CreateComplain(req.body);
+            const data = await service.CreateComplain(req.body);
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went like this-----', err)
@@ -65,7 +65,7 @@ export default (app: Express) => {
     // // API = get Complain by id and search and all Complain
     app.get('/get-complain', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data: { STATUS_CODE: number, data: [], message: string } = await service.getComplain({ ...req.query});
+            const data = await service.getComplain({ ...req.query});
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went in',err)
@@ -92,7 +92,7 @@ export default (app: Express) => {
                 coordinates: coordinate
             }
             
-            const { data } = await service.updateComplain({ ...req.body, userId: req.user._id, _id: req.query._id });
+            const data = await service.updateComplain({ ...req.body, userId: req.user._id, _id: req.query._id });
             return res.json(data);
         } catch (err) {
             next(err);
@@ -105,7 +105,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const { data } = await service.deleteComplain(req.query);
+            const data = await service.deleteComplain(req.query);
             return res.json(data);
         } catch (err) {
             next(err);

@@ -19,7 +19,7 @@ const StartServer = async (): Promise<void> => {
     console.log("Called")
     app.get('/', (req: Request, res: Response) => {
         console.log("Called");
-        res.status(200).send({ message: 'Upload microservices called........' });
+        res.status(200).send({ message: 'Payment microservices called........' });
     });
 
     // Start the Express server

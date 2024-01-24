@@ -1,12 +1,5 @@
 import roomRepository from '../database/repository/room';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { roomRequest, getRoomRequest, deleteRoomRequest } from '../interface/room';
 
@@ -23,37 +16,39 @@ class roomService {
             const existingRoom: any = await this.repository.CreateRoom(roomInputs);
             return existingRoom;
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
+
     // get room
     async GetRoom(roomInputs: getRoomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRoom(roomInputs);
             return existingRoom;
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
+
     // get rooms
     async GetRooms(roomInputs: roomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRooms(roomInputs);
             return existingRoom;
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
+
     // delete room
     async DeleteRoom(roomInputs: deleteRoomRequest) {
         try {
             const existingRoom: any = await this.repository.DeleteRoom(roomInputs);
             return FormateData(existingRoom);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Deleted" });
         }
     }
-
 }
 
 export = roomService;

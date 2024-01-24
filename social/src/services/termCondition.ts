@@ -1,6 +1,5 @@
 import TermConditionRepository from '../database/repository/termCondition';
-import { FormateData } from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { termConditionRequest, termConditionUpdateRequest, termConditionGetRequest, termConditionDeleteRequest } from '../interface/termCondition';
 
@@ -19,10 +18,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData ({ existingTermCondition });
+            return FormateData (existingTermCondition);
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create Term & Condition" });
         }
     }
     // get TermConditions by id
@@ -32,10 +30,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData({ existingTermConditions });
+            return FormateData(existingTermConditions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Term & Condition" });
         }
     }
     // get All TermConditions
@@ -44,10 +41,9 @@ class TermConditionService {
             let existingTermConditions: any
             existingTermConditions = await this.repository.getAllTermCondition();
 
-            return FormateData({ existingTermConditions });
+            return FormateData(existingTermConditions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Term & Condition" });
         }
     }
     // get TermConditions by id
@@ -58,10 +54,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData({ existingTermConditions });
+            return FormateData(existingTermConditions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Term & Condition" });
         }
     }
     // add images to TermCondition
@@ -71,10 +66,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData({ existingTermCondition });
+            return FormateData(existingTermCondition);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to add image Term & Condition" });
         }
     }
     // update TermCondition by id
@@ -84,10 +78,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData({ existingTermCondition });
+            return FormateData(existingTermCondition);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update Term & Condition" });
         }
     }
     // delete TermCondition by id  (soft delete)
@@ -97,10 +90,9 @@ class TermConditionService {
                 TermConditionInputs
             );
 
-            return FormateData({ existingTermCondition });
+            return FormateData(existingTermCondition);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete Term & Condition" });
         }
     }
 

@@ -1,66 +1,98 @@
+// combined-error-handler.ts
+
 import { createLogger, transports, Logger } from "winston";
-import { AppError } from "./app-error";
 import { Request, Response, NextFunction } from "express";
+import fs from "fs";
+import path from "path";
+
+const logDirectory = "Logs";
+const logFileName = "app_error.log";
+
+// Ensure the log directory exists; create it if it doesn't
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory);
+} else {
+  // check file size
+  const stats = fs.statSync(path.join(logDirectory, logFileName));
+  const fileSizeInBytes = stats.size;
+  // if file size is greater than 5MB then create a new file and copy old file data to the new file
+  if (fileSizeInBytes > 5242880) {
+    const newFileName = `app_error_${new Date().getTime()}.log`;
+    fs.renameSync(path.join(logDirectory, logFileName), path.join(logDirectory, newFileName));
+
+    // clear old file
+    fs.truncateSync(path.join(logDirectory, logFileName), 0);
+  }
+}
+
+const logFilePath = path.join(logDirectory, logFileName);
 
 const LogErrors: Logger = createLogger({
   transports: [
     new transports.Console(),
-    new transports.File({ filename: "app_error.log" }),
+    new transports.File({ filename: logFilePath }),
   ],
 });
 
-class ErrorLogger {
-  constructor() { }
+class AppError extends Error {
+  statusCode: number;
+  isOperational: boolean;
+  errorStack: boolean;
+  logError: boolean;
 
-  async logError(err: Error) {
-    console.log("==================== Start Error Logger ===============");
-    LogErrors.log({
-      private: true,
-      level: "error",
-      message: `${new Date()}-${JSON.stringify(err)}`,
-    });
-    console.log("==================== End Error Logger ===============");
-    // log error with Logger plugins
-
-    return false;
-  }
-
-  isTrustError(error: Error) {
-    if (error instanceof AppError) {
-      return (error as AppError).isOperational;
-    } else {
-      return false;
-    }
+  constructor(
+    name: string,
+    statusCode: number,
+    description: string,
+    isOperational: boolean,
+    errorStack: boolean,
+    logingErrorResponse: boolean
+  ) {
+    super(description);
+    this.name = name;
+    this.statusCode = statusCode;
+    this.isOperational = isOperational;
+    this.errorStack = errorStack;
+    this.logError = logingErrorResponse;
   }
 }
 
-const ErrorHandler = async (err: Error, req: Request, res: Response, next: NextFunction) => {
-  const errorLogger = new ErrorLogger();
+const errorLogger = createLogger({
+  transports: [
+    new transports.Console(),
+    new transports.File({ filename: logFilePath }),
+  ],
+});
 
-  process.on("uncaughtException", (reason, promise) => {
-    console.log(reason, "UNHANDLED");
-    throw reason; // need to take care
-  });
-
-  process.on("uncaughtException", (error) => {
-    errorLogger.logError(error);
-    if (errorLogger.isTrustError(error as AppError)) {
-      // process exit // need restart
-    }
-  });
-
+// Middleware to handle errors
+const ErrorHandler = async (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (err) {
-    await errorLogger.logError(err);
-    if (errorLogger.isTrustError(err as AppError)) {
-      if ((err as AppError).errorStack) {
-        const errorDescription = (err as AppError).errorStack;
-        return res.status((err as AppError).statusCode).json({ message: errorDescription });
+    console.log(err);
+    
+    console.log("==================== Start Error Logger ===============");
+    errorLogger.log({
+      private: true,
+      level: "error",
+      message: `${new Date()}-${err}`,
+    });
+    console.log("==================== End Error Logger ===============");
+
+    if (err instanceof AppError) {
+      const statusCode = err.statusCode || 500;
+      if (err.errorStack) {
+        const errorDescription = err.errorStack;
+        return res.status(statusCode).json({ message: errorDescription });
       }
-      return res.status((err as AppError).statusCode).json({ message: err.message });
+      return res.status(statusCode).json({ message: err.message });
     } else {
-      // process exit // terribly wrong with flow, need restart
+      // Handle other non-trusted errors here
+      res.status(500).json({ message: "Internal Server Error" });
     }
-    return res.status((err as AppError).statusCode).json({ message: err.message });
   }
   next();
 };

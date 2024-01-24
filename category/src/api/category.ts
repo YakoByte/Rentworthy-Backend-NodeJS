@@ -18,7 +18,7 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5003/image-upload", formData, {
+        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,

@@ -17,7 +17,7 @@ async function uploadMultipleImagesWithToken(imagePaths: string[], token: string
     }
 
     try {
-        const response = await axios.post("http://localhost:5003/image-uploads", formData, {
+        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
@@ -46,7 +46,6 @@ export default (app: Express) => {
             } else {
                 return res.status(400).json({ error: "No file provided" });
             }
-            console.log("req.body", req.body)
             const data = await service.CreateBooking(req.body, req);
             return res.json(data);
         } catch (err) {
@@ -57,10 +56,9 @@ export default (app: Express) => {
     //API = get recent booking
     app.get('/get-recent-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            // let authUser = req.user as { _id: string; roleName: string; email: string; };
-            // req.query.user = authUser;
-            console.log("req.query", req.query)
-            const { data } = await service.getRecentBooking(req.query);
+            let authUser = req.user as { _id: string; roleName: string; email: string; };
+            req.query.user = authUser;
+            const data = await service.getRecentBooking(req.query);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -73,7 +71,7 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             // req.query.user = authUser;
             console.log("req.query", req.query)
-            const { data } = await service.getBooking({ ...req.query, user: authUser });
+            const data = await service.getBooking({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {
             next(err);

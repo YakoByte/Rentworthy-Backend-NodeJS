@@ -33,7 +33,7 @@ const startServer = async (): Promise<void> => {
     // Define a simple root route
     console.log("called");
     app.get('/', (req: Request, res: Response) => {
-        res.status(200).send({ message: 'Chat microservice is running...' });
+        res.status(200).send({ message: 'Chat microservice is running.....' });
     });
 
     // Start the Express server

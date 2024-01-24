@@ -12,7 +12,7 @@ export default (app: Express) => {
         try {
             req.body.userId = req.user._id;
             req.body.token = req.headers.authorization
-            const { data } = await service.CreateProductReview(req.body);
+            const data = await service.CreateProductReview(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

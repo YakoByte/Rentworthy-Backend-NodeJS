@@ -1,14 +1,6 @@
 import productReviewRepository from '../database/repository/productreview';
 import { productReviewRequest, getProductReviewRequest, AuthenticatedRequest, getAllProductReview } from "../interface/productreview";
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
-
+import { FormateData, FormateError } from '../utils';
 
 class productService {
     private repository: productReviewRepository;
@@ -23,10 +15,10 @@ class productService {
                 productInputs
             );
 
-            return FormateData({ existingProduct });
+            return FormateData(existingProduct);
 
         } catch (err: any) {
-            return FormateData("Data Not found");
+            return FormateData("Data Not Created");
         }
     }
 
@@ -36,10 +28,10 @@ class productService {
                 productInputs
             );
 
-            return existingProduct;
+            return FormateData(existingProduct);
 
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 
@@ -51,10 +43,10 @@ class productService {
                 limit: Number(productInputs.limit) || 10
             });
 
-            return existingProduct;
+            return FormateData(existingProduct);
 
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 }

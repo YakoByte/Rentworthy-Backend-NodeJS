@@ -39,7 +39,6 @@ class OTPRepository {
       // Generate a random OTP with 6 digits
       let newOtp: number = Math.floor(100000 + Math.random() * 900000);
   
-      console.log("newOtp", newOtp);
   
       // Create OTP
       const otp = new otpModel({ ...otpInputs, otp: newOtp });
@@ -55,7 +54,6 @@ class OTPRepository {
         sendEmail(emailOptions);
       }
   
-      console.log("otp", otp);
   
       const otpResult = await otp.save();
   
@@ -92,9 +90,8 @@ class OTPRepository {
         otp: otpInputs.otp,
         isUsed: false,
       });
-      console.log("existingOTP", existingOTP);
+
       if (existingOTP) {
-        console.log("existingOTP ================");
         const otpResult = await otpModel.updateMany(
           {
             $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
