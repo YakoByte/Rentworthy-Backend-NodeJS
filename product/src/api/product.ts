@@ -72,10 +72,10 @@ export default (app: Express) => {
     });
 
     // // API = get product by id and search and all product
-    app.get('/get-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
-            req.query.userId = authUser._id;
+            // let authUser: any = req.user
+            // req.query.userId = authUser._id;
             const data: { STATUS_CODE: number, data: [], message: string } = await service.getProduct({ ...req.query});
             return res.status(200).json(data);
         } catch (err: any) {
