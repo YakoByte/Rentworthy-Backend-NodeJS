@@ -14,14 +14,6 @@ class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
     try {
-      const findProduct = await productModel.findOne({
-        name: productInputs.name,
-      });
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        return { id: findProduct._id, name: findProduct.name };
-      }
-
       const product = new productModel(productInputs);
       const productResult = await product.save();
       let resObj = {
