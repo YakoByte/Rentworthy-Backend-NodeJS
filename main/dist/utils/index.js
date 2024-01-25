@@ -3,38 +3,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FormateData = exports.ValidateSignature = void 0;
-// import bcrypt from "bcrypt";
+exports.FormateError = exports.FormateData = exports.ValidateSignature = exports.GenerateSignature = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-let secret_key = "YAKOBYTE";
-// Utility functions
-// export const GenerateSalt = async (): Promise<string> => {
-//     return await bcrypt.genSalt(10);
-// };
-// export const GeneratePassword = async (password: string, salt: string): Promise<string> => {
-//     return await bcrypt.hash(password, salt);
-// };
-// export const ValidatePassword = async (enteredPassword: string, savedPassword: string): Promise<boolean> => {
-//     // console.log(enteredPassword, savedPassword)
-//     return await bcrypt.compare(enteredPassword, savedPassword);
-// };
-// export const GenerateSignature = async (payload: any): Promise<string | Error> => {
-//     try {
-//         const token = await jwt.sign(payload, secret_key, { expiresIn: "10d" });
-//         return token;
-//     } catch (error) {
-//         console.error(error);
-//         throw error;
-//     }
-// };
+const config_1 = require("../config");
+const secret_key = config_1.SECRET_KEY || "";
+const GenerateSignature = async (payload) => {
+    try {
+        const token = await jsonwebtoken_1.default.sign(payload, secret_key, { expiresIn: "10d" });
+        return token;
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+exports.GenerateSignature = GenerateSignature;
 const ValidateSignature = async (req) => {
     try {
         const token = req.headers.authorization;
-        console.log("token", token);
+        if (!token)
+            return false;
         const splitToken = token.split(" ")[1];
-        console.log("splitToken", splitToken);
+        if (!splitToken)
+            return false;
         const payload = await jsonwebtoken_1.default.verify(splitToken, secret_key);
         req.user = payload;
+        console.log("payload", payload);
         return true;
     }
     catch (error) {
@@ -44,11 +38,10 @@ const ValidateSignature = async (req) => {
 };
 exports.ValidateSignature = ValidateSignature;
 const FormateData = (data) => {
-    if (data) {
-        return { data };
-    }
-    else {
-        throw new Error("Data Not found!");
-    }
+    return data;
 };
 exports.FormateData = FormateData;
+const FormateError = (error) => {
+    return error;
+};
+exports.FormateError = FormateError;

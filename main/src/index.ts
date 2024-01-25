@@ -14,7 +14,7 @@ const StartServer = async (): Promise<void> => {
     // Connect to the database
     await connectDB();
 
-    app.use(express.json({ limit: "10mb" }));
+    // app.use(express.json({ limit: "10mb" }));
 
     app.get('/', (req, res) => {
       res.status(200).send({ message: "Microservices called........" });

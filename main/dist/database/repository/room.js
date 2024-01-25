@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = require("../models");
-const utils_1 = require("../../utils");
 class RoomRepository {
     //create room
     async CreateRoom(roomInputs) {
@@ -13,15 +12,15 @@ class RoomRepository {
                 userId: roomInputs.userId,
                 vendorId: roomInputs.vendorId,
             });
-            console.log("room", room);
             if (room) {
-                return (0, utils_1.FormateData)(room);
+                return room;
             }
             let roomResult = await models_1.roomModel.create(roomInputs);
-            return (0, utils_1.FormateData)(roomResult);
+            return roomResult;
         }
         catch (error) {
-            return error;
+            console.log("error", error);
+            throw new Error("Unable to Create Room");
         }
     }
     //get room
@@ -42,12 +41,13 @@ class RoomRepository {
             }
             let room = await models_1.roomModel.findOne(criteria);
             if (!room) {
-                return (0, utils_1.FormateData)({ message: "Room not found" });
+                return { message: "Room not found" };
             }
             return room;
         }
         catch (error) {
-            return error;
+            console.log("error", error);
+            throw new Error("Unable to Get Room");
         }
     }
     // get rooms
@@ -65,40 +65,45 @@ class RoomRepository {
             }
             let rooms = await models_1.roomModel.find(criteria);
             if (!roomInputs) {
-                return (0, utils_1.FormateData)({ message: "Room not found" });
+                return { message: "Room not found" };
             }
             for (let i = 0; i < rooms.length; i++) {
                 const element = rooms[i];
-                let lastMessage = await models_1.messageModel.findOne({ roomId: element._id }).sort({ createdAt: -1 });
+                let lastMessage = await models_1.messageModel
+                    .findOne({ roomId: element._id })
+                    .sort({ createdAt: -1 });
                 if (lastMessage) {
                     element.lastMessage = lastMessage.message;
                     element.lastMessageTime = lastMessage.createdAt;
                 }
             }
-            return (0, utils_1.FormateData)(rooms);
+            return rooms;
         }
         catch (error) {
-            return error;
+            console.log("error", error);
+            throw new Error("Unable to Get Room");
         }
     }
     //delete room
     async DeleteRoom(roomInputs) {
         try {
             let roomResult = await models_1.roomModel.updateOne({ _id: roomInputs._id }, { isDeleted: true });
-            return (0, utils_1.FormateData)(roomResult);
+            return roomResult;
         }
         catch (error) {
-            return error;
+            console.log("error", error);
+            throw new Error("Unable to Delete Room");
         }
     }
     // inActive room
     async InActiveRoom(roomInputs) {
         try {
             let roomResult = await models_1.roomModel.updateOne({ _id: roomInputs._id }, { isActive: false });
-            return (0, utils_1.FormateData)(roomResult);
+            return roomResult;
         }
         catch (error) {
-            return error;
+            console.log("error", error);
+            throw new Error("Unable to InActive Room");
         }
     }
 }

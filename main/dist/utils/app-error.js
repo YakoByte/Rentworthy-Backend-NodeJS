@@ -1,6 +1,7 @@
 "use strict";
+// app-errors.ts
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.STATUS_CODES = exports.ValidationError = exports.BadRequestError = exports.APIError = exports.AppError = void 0;
+exports.STATUS_CODES = exports.APIError = exports.AppError = exports.ValidationError = exports.BadRequestError = void 0;
 const STATUS_CODES = {
     OK: 200,
     BAD_REQUEST: 400,
