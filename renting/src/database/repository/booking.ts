@@ -39,7 +39,7 @@ class BookingRepository {
 
       // call updateLevel api
       let updateProfile = await axios.put(
-        "http://localhost:5001/update-level",
+        "https://backend.rentworthy.us/app/api/v1/user/update-level",
         {
           userId: product.userId,
         }
@@ -89,7 +89,7 @@ class BookingRepository {
           endDate: bookingInputs.endDate,
         };
         await axios.post(
-          "http://localhost:5004/update-productreservation",
+          "https://backend.rentworthy.us/app/api/v1/product/update-productreservation",
           tempBody,
           {
             headers: {
@@ -750,7 +750,7 @@ class BookingRepository {
           endDate: bookingResult.endDate.toISOString().split("T")[0],
         };
         await axios.post(
-          "http://localhost:5004/update-relieveproductreservation",
+          "https://backend.rentworthy.us/app/api/v1/product/update-relieveproductreservation",
           tempBody,
           {
             headers: {

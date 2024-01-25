@@ -47,7 +47,7 @@ async function deleteImageWithToken(
     console.log(id, token);
 
     const response = await axios.delete(
-      `http://localhost:5003/image-delete/${id}`,
+      `https://backend.rentworthy.us/app/api/v1/upload/image-delete/${id}`,
       {
         headers: {
           Authorization: token,

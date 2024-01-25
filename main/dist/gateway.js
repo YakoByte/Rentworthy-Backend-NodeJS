@@ -34,15 +34,15 @@ gateway.on("error", (err, req, res) => {
     });
     res.end("Proxy error: " + err.message);
 });
-const userMicroservice = "http://localhost:5001";
-const categoryMicroservice = "http://localhost:5002";
-const uploadMicroservice = "http://localhost:5003";
-const productMicroservice = "http://localhost:5004";
-const rentingMicroservice = "http://localhost:5005";
-const chatMicroservice = "http://localhost:5006";
-const paymentMicroservice = "http://localhost:5007";
-const cancellationMicroservice = "http://localhost:5008";
-const socialMicroservice = "http://localhost:5009";
+const userMicroservice = "http://user:5001";
+const categoryMicroservice = "http://category:5002";
+const uploadMicroservice = "http://upload:5003";
+const productMicroservice = "http://product:5004";
+const rentingMicroservice = "http://renting:5005";
+const chatMicroservice = "http://chat:5006";
+const paymentMicroservice = "http://payment:5007";
+const cancellationMicroservice = "http://cancellation:5008";
+const socialMicroservice = "http://social:5009";
 // User microservice
 const user = (req, res) => {
     console.log("Routing to user microservice", req.url);
