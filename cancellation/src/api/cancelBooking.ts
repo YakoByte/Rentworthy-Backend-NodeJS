@@ -30,7 +30,7 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             req.query.userId = authUser._id;
             console.log("req.query", req.query)
-            const { data } = await service.getCancelBooking({ ...req.query });
+            const data = await service.getCancelBooking({ ...req.query });
             return res.json(data);
         } catch (err) {
             next(err);

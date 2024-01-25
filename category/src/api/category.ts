@@ -54,7 +54,7 @@ export default (app: Express) => {
     // API = get category by id and search and all category
     app.get('/get-category', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const { data } = await service.getCategory(req.query);
+            const data = await service.getCategory(req.query);
             return res.json(data);
         } catch (err) {
             console.log("err", err)

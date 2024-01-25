@@ -1,8 +1,6 @@
 import { cancelBookingModel, productModel, historyModel } from "../models";
 import { ObjectId } from "mongodb";
 import moment from "moment";
-import { FormateData } from "../../utils/index";
-import { APIError } from "../../utils/app-error";
 import {
   cancelBookingRequest,
   cancelBookingGetRequest,
@@ -43,9 +41,10 @@ class CancelBookingRepository {
         sendEmail(emailOptions);
       }
 
-      return FormateData(cancelBooking);
-    } catch (err: any) {
-      return FormateData(err);
+      return cancelBooking;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to Create Booking");
     }
   }
 
@@ -64,9 +63,10 @@ class CancelBookingRepository {
           // isDeleted: false
         });
       }
-      return FormateData(cancelBooking);
-    } catch (err: any) {
-      throw new APIError("Data Not found", err);
+      return cancelBooking;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to get Booking");
     }
   }
 
@@ -74,6 +74,7 @@ class CancelBookingRepository {
   async updateCancelBookingById(
     cancelBookingInputs: cancelBookingUpdateRequest
   ) {
+    try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
       { _id: cancelBookingInputs._id },
       { ...cancelBookingInputs },
@@ -103,13 +104,19 @@ class CancelBookingRepository {
         sendEmail(emailOptions);
       }
       
-      return FormateData(cancelBookingResult);
+      return cancelBookingResult;
     }
+    return { message: "Data not found" };
+  } catch (error) {
+    console.log("error", error);
+    throw new Error("Unable to update Booking");
+  }
   }
 
   async approveRejectCancelBookingById(
     cancelBookingInputs: cancelBookingApproveRequest
   ) {
+    try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
       { _id: cancelBookingInputs._id },
       { ...cancelBookingInputs },
@@ -140,14 +147,20 @@ class CancelBookingRepository {
         sendEmail(emailOptions);
       }
 
-      return FormateData(cancelBookingResult);
+      return cancelBookingResult;
     }
+    return { message: "Data not found" };
+  } catch (error) {
+    console.log("error", error);
+    throw new Error("Unable to approve Booking");
+  }
   }
 
   //delete cancelBooking by id
   async deleteCancelBookingById(
     cancelBookingInputs: cancelBookingDeleteRequest
   ) {
+    try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
       { _id: cancelBookingInputs._id, isDeleted: false },
       { isDeleted: true },
@@ -178,8 +191,13 @@ class CancelBookingRepository {
         sendEmail(emailOptions);
       }
 
-      return FormateData(cancelBookingResult);
+      return cancelBookingResult;
     }
+    return { message: "Data not found" };
+  } catch (error) {
+    console.log("error", error);
+    throw new Error("Unable to delete Booking");
+  }
   }
 
   async getCountOfCancellationPerDay() {

@@ -1,12 +1,5 @@
 import cancelBookingRepository from '../database/repository/cancelBooking';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { cancelBookingRequest, cancelBookingUpdateRequest, cancelBookingGetRequest, cancelBookingApproveRequest,cancelBookingDeleteRequest } from '../interface/cancelBooking';
 
@@ -26,10 +19,10 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
 
@@ -41,10 +34,10 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not FOund" });
         }
     }
 
@@ -56,10 +49,10 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not updated" });
         }
     }
 
@@ -70,10 +63,10 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Approved" });
         }
     }
 
@@ -84,10 +77,10 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Deleted" });
         }
     }
 
@@ -96,21 +89,21 @@ class cancelBookingService {
             if(criteria === 'month'){
                 const CancelBooking: any = await this.repository.getCountOfCancellationPerMonth();
                 
-                return FormateData({ CancelBooking });
+                return FormateData(CancelBooking);
             } else if(criteria === 'week') {
                 const CancelBooking: any = await this.repository.getCountOfCancellationPerWeek();
                 
-                return FormateData({ CancelBooking });
+                return FormateData(CancelBooking);
             }
             else {
                 const CancelBooking: any = await this.repository.getCountOfCancellationPerDay();
                 
-                return FormateData({ CancelBooking });
+                return FormateData(CancelBooking);
             }
 
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not found" });
         }
     }
 

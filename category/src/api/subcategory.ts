@@ -16,7 +16,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.body)
-            const { data } = await service.CreateSubCategory(req.body);
+            const data = await service.CreateSubCategory(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -40,7 +40,7 @@ export default (app: Express) => {
             req.body.userId = authUser._id;
             req.body._id = req.query._id;
             console.log("req.body", req.body)
-            const { data } = await service.updateSubCategory(req.body);
+            const data = await service.updateSubCategory(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -53,7 +53,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const { data } = await service.deleteSubCategory(req.query);
+            const data = await service.deleteSubCategory(req.query);
             return res.json(data);
         } catch (err) {
             next(err);
