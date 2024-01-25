@@ -14,7 +14,7 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
 
 const userMicroservice: string = "http://user:5001";
 const categoryMicroservice: string = "http://category:5002";
-const uploadMicroservice: string = "http://localhost:5003";
+const uploadMicroservice: string = "http://upload:5003";
 const productMicroservice: string = "http://product:5004";
 const rentingMicroservice: string = "http://renting:5005";
 const chatMicroservice: string = "http://chat:5006";

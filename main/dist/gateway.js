@@ -36,7 +36,7 @@ gateway.on("error", (err, req, res) => {
 });
 const userMicroservice = "http://user:5001";
 const categoryMicroservice = "http://category:5002";
-const uploadMicroservice = "http://localhost:5003";
+const uploadMicroservice = "http://upload:5003";
 const productMicroservice = "http://product:5004";
 const rentingMicroservice = "http://renting:5005";
 const chatMicroservice = "http://chat:5006";
