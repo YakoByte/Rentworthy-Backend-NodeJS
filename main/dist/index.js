@@ -37,12 +37,12 @@ const StartServer = async () => {
         app.use("/app/api/v1/social", gateway_1.social);
         app.use("/web/api/v1/cancel-booking", gateway_1.cancelBooking);
         app.use("/app/api/v1/cancel-booking", gateway_1.cancelBooking);
-        app.use(express_1.default.static(path_1.default.join(__dirname, "../../public"), {
+        app.use(express_1.default.static(path_1.default.join(__dirname, "../public"), {
             maxAge: "1d",
             etag: true,
             lastModified: true,
         }));
-        app.set("uploads", path_1.default.join(__dirname, "../../public"));
+        app.set("uploads", path_1.default.join(__dirname, "../public"));
         const server = http_1.default.createServer(app);
         const io = new socket_io_1.Server(server, {
             cors: {

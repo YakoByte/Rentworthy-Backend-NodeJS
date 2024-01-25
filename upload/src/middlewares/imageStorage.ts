@@ -5,7 +5,7 @@ import path from 'path';
 
 const storage = multer.diskStorage({
     destination: (req: any, file, cb) => {
-        cb(null, '../../../public/images'); // Define the destination folder for uploaded images
+        cb(null, '../public/images'); // Define the destination folder for uploaded images
     },
     filename: (req: any, file, cb) => {
         const ext = path.extname(file.originalname);

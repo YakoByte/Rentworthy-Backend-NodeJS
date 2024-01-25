@@ -39,13 +39,13 @@ const StartServer = async (): Promise<void> => {
     app.use("/app/api/v1/cancel-booking", cancelBooking);
 
     app.use(
-      express.static(path.join(__dirname, "../../public"), {
+      express.static(path.join(__dirname, "../public"), {
         maxAge: "1d",
         etag: true,
         lastModified: true,
       })
     );
-    app.set("uploads", path.join(__dirname, "../../public"));
+    app.set("uploads", path.join(__dirname, "../public"));
 
     const server = http.createServer(app);
     const io = new SocketIOServer(server, {
