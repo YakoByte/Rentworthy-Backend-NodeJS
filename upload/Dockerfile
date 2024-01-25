@@ -17,7 +17,6 @@ COPY . .
 # Uncomment the next line if you have a build script in your package.json
 # RUN npm run build
 
-
 # Use an official Node runtime as a parent image for the final stage
 FROM node:18.17.1
 
@@ -40,9 +39,5 @@ EXPOSE 5003
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:5003/ || exit 1
 
-
-
-
 # Run the app when the container launches
 CMD ["npm", "run", "dev"]
-
