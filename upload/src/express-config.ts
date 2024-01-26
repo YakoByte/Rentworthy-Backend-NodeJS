@@ -4,8 +4,6 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
 import imageUpload from './api/imageUpload.ts';
-// import Admin from './api/user.ts';
-// import Role from './api/role.ts';
 
 export const configureExpress = async (app: Express) => {
   app.use(express.json({ limit: '10mb' }));

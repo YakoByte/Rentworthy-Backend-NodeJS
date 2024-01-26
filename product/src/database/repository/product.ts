@@ -8,6 +8,7 @@ import {
   productGetRequest,
 } from "../../interface/product";
 import productReservationService from "../../services/productreservation";
+import { generatePresignedUrl } from "../../utils/aws";
 const ResRepo = new productReservationService();
 
 class ProductRepository {
@@ -60,7 +61,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -70,7 +71,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -137,7 +138,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -147,7 +148,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -165,6 +166,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          // element.images.forEach(async(element: any) => {
+          //   let newPath = await generatePresignedUrl(element.imageName);
+          //   element.path = newPath;
+          // });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -230,7 +235,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -240,7 +245,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -317,7 +322,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -327,7 +332,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -406,7 +411,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -416,7 +421,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -485,7 +490,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -495,7 +500,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -579,7 +584,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -589,7 +594,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -663,7 +668,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -673,7 +678,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
