@@ -181,10 +181,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -261,10 +265,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -344,10 +352,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -429,10 +441,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -505,10 +521,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -594,10 +614,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
@@ -674,10 +698,14 @@ class ProductRepository {
               status: 1,
             });
 
-            const wishlistData = await Wishlists.findOne({
-              userId: productInputs.userId,
-              productIds: element._id,
-            });
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
