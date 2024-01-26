@@ -21,7 +21,7 @@ class imageService {
     //   console.log('Running UpdateAllPath task...');
     //   await this.repository.UpdateAllPathAt6thDay();
     //   console.log('UpdateAllPath task completed.');
-    // }, 604800000);
+    // }, 604800);
 
     // cron.schedule('0 0 0 * * 0', this.repository.UpdateAllPathAt6thDay.bind(this));
   }
@@ -61,6 +61,9 @@ class imageService {
 
       return FormateData(existingImage);
     } catch (err: any) {
+      if (fs.existsSync(imageInputs.imageDetail.path)) {
+        fs.unlinkSync(imageInputs.imageDetail.path);
+      }
       return FormateError({ error: "Failed to create the image" });
     }
   }
@@ -105,6 +108,11 @@ class imageService {
 
       return FormateData(existingImage);
     } catch (err: any) {
+      imageInputs.imageDetails.forEach(async (element: any) => {
+        if (fs.existsSync(element.path)) {
+          fs.unlinkSync(element.path);
+        }
+      });
       return FormateError({ error: "Failed to create the multiple images" });
     }
   }

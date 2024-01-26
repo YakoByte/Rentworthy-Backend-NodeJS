@@ -1,22 +1,32 @@
 import express, { Express, Request, Response } from "express";
 import { PORT } from "./config";
-import { product, user, category, upload, renting, cancelBooking, payment, social } from "./gateway";
+import {
+  product,
+  user,
+  category,
+  upload,
+  renting,
+  cancelBooking,
+  payment,
+  social,
+} from "./gateway";
 import path from "path";
 import http from "http";
-import { Server as SocketIOServer } from 'socket.io'; 
-import { setupSocketServer } from './chat/chat';
+import fs from "fs";
+import { Server as SocketIOServer } from "socket.io";
+import { setupSocketServer } from "./chat/chat";
 import { connectDB } from "./database";
 
 const StartServer = async (): Promise<void> => {
   const app: Express = express();
-  
+
   try {
     // Connect to the database
     await connectDB();
 
     // app.use(express.json({ limit: "10mb" }));
 
-    app.get('/', (req, res) => {
+    app.get("/", (req, res) => {
       res.status(200).send({ message: "Microservices called........" });
     });
 
@@ -38,35 +48,42 @@ const StartServer = async (): Promise<void> => {
     app.use("/web/api/v1/cancel-booking", cancelBooking);
     app.use("/app/api/v1/cancel-booking", cancelBooking);
 
+    const imagesDirectory = path.join(__dirname, "../../public/images");
+
+    // Check if the directory exists, and create it if not
+    if (!fs.existsSync(imagesDirectory)) {
+      fs.mkdirSync(imagesDirectory, { recursive: true });
+    }
+
     app.use(
-      express.static(path.join(__dirname, "../public"), {
+      express.static(path.join(__dirname, "../../public/images"), {
         maxAge: "1d",
         etag: true,
         lastModified: true,
       })
     );
-    app.set("uploads", path.join(__dirname, "../public"));
+    app.set("uploads", path.join(__dirname, "../../public/images"));
 
     const server = http.createServer(app);
     const io = new SocketIOServer(server, {
       cors: {
-        origin: '*',
-        credentials: true
-      }
+        origin: "*",
+        credentials: true,
+      },
     });
     setupSocketServer(io);
-    console.log("Socket server created")
+    console.log("Socket server created");
 
     server.listen(PORT, () => {
       console.log(`Listening on port ${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start the server:', error);
+    console.error("Failed to start the server:", error);
   }
 };
 
 // Uncomment the line below if you want to call StartServer directly
 // StartServer();
-StartServer().catch(error => {
-  console.error('Failed to start the server:', error);
+StartServer().catch((error) => {
+  console.error("Failed to start the server:", error);
 });
