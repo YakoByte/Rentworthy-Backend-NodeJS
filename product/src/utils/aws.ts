@@ -23,7 +23,7 @@ async function generatePresignedUrl(key: string): Promise<string> {
     Key: key,
   });
 
-  const url = await getSignedUrl(s3Client, command);
+  const url = await getSignedUrl(s3Client, command, {expiresIn: 604800000});
 
   return url;
 }
