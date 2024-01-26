@@ -243,6 +243,105 @@ class ImageRepository {
       throw new Error("Unable to get images");
     }
   }
+
+  async UpdateAllPath() {
+    try {
+      // Find the images
+      const images = await imageModel.find();
+
+      // If no images are found, throw an error
+      if (!images || images.length === 0) {
+        throw new Error("No images found");
+      }
+
+      const updateImagePromises = images.map(async (element) => {
+        try {
+          const path = await generatePresignedUrl(element.imageName);
+
+          // Update the image
+          const imageUpdate = await imageModel.findOneAndUpdate(
+            { _id: element._id },
+            { path: path },
+            { new: true } // to return the updated document
+          );
+
+          return imageUpdate;
+        } catch (error) {
+          // Handle errors during the iteration
+          console.error(
+            `Error updating image with ID ${element._id}: ${error}`
+          );
+          throw error;
+        }
+      });
+
+      // Wait for all updates to complete
+      const updatedImages = await Promise.all(updateImagePromises);
+
+      // Return the updated images
+      return updatedImages;
+    } catch (error) {
+      console.error("Error in uptaing All Path:", error);
+      throw new Error("Unable to update all images path");
+    }
+  }
+
+  async UpdateAllPathAt6thDay() {
+    try {
+      // Find the images
+      const images = await imageModel.find({
+        $expr: {
+          $gte: [
+            { 
+              $subtract: [
+                new Date(), 
+                "$updatedAt"
+              ]
+            },
+            7 * 24 * 60 * 60 * 1000
+          ],
+        },
+      });
+
+      console.log(images.length);
+      
+
+      // If no images are found, throw an error
+      if (!images || images.length === 0) {
+        return images;
+      }
+
+      const updateImagePromises = images.map(async (element) => {
+        try {
+          const path = await generatePresignedUrl(element.imageName);
+
+          // Update the image
+          const imageUpdate = await imageModel.findOneAndUpdate(
+            { _id: element._id },
+            { path: path },
+            { new: true } // to return the updated document
+          );
+
+          return imageUpdate;
+        } catch (error) {
+          // Handle errors during the iteration
+          console.error(
+            `Error updating image with ID ${element._id}: ${error}`
+          );
+          throw error;
+        }
+      });
+
+      // Wait for all updates to complete
+      const updatedImages = await Promise.all(updateImagePromises);
+
+      // Return the updated images
+      return updatedImages;
+    } catch (error) {
+      console.error("Error in uptaing All Path:", error);
+      throw new Error("Unable to update all images path");
+    }
+  }
 }
 
 export default ImageRepository;

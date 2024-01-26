@@ -88,4 +88,14 @@ export default (app: Express) => {
       }
     }
   );
+
+  app.put("/image", UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        let data = await service.UpdateAllPath();
+        return res.json(data);
+      } catch (err) {
+        next(err);
+      }
+    }
+  );
 };

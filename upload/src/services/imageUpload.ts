@@ -8,6 +8,7 @@ import {
 } from "../interface/imageUpload";
 import { deleteS3File, uploadS3File } from "../utils/aws";
 import fs from "fs";
+import cron from 'node-cron'
 
 // All Business logic will be here
 class imageService {
@@ -15,7 +16,16 @@ class imageService {
 
   constructor() {
     this.repository = new imageRepository();
+
+    // setInterval(async () => {
+    //   console.log('Running UpdateAllPath task...');
+    //   await this.repository.UpdateAllPathAt6thDay();
+    //   console.log('UpdateAllPath task completed.');
+    // }, 604800000);
+
+    // cron.schedule('0 0 0 * * 0', this.repository.UpdateAllPathAt6thDay.bind(this));
   }
+  
   // create image
   async CreateImage(imageInputs: imageRequest) {
     try {
@@ -131,9 +141,11 @@ class imageService {
       if (imageInputs._id) {
         data = await this.repository.GetImageById(imageInputs._id);
       } else if (imageInputs.search) {
-        data = await this.repository.GetImageByName(imageInputs.search || '');
+        data = await this.repository.GetImageByName(imageInputs.search || "");
       } else if (imageInputs.imageName) {
-        data = await this.repository.GetImageByName(imageInputs.imageName || '');
+        data = await this.repository.GetImageByName(
+          imageInputs.imageName || ""
+        );
       } else {
         data = await this.repository.GetAllImages();
       }
@@ -171,6 +183,16 @@ class imageService {
   async GetAllImages() {
     try {
       const existingImage: any = await this.repository.GetAllImages();
+      if (!existingImage) return FormateError({ error: "No Image Found" });
+      return FormateData(existingImage);
+    } catch (err: any) {
+      return FormateError({ error: "Failed to Get the images By Name" });
+    }
+  }
+
+  async UpdateAllPath() {
+    try {
+      const existingImage: any = await this.repository.UpdateAllPath();
       if (!existingImage) return FormateError({ error: "No Image Found" });
       return FormateData(existingImage);
     } catch (err: any) {
