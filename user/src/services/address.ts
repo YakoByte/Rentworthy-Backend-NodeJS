@@ -75,7 +75,7 @@ class AddressService {
                 addressInputs
             );
 
-            if(!existingAddress){
+            if(existingAddress==false){
                 throw new Error('Failed to Update Address');
             }
 
