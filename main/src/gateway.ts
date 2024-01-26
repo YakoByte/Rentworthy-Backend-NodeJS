@@ -12,7 +12,7 @@ gateway.on("error", (err: Error, req: IncomingMessage, res: ServerResponse) => {
   res.end("Proxy error: " + err.message);
 });
 
-const userMicroservice: string = "http://localhost:5001";
+const userMicroservice: string = "http://user:5001";
 const categoryMicroservice: string = "http://category:5002";
 const uploadMicroservice: string = "http://upload:5003";
 const productMicroservice: string = "http://product:5004";
