@@ -67,4 +67,4 @@ async function deleteS3File(newFileNameKey: string): Promise<void> {
     });
 }
 
-export { uploadS3File, deleteS3File };
+export { uploadS3File, deleteS3File, generatePresignedUrl };

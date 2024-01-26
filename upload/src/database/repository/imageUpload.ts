@@ -1,5 +1,6 @@
 import { imageModel, historyModel } from "../models";
 import { imageDetail, imageRequests } from "../../interface/imageUpload";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class ImageRepository {
   //create image
@@ -31,7 +32,7 @@ class ImageRepository {
       throw new Error("Unable to Create Image");
     }
   }
-  
+
   // create images
   async CreateImages(imageInputs: imageRequests) {
     try {
@@ -143,6 +144,103 @@ class ImageRepository {
       // Handle errors appropriately
       console.log("error", error);
       throw new Error("Unable to Delete Image By Name");
+    }
+  }
+
+  async GetImageByName(imageName: string) {
+    try {
+      // Find the image
+      const image = await imageModel.findOne({ imageName: imageName });
+
+      // If the image doesn't exist, throw an error
+      if (!image) {
+        throw new Error("Image not found");
+      }
+
+      const path = await generatePresignedUrl(imageName);
+
+      // update the image
+      const updateImage = await imageModel.findOneAndUpdate({
+        imageName: imageName,
+        path: path,
+      });
+
+      // Return the deleted image
+      return updateImage;
+    } catch (error) {
+      // Handle errors appropriately
+      console.log("error", error);
+      throw new Error("Unable to Get Image By Name");
+    }
+  }
+
+  async GetImageById(_id: string) {
+    try {
+      // Find the image
+      const image = await imageModel.findById(_id);
+
+      // If the image doesn't exist, throw an error
+      if (!image) {
+        throw new Error("Image not found");
+      }
+
+      const path = await generatePresignedUrl(image.imageName);
+
+      // update the image
+      const updateImage = await imageModel.findOneAndUpdate({
+        _id: _id,
+        path: path,
+      });
+
+      // Return the deleted image
+      return updateImage;
+    } catch (error) {
+      // Handle errors appropriately
+      console.log("error", error);
+      throw new Error("Unable to Get Image By Id");
+    }
+  }
+
+  async GetAllImages() {
+    try {
+      // Find the images
+      const images = await imageModel.find();
+
+      // If no images are found, throw an error
+      if (!images || images.length === 0) {
+        throw new Error("No images found");
+      }
+
+      const updateImagePromises = images.map(async (element) => {
+        try {
+          const path = await generatePresignedUrl(element.imageName);
+
+          // Update the image
+          const imageUpdate = await imageModel.findOneAndUpdate(
+            { _id: element._id },
+            { path: path },
+            { new: true } // to return the updated document
+          );
+
+          return imageUpdate;
+        } catch (error) {
+          // Handle errors during the iteration
+          console.error(
+            `Error updating image with ID ${element._id}: ${error}`
+          );
+          throw error;
+        }
+      });
+
+      // Wait for all updates to complete
+      const updatedImages = await Promise.all(updateImagePromises);
+
+      // Return the updated images
+      return updatedImages;
+    } catch (error) {
+      // Handle errors appropriately
+      console.error("Error in GetAllImages:", error);
+      throw new Error("Unable to get images");
     }
   }
 }
