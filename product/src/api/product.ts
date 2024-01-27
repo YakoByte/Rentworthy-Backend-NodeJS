@@ -71,7 +71,7 @@ export default (app: Express) => {
         }
     });
 
-    app.get('/product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/guest-product', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.getProduct({...req.query});
             return res.status(200).json(data);
