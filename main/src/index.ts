@@ -48,12 +48,12 @@ const StartServer = async (): Promise<void> => {
     app.use("/web/api/v1/cancel-booking", cancelBooking);
     app.use("/app/api/v1/cancel-booking", cancelBooking);
 
-    const imagesDirectory = path.join(__dirname, "../../public/images");
+    // const imagesDirectory = path.join(__dirname, "../../public/images");
 
-    // Check if the directory exists, and create it if not
-    if (!fs.existsSync(imagesDirectory)) {
-      fs.mkdirSync(imagesDirectory, { recursive: true });
-    }
+    // // Check if the directory exists, and create it if not
+    // if (!fs.existsSync(imagesDirectory)) {
+    //   fs.mkdirSync(imagesDirectory, { recursive: true });
+    // }
 
     app.use(
       express.static(path.join(__dirname, "../../public/images"), {

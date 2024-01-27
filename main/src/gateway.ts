@@ -75,4 +75,14 @@ const cancelBooking = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: cancellationMicroservice });
 };
 
-export { user, category, upload, product, renting, chatApi, payment, social, cancelBooking };
+export {
+  user,
+  category,
+  upload,
+  product,
+  renting,
+  chatApi,
+  payment,
+  social,
+  cancelBooking,
+};
