@@ -23,7 +23,7 @@ class imageService {
     //   console.log('UpdateAllPath task completed.');
     // }, 604800);
 
-    // cron.schedule('0 0 0 * * 0', this.repository.UpdateAllPathAt6thDay.bind(this));
+    // cron.schedule('0 0 0 * * 0', this.repository.UpdateAllPathAt6thDay());
   }
   
   // create image
