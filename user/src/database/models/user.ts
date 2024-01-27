@@ -9,7 +9,6 @@ const userSchema: Schema = new Schema<User>(
     // },
     phoneNo: {
       type: Number,
-      default: null,
     },
     phoneCode: {
       type: String,
@@ -18,7 +17,6 @@ const userSchema: Schema = new Schema<User>(
       type: String,
       unique: true,
       lowercase: true,
-      default: null,
     },
     password: {
       type: String,

@@ -1,12 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import CancellationPlanService from '../services/cancellationPlan';
 import UserAuth from '../middlewares/auth';
-import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest, cancellationPlanRequest, postAuthenticatedRequest, updateAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/cancellationPlan';
-import upload from '../middlewares/imageStorage';
-// import multer from 'multer';
-// import path from 'path';
-// import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new CancellationPlanService();
@@ -29,7 +24,7 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             // req.query.user = authUser;
             console.log("req.query", req.query)
-            const { data } = await service.getCancellationPlan(req.query);
+            const data = await service.getCancellationPlan(req.query);
             return res.json(data);
         } catch (err) {
             next(err);

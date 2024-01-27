@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const messages_1 = __importDefault(require("../database/repository/messages"));
 const utils_1 = require("../utils");
-const app_error_1 = require("../utils/app-error");
 // All Business logic will be here
 class messageService {
     repository;
@@ -15,10 +14,10 @@ class messageService {
     async CreateMessage(messageInputs) {
         try {
             const existingMessage = await this.repository.CreateMessage(messageInputs);
-            return existingMessage;
+            return (0, utils_1.FormateData)(existingMessage);
         }
         catch (err) {
-            throw new app_error_1.Error("Data Not found", err);
+            return (0, utils_1.FormateError)({ error: "Data not Created" });
         }
     }
     // group message in multiple room
@@ -39,37 +38,37 @@ class messageService {
             return (0, utils_1.FormateData)({ message: "Message sent" });
         }
         catch (err) {
-            throw new app_error_1.Error("Data Not found", err);
+            return (0, utils_1.FormateError)({ error: "Data not Found" });
         }
     }
     // get message
     async GetMessage(messageInputs) {
         try {
             const existingMessage = await this.repository.GetMessage(messageInputs);
-            return (0, utils_1.FormateData)({ existingMessage });
+            return (0, utils_1.FormateData)(existingMessage);
         }
         catch (err) {
-            throw new app_error_1.Error("Data Not found", err);
+            return (0, utils_1.FormateError)({ error: "Data not Found" });
         }
     }
     // get messages
     async GetMessages(messageInputs) {
         try {
             const existingMessage = await this.repository.GetMessages(messageInputs);
-            return existingMessage;
+            return (0, utils_1.FormateData)(existingMessage);
         }
         catch (err) {
-            throw new app_error_1.Error("Data Not found", err);
+            return (0, utils_1.FormateError)({ error: "Data not Found" });
         }
     }
     // delete message
     async DeleteMessage(messageInputs) {
         try {
             const existingMessage = await this.repository.DeleteMessage(messageInputs);
-            return (0, utils_1.FormateData)({ existingMessage });
+            return (0, utils_1.FormateData)(existingMessage);
         }
         catch (err) {
-            throw new app_error_1.Error("Data Not found", err);
+            return (0, utils_1.FormateError)({ error: "Data not Found" });
         }
     }
 }

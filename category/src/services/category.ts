@@ -1,15 +1,7 @@
 import categoryRepository from '../database/repository/category';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { categoryRequest, categoryUpdateRequest, categoryDeleteRequest, categoryGetRequest } from '../interface/category';
-import category from '../api/category';
 
 // All Business logic will be here
 class categoryService {
@@ -25,9 +17,9 @@ class categoryService {
                 categoryInputs
             );
 
-            return FormateData({ existingCategory });
+            return FormateData(existingCategory);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
     // get category by id , search or all category
@@ -51,7 +43,7 @@ class categoryService {
                 });
             }
 
-            return FormateData({ existingCategory });
+            return FormateData(existingCategory);
         } catch (err: any) {
             console.log("service err", err)
             return FormateData({ message: "Data Not found", err });
@@ -64,9 +56,9 @@ class categoryService {
                 categoryInputs
             );
 
-            return FormateData({ existingCategory });
+            return FormateData(existingCategory);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
 
@@ -77,9 +69,9 @@ class categoryService {
                 categoryInputs
             );
 
-            return FormateData({ existingCategory });
+            return FormateData(existingCategory);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
 

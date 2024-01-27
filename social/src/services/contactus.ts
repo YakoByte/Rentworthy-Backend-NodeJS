@@ -1,12 +1,5 @@
 import ContactUsRepository from '../database/repository/contactus';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { ContactUsInput } from '../interface/contactus';
 
@@ -25,10 +18,9 @@ class ContactUsService {
                 ContactUsInputs
             );
 
-            return FormateData({ existingContactUs });
+            return FormateData(existingContactUs);
         } catch (err: any) {
-            console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Create contact us" });
         }
     }
 }

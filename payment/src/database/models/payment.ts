@@ -29,9 +29,13 @@ const PaymentSchema: Schema = new Schema<Payment>(
             type: Number,
             required: true,
         },
-        price: {
+        amount: {
             type: Number,
             required: true,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false,
         }
     },
     { timestamps: true }

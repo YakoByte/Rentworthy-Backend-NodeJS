@@ -1,12 +1,5 @@
 import cancellationPlanRepository from '../database/repository/cancellationPlan';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { cancellationPlanRequest, cancellationPlanUpdateRequest, cancellationPlanGetRequest, cancellationPlanDeleteRequest } from '../interface/cancellationPlan';
 
@@ -25,10 +18,10 @@ class cancellationPlanService {
                 cancellationPlanInputs
             );
 
-            return FormateData({ existingCancellationPlan });
+            return FormateData(existingCancellationPlan);
         } catch (err: any) {
             console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
     // get cancellationPlan by id , userId or all cancellationPlan
@@ -39,10 +32,10 @@ class cancellationPlanService {
                 cancellationPlanInputs
             );
 
-            return FormateData({ existingCancellationPlan });
+            return FormateData(existingCancellationPlan);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
     // update cancellationPlan by id
@@ -53,10 +46,10 @@ class cancellationPlanService {
                 cancellationPlanInputs
             );
 
-            return FormateData({ existingCancellationPlan });
+            return FormateData(existingCancellationPlan);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not updated" });
         }
     }
     // delete cancellationPlan by id  (soft delete)
@@ -66,10 +59,10 @@ class cancellationPlanService {
                 cancellationPlanInputs
             );
 
-            return FormateData({ existingCancellationPlan });
+            return FormateData(existingCancellationPlan);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Deleted" });
         }
     }
 
@@ -77,10 +70,10 @@ class cancellationPlanService {
         try {
             const CancellationPlan: any = await this.repository.getCountOfCancellationPerDay();
 
-            return FormateData({ CancellationPlan });
+            return FormateData(CancellationPlan);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 }

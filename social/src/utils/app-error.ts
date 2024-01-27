@@ -72,10 +72,9 @@ class ValidationError extends AppError {
 }
 
 export {
+  BadRequestError,
+  ValidationError,
   AppError,
   APIError,
   STATUS_CODES,
-  BadRequestError,
-  ValidationError
-
 };

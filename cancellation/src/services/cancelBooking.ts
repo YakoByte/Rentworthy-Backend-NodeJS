@@ -1,12 +1,5 @@
 import cancelBookingRepository from '../database/repository/cancelBooking';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { cancelBookingRequest, cancelBookingUpdateRequest, cancelBookingGetRequest, cancelBookingApproveRequest,cancelBookingDeleteRequest } from '../interface/cancelBooking';
 
@@ -17,6 +10,7 @@ class cancelBookingService {
     constructor() {
         this.repository = new cancelBookingRepository();
     }
+    
     // create cancelBooking
     async CreateCancelBooking(cancelBookingInputs: cancelBookingRequest) {
         try {
@@ -25,12 +19,13 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
+
     // get cancelBooking by id , userId or all cancelBooking
     async getCancelBooking(cancelBookingInputs: cancelBookingGetRequest) {
         try {
@@ -39,12 +34,13 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not FOund" });
         }
     }
+
     // update cancelBooking by id
     async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
         console.log("cancelBookingInputs", cancelBookingInputs)
@@ -53,12 +49,13 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not updated" });
         }
     }
+
     //  approve and reject cancelBooking
     async approveCancelBooking(cancelBookingInputs: cancelBookingApproveRequest) {
         try {
@@ -66,12 +63,13 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Approved" });
         }
     }
+
     // delete cancelBooking by id  (soft delete)
     async deleteCancelBooking(cancelBookingInputs: cancelBookingDeleteRequest) {
         try {
@@ -79,21 +77,33 @@ class cancelBookingService {
                 cancelBookingInputs
             );
 
-            return FormateData({ existingCancelBooking });
+            return FormateData(existingCancelBooking);
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Deleted" });
         }
     }
 
-    async getCountOfCancellationPerDay() {
+    async getCountOfCancellation(criteria: string) {
         try {
-            const CancelBooking: any = await this.repository.getCountOfCancellationPerDay();
+            if(criteria === 'month'){
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerMonth();
+                
+                return FormateData(CancelBooking);
+            } else if(criteria === 'week') {
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerWeek();
+                
+                return FormateData(CancelBooking);
+            }
+            else {
+                const CancelBooking: any = await this.repository.getCountOfCancellationPerDay();
+                
+                return FormateData(CancelBooking);
+            }
 
-            return FormateData({ CancelBooking });
         } catch (err: any) {
             console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not found" });
         }
     }
 

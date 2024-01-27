@@ -51,3 +51,9 @@ export interface imageDetail {
     userId: Types.ObjectId;
     isDeleted?: boolean;
 }
+
+export interface GetImageRequest {
+    _id?: string;
+    imageName?: string,
+    search?: string,
+}

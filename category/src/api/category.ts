@@ -18,17 +18,14 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
     formData.append('image', fs.createReadStream(imagePath));
 
     try {
-        const response = await axios.post("http://localhost:5000/app/api/v1/upload/image-upload", formData, {
+        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-upload", formData, {
             headers: {
                 ...formData.getHeaders(),
                 Authorization: token,
             },
         });
 
-        console.log(response.data.data.existingImage._id);
-        
-
-        return response.data.data.existingImage._id; // Assuming you are expecting a single image ID
+        return response.data._id;
     } catch (error: any) {
         return error.message;
     }
@@ -55,13 +52,9 @@ export default (app: Express) => {
     });
 
     // API = get category by id and search and all category
-    app.get('/get-category', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-category', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
-            req.body.userId = authUser._id;
-            console.log("req.body", req.query)
-
-            const { data } = await service.getCategory(req.query);
+            const data = await service.getCategory(req.query);
             return res.json(data);
         } catch (err) {
             console.log("err", err)

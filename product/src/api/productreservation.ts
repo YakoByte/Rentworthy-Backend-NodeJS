@@ -11,7 +11,7 @@ export default (app: Express) => {
     app.post('/create-productreservation', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.CreateProductReservation(req.body);
+            const data = await service.CreateProductReservation(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -22,7 +22,7 @@ export default (app: Express) => {
     app.post('/update-productreservation', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.UpdateProductReservation(req.body);
+            const data = await service.UpdateProductReservation(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -33,7 +33,7 @@ export default (app: Express) => {
     app.post('/update-productreservationself', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.UpdateProductReservationSelf(req.body);
+            const data = await service.UpdateProductReservationSelf(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -44,7 +44,7 @@ export default (app: Express) => {
     app.post('/update-relieveproductreservation', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.RelieveProductReservation(req.body);
+            const data = await service.RelieveProductReservation(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -55,7 +55,7 @@ export default (app: Express) => {
     app.post('/get-availabledates', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.getProductAvailable(req.body);
+            const data = await service.getProductAvailable(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

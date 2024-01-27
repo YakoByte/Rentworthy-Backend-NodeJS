@@ -1,6 +1,5 @@
 import SubscriptionRepository from '../database/repository/subscription';
-import { FormateData } from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { subscriptionRequest, subscriptionUpdateRequest, subscriptionGetRequest, subscriptionDeleteRequest } from '../interface/subscription';
 
@@ -19,10 +18,9 @@ class SubscriptionService {
                 SubscriptionInputs
             );
 
-            return FormateData({ existingSubscription });
+            return FormateData(existingSubscription);
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create Subscription" });
         }
     }
     // get Subscriptions by id
@@ -32,10 +30,9 @@ class SubscriptionService {
                 SubscriptionInputs
             );
 
-            return FormateData({ existingSubscriptions });
+            return FormateData(existingSubscriptions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Subscription" });
         }
     }
     // get All Subscriptions
@@ -44,10 +41,9 @@ class SubscriptionService {
             let existingSubscriptions: any
             existingSubscriptions = await this.repository.getAllSubscription();
 
-            return FormateData({ existingSubscriptions });
+            return FormateData(existingSubscriptions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get all Subscription" });
         }
     }
     // get Subscriptions by id
@@ -58,10 +54,9 @@ class SubscriptionService {
                 SubscriptionInputs
             );
 
-            return FormateData({ existingSubscriptions });
+            return FormateData(existingSubscriptions);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Subscription" });
         }
     }
     // update Subscription by id
@@ -71,10 +66,9 @@ class SubscriptionService {
                 SubscriptionInputs
             );
 
-            return FormateData({ existingSubscription });
+            return FormateData(existingSubscription);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update Subscription" });
         }
     }
     // delete Subscription by id  (soft delete)
@@ -84,10 +78,9 @@ class SubscriptionService {
                 SubscriptionInputs
             );
 
-            return FormateData({ existingSubscription });
+            return FormateData(existingSubscription);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete Subscription" });
         }
     }
 

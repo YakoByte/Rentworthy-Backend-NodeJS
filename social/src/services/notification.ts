@@ -1,6 +1,5 @@
 import NotificationRepository from '../database/repository/notification';
-import { FormateData } from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { notificationRequest, notificationUpdateRequest, notificationGetRequest, notificationDeleteRequest } from '../interface/notification';
 
@@ -19,10 +18,9 @@ class NotificationService {
                 NotificationInputs
             );
 
-            return existingNotification;
+            return FormateData(existingNotification);
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create NOtification" });
         }
     }
     // get Notification by id
@@ -58,10 +56,9 @@ class NotificationService {
                 NotificationInputs
             );
 
-            return FormateData({ existingNotification });
+            return FormateData(existingNotification);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Notification" });
         }
     }
     // add images to Notification
@@ -84,12 +81,12 @@ class NotificationService {
                 NotificationInputs
             );
 
-            return FormateData({ existingNotification });
+            return FormateData(existingNotification);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update Notification" });
         }
     }
+
     // delete Notification by id  (soft delete)
     async deleteNotification(NotificationInputs: notificationDeleteRequest) {
         try {
@@ -97,10 +94,9 @@ class NotificationService {
                 NotificationInputs
             );
 
-            return FormateData({ existingNotification });
+            return FormateData(existingNotification);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Delete Notification" });
         }
     }
 

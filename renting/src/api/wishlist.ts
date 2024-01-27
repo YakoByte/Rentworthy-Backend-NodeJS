@@ -16,7 +16,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            const { data } = await service.CreateWishlist(req.body);
+            const data = await service.CreateWishlist(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -29,7 +29,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.query.userId = authUser._id;
             console.log("req.query", req.query)
-            const { data } = await service.getWishlist(req.query);
+            const data = await service.getWishlist(req.query);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -43,7 +43,7 @@ export default (app: Express) => {
             req.body.userId = authUser._id;
             req.body._id = req.query._id;
             console.log("req.body", req.body)
-            const { data } = await service.addProductToWishlist(req.body);
+            const data = await service.addProductToWishlist(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -57,7 +57,7 @@ export default (app: Express) => {
             req.body.userId = authUser._id;
             req.body._id = req.query._id;
             console.log("req.body", req.body)
-            const { data } = await service.removeProductFromWishlist(req.body);
+            const data = await service.removeProductFromWishlist(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -70,7 +70,7 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             console.log("req.body", req.query)
-            const { data } = await service.deleteWishlist(req.query);
+            const data = await service.deleteWishlist(req.query);
             return res.json(data);
         } catch (err) {
             next(err);

@@ -130,6 +130,10 @@ const categorySchema: Schema = new Schema<Product>(
       type: Number,
       default: 0,
     },
+    cancellationTimeLimit: {
+      type: Number,
+      default: 0,
+    }
   },
   { timestamps: true }
 );

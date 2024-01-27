@@ -1,12 +1,5 @@
 import messageRepository from "../database/repository/messages";
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { messageRequest, getMessageRequest, deleteMessageRequest } from '../interface/messages';
 
@@ -22,9 +15,9 @@ class messageService {
     async CreateMessage(messageInputs: messageRequest) {
         try {
             const existingMessage: any = await this.repository.CreateMessage(messageInputs);
-            return existingMessage;
+            return FormateData(existingMessage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Created" });
         }
     }
 
@@ -46,7 +39,7 @@ class messageService {
             }
             return FormateData({ message: "Message sent" });
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 
@@ -54,9 +47,9 @@ class messageService {
     async GetMessage(messageInputs: getMessageRequest) {
         try {
             const existingMessage: any = await this.repository.GetMessage(messageInputs);
-            return FormateData({ existingMessage });
+            return FormateData(existingMessage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 
@@ -64,9 +57,9 @@ class messageService {
     async GetMessages(messageInputs: messageRequest) {
         try {
             const existingMessage: any = await this.repository.GetMessages(messageInputs);
-            return existingMessage;
+            return FormateData(existingMessage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 
@@ -74,9 +67,9 @@ class messageService {
     async DeleteMessage(messageInputs: deleteMessageRequest) {
         try {
             const existingMessage: any = await this.repository.DeleteMessage(messageInputs);
-            return FormateData({ existingMessage });
+            return FormateData(existingMessage);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Data not Found" });
         }
     }
 

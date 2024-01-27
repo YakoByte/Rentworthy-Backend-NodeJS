@@ -24,7 +24,6 @@ FROM node:18.17.1
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-
 # Install nodemon globally
 RUN npm install -g nodemon ts-node
 
@@ -45,5 +44,5 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 
 
 # Run the app when the container launches
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]
 

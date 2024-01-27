@@ -1,86 +1,74 @@
-import productreservationRepository from '../database/repository/productreservation';
-import { productReservationRequest, updateProductReservation, getAvailables, AuthenticatedRequest } from "../interface/productreservation";
+import productreservationRepository from "../database/repository/productreservation";
 import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError, STATUS_CODES } from '../utils/app-error';
-
+  productReservationRequest,
+  updateProductReservation,
+  getAvailables,
+  AuthenticatedRequest,
+} from "../interface/productreservation";
+import { FormateData, FormateError } from "../utils";
 
 class productReservationService {
-    private repository: productreservationRepository;
+  private repository: productreservationRepository;
 
-    constructor() {
-        this.repository = new productreservationRepository();
+  constructor() {
+    this.repository = new productreservationRepository();
+  }
+
+  async CreateProductReservation(productInputs: productReservationRequest) {
+    try {
+      const existingProduct: any =
+        await this.repository.CreateProductReservation(productInputs);
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      return FormateError({ error: "Data not Created" });
     }
+  }
 
-    async CreateProductReservation(productInputs: productReservationRequest) {
-        try {
-            const existingProduct: any = await this.repository.CreateProductReservation(
-                productInputs,
-            );
+  async UpdateProductReservation(productInputs: updateProductReservation) {
+    try {
+      const existingProduct: any =
+        await this.repository.UpdateProductReservation(productInputs);
 
-            return FormateData({ existingProduct });
-
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      return FormateError({ error: "Data not Found" });
     }
+  }
 
-    async UpdateProductReservation(productInputs: updateProductReservation) {
-        try {
-            const existingProduct: any = await this.repository.UpdateProductReservation(
-                productInputs
-            );
+  async UpdateProductReservationSelf(productInputs: updateProductReservation) {
+    try {
+      const existingProduct: any =
+        await this.repository.UpdateProductReservationSelf(productInputs);
 
-            return FormateData({ existingProduct });
-
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      return FormateError({ error: "Data not Updated" });
     }
+  }
 
-    async UpdateProductReservationSelf(productInputs: updateProductReservation) {
-        try {
-            const existingProduct: any = await this.repository.UpdateProductReservationSelf(
-                productInputs
-            );
+  async RelieveProductReservation(productInputs: updateProductReservation) {
+    try {
+      const existingProduct: any =
+        await this.repository.relieveProductReservation(productInputs);
 
-            return FormateData({ existingProduct });
-
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      return FormateError({ error: "Data not Relieve" });
     }
+  }
 
-    async RelieveProductReservation(productInputs: updateProductReservation) {
-        try {
-            const existingProduct: any = await this.repository.relieveProductReservation(
-                productInputs
-            );
+  async getProductAvailable(productInputs: getAvailables) {
+    try {
+      const existingProduct: any = await this.repository.GetAvailableDates(
+        productInputs
+      );
 
-            return FormateData({ existingProduct });
-
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      return FormateError({ error: "Data not Found" });
     }
-
-    async getProductAvailable(productInputs: getAvailables) {
-        try {
-            const existingProduct: any = await this.repository.GetAvailableDates(
-                productInputs
-            );
-
-            return FormateData({ existingProduct });
-
-        } catch (err: any) {
-            throw new APIError("Data Not found", err);
-        }
-    }
+  }
 }
 
 export = productReservationService;

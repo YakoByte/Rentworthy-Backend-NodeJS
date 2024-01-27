@@ -11,7 +11,7 @@ export default (app: Express) => {
     app.post('/create-productlike', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.body.userId = req.user._id;
-            const { data } = await service.CreateProductLike(req.body);
+            const data = await service.CreateProductLike(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

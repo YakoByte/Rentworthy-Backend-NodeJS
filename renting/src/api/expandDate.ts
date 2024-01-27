@@ -16,7 +16,6 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.body)
             const data = await service.CreateExpandDate(req.body);
             return res.json(data);
         } catch (err) {
@@ -28,9 +27,7 @@ export default (app: Express) => {
     app.get('/get-expand-date', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            // req.query.user = authUser;
-            console.log("req.query", req.query)
-            const { data } = await service.getExpandDate({ ...req.query, user: authUser });
+            const data = await service.getExpandDate({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {
             next(err);
@@ -86,5 +83,4 @@ export default (app: Express) => {
             next(err);
         }
     });
-
 };

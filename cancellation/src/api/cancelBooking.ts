@@ -2,7 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import CancelBookingService from '../services/cancelBooking';
 import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
-import { AuthenticatedRequest, postAuthenticatedRequest, updateAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/cancelBooking';
+import { AuthenticatedRequest, postAuthenticatedRequest, updateAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/cancelBooking';
 import upload from '../middlewares/imageStorage';
 // import multer from 'multer';
 // import path from 'path';
@@ -30,7 +30,7 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             req.query.userId = authUser._id;
             console.log("req.query", req.query)
-            const { data } = await service.getCancelBooking({ ...req.query });
+            const data = await service.getCancelBooking({ ...req.query });
             return res.json(data);
         } catch (err) {
             next(err);
@@ -76,10 +76,11 @@ export default (app: Express) => {
     });
 
     //API = count cancleBooking by every minutes   
-    app.get('/get-cancel-booking/per-day', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-cancel-booking/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
-            const data = await service.getCountOfCancellationPerDay();
+            let criteria = req.query.criteria
+            const data = await service.getCountOfCancellation(criteria);
             return res.json(data);
         } catch (err) {
             next(err);

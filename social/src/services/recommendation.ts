@@ -1,12 +1,5 @@
 import recommendationRepository from '../database/repository/recommendation';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { recommendationRequest } from '../interface/recommendation';
 
@@ -25,10 +18,9 @@ class recommendationService {
                 recommendationInputs
             );
 
-            return FormateData({ existingRecommendation });
+            return FormateData(existingRecommendation);
         } catch (err: any) {
-            console.log("err", err.message)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Create Recommendation" });
         }
     }
 }

@@ -1,4 +1,5 @@
 import { userModel, roleModel, historyModel } from "../models";
+import moment from "moment";
 import {
   GeneratePassword,
   GenerateSalt,
@@ -228,6 +229,141 @@ class AdminRepository {
     } catch (error) {
       console.log("err", error);
       throw new Error("Error on Find All Users");
+    }
+  }
+
+  async getCountOfUserPerDay() {
+    try {
+      // Set the startDate to the beginning of the day one year ago
+      let startDate = moment()
+        .subtract(1, "years")
+        .startOf("day")
+        .toISOString();
+
+      // Set the endDate to the end of the current day
+      let endDate = moment().endOf("day").toISOString();
+
+      let result = await userModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+            isDeleted: false,
+          },
+        },
+        {
+          $project: {
+            date: {
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$date",
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+
+      let finalData = result.map((item) => ({
+        date: item._id,
+        total: item.total,
+      }));
+
+      return finalData;
+    } catch (error) {
+      console.log("Error in getting count of day : ", error);
+      return [];
+    }
+  }
+
+  async getCountOfUserPerMonth() {
+    try {
+      // Set the startDate to the beginning of the month one year ago
+      let startDate = moment()
+        .subtract(1, "years")
+        .startOf("day")
+        .toISOString();
+
+      // Set the endDate to the end of the current month
+      let endDate = moment().endOf("day").toISOString();
+
+      let result = await userModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+            isDeleted: false,
+          },
+        },
+        {
+          $project: {
+            month: {
+              $dateToString: { format: "%Y-%m", date: "$createdAt" },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$month",
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+
+      let finalData = result.map((item) => ({
+        month: item._id,
+        total: item.total,
+      }));
+
+      return finalData;
+    } catch (error) {
+      console.log("Error in getting count of month : ", error);
+      return [];
+    }
+  }
+
+  async getCountOfUserPerWeek() {
+    try {
+      // Set the startDate to the beginning of the day one year ago
+      let startDate = moment()
+        .subtract(1, "years")
+        .startOf("day")
+        .toISOString();
+
+      // Set the endDate to the end of the current day
+      let endDate = moment().endOf("day").toISOString();
+
+      const result = await userModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+            isDeleted: false,
+          },
+        },
+        {
+          $project: {
+            month: {
+              $dateToString: { format: "%Y-%U", date: "$createdAt" },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$month",
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+
+      let finalData = result.map((item) => ({
+        week: item._id,
+        total: item.total,
+      }));
+
+      return finalData;
+    } catch (error) {
+      console.log("Error in getting count of previous years weeks : ", error);
+      return [];
     }
   }
 }

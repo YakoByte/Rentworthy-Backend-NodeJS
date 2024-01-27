@@ -1,7 +1,5 @@
-import { productModel, historyModel, Bookings } from "../models";
+import { productModel, historyModel, Bookings, Wishlists } from "../models";
 import { Types } from "mongoose";
-import { FormateData } from "../../utils";
-import { BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import {
   productRequest,
   productDeleteRequest,
@@ -10,56 +8,45 @@ import {
   productGetRequest,
 } from "../../interface/product";
 import productReservationService from "../../services/productreservation";
+import { generatePresignedUrl } from "../../utils/aws";
 const ResRepo = new productReservationService();
 
 class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
-    // try {
-    const findProduct = await productModel.findOne({
-      name: productInputs.name,
-    });
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      return FormateData({ id: findProduct._id, name: findProduct.name });
-    }
-
-    const product = new productModel(productInputs);
-    const productResult = await product.save();
-    let resObj = {
-      productId: productResult._id.toString(),
-      startDate: productInputs.rentingDate.startDate,
-      endDate: productInputs.rentingDate.endDate,
-    };
-    ResRepo.CreateProductReservation(resObj);
-    const history = new historyModel({
-      productId: productResult._id,
-      log: [
-        {
-          objectId: productResult._id,
-          data: {
-            userId: productInputs.userId,
+    try {
+      const product = new productModel(productInputs);
+      const productResult = await product.save();
+      let resObj = {
+        productId: productResult._id.toString(),
+        startDate: productInputs.rentingDate.startDate,
+        endDate: productInputs.rentingDate.endDate,
+      };
+      ResRepo.CreateProductReservation(resObj);
+      const history = new historyModel({
+        productId: productResult._id,
+        log: [
+          {
+            objectId: productResult._id,
+            data: {
+              userId: productInputs.userId,
+            },
+            action: `productName = ${productInputs.name} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
           },
-          action: `productName = ${productInputs.name} created`,
-          date: new Date().toISOString(),
-          time: Date.now(),
-        },
-      ],
-    });
-    await history.save();
+        ],
+      });
+      await history.save();
 
-    return productResult;
-    // } catch (err) {
-    //     throw new APIError(
-    //         "API Error",
-    //         STATUS_CODES.INTERNAL_ERROR,
-    //         "Unable to Create User"
-    //     );
-    // }
+      return productResult;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Create Product");
+    }
   }
 
-  //get product by id
-  async getProductById(productInputs: { _id: string }) {
+  async getProductApprovedById(productInputs: { _id: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -74,7 +61,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -84,7 +71,7 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
@@ -92,11 +79,7 @@ class ProductRepository {
       ]);
 
       if (findProduct.length === 0) {
-        return {
-          STATUS_CODE: STATUS_CODES.NOT_FOUND,
-          data: [],
-          message: "Product not found",
-        };
+        return { message: "Product not found" };
       }
 
       await productModel.updateOne(
@@ -130,16 +113,109 @@ class ProductRepository {
       }
 
       return {
-        STATUS_CODE: STATUS_CODES.OK,
-        data: productData,
-        bookingData: bookingData,
+        data: productData || [],
+        bookingData: bookingData || [],
       };
-    } catch (err: any) {
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
+    }
+  }
+
+  //get product by id
+  async getProductById(productInputs: { _id: string; userId: string }) {
+    try {
+      const findProduct = await productModel.aggregate([
+        {
+          $match: {
+            _id: new Types.ObjectId(productInputs._id),
+            isDeleted: false,
+            isActive: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
+        },
+      ]);
+
+      if (findProduct.length === 0) {
+        return { message: "Product not found" };
+      }
+
+      await productModel.updateOne(
+        { _id: productInputs._id },
+        { $inc: { viewCount: 1 } }
+      );
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          // element.images.forEach(async(element: any) => {
+          //   let newPath = await generatePresignedUrl(element.imageName);
+          //   element.path = newPath;
+          // });
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
       return {
-        STATUS_CODE: STATUS_CODES.INTERNAL_ERROR,
-        data: [],
-        message: err.message,
+        data: await Promise.all(wishlistPromises),
       };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -154,14 +230,12 @@ class ProductRepository {
             isActive: true,
           },
         },
-        // { $skip: productInputs.page as number },
-        // { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -171,65 +245,161 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
         },
       ]);
-      // const findProduct = await productModel.find({ categoryId: productInputs.categoryId, isDeleted: false, isActive: true }).populate("images");
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        return FormateData(findProduct);
-      }
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
   // get product by subcategory id
   async getProductBySubCategoryId(productInputs: productGetRequest) {
-    console.log("skip", productInputs.page, "limit", productInputs.limit);
-    const findProduct = await productModel.aggregate([
-      {
-        $match: {
-          subCategoryId: new Types.ObjectId(productInputs.subCategoryId),
-          isDeleted: false,
-          isActive: true,
+    try {
+      console.log("skip", productInputs.page, "limit", productInputs.limit);
+      const findProduct = await productModel.aggregate([
+        {
+          $match: {
+            subCategoryId: new Types.ObjectId(productInputs.subCategoryId),
+            isDeleted: false,
+            isActive: true,
+          },
         },
-      },
-      // { $skip: productInputs.page as number },
-      // { $limit: productInputs.limit },
-      {
-        $lookup: {
-          from: "images",
-          localField: "images",
-          foreignField: "_id",
-          pipeline: [{ $project: { path: 1, _id: 0 } }],
-          as: "images",
+        // { $skip: productInputs.page as number },
+        // { $limit: productInputs.limit },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          pipeline: [
-            { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
-          ],
-          as: "userId",
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
         },
-      },
-    ]);
-    // const findProduct = await productModel.find({ subCategoryId: productInputs.subCategoryId, isDeleted: false, isActive: true }).populate("images");
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      return FormateData(findProduct);
+      ]);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
   //get all product
-  async getAllProduct({ skip, limit }: { skip: number; limit: number }) {
+  async getAllProduct({
+    skip,
+    limit,
+    userId,
+  }: {
+    skip: number;
+    limit: number;
+    userId: string;
+  }) {
     try {
       console.log("skip", skip, "limit", limit);
       const findProduct = await productModel.aggregate([
@@ -241,7 +411,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -251,22 +421,61 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
         },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        return { STATUS_CODE: STATUS_CODES.OK, data: findProduct };
-      }
-    } catch (err: any) {
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
       return {
-        STATUS_CODE: STATUS_CODES.NOT_FOUND,
-        data: [],
-        message: err.message,
+        data: await Promise.all(wishlistPromises),
       };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -281,7 +490,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -291,24 +500,71 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
         },
         { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        return FormateData(findProduct);
-      }
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
   // get product by location
-  async getProductByLocation(productInputs: { lat: number; long: number }) {
+  async getProductByLocation(productInputs: {
+    lat: number;
+    long: number;
+    userId: string;
+  }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -328,7 +584,7 @@ class ProductRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -338,58 +594,145 @@ class ProductRepository {
             localField: "userId",
             foreignField: "_id",
             pipeline: [
-              { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
             ],
             as: "userId",
           },
         },
       ]);
-      console.log("findProduct", findProduct);
-      if (findProduct) {
-        return FormateData(findProduct);
-      }
-    } catch (err: any) {
-      return new BadRequestError("Data Not found", err);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
   // get product by name and search using regex
-  async getProductByName(productInputs: { name: string }) {
-    // const findProduct = await productModel.find({ name: { $regex: productInputs.name, $options: 'i' }, isDeleted: false, isActive: true }).populate("images");
-    const findProduct = await productModel.aggregate([
-      {
-        $match: {
-          name: { $regex: productInputs.name, $options: "i" },
-          isDeleted: false,
-          isActive: true,
+  async getProductByName(productInputs: { name: string; userId: string }) {
+    try {
+      const findProduct = await productModel.aggregate([
+        {
+          $match: {
+            name: { $regex: productInputs.name, $options: "i" },
+            isDeleted: false,
+            isActive: true,
+          },
         },
-      },
-      // { $skip: productInputs.skip },
-      // { $limit: productInputs.limit },
-      {
-        $lookup: {
-          from: "images",
-          localField: "images",
-          foreignField: "_id",
-          pipeline: [{ $project: { path: 1, _id: 0 } }],
-          as: "images",
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          pipeline: [
-            { $project: { password: 0, salt: 0, isDeleted: 0, isActive: 0 } },
-          ],
-          as: "userId",
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
         },
-      },
-    ]);
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      return FormateData(findProduct);
+      ]);
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.findOne({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(
+              `Error processing wishlist for product ${element._id}: ${error}`
+            );
+            // Handle the error as needed
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: null,
+            };
+          }
+        })
+      );
+
+      return {
+        data: await Promise.all(wishlistPromises),
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
     }
   }
 
@@ -418,52 +761,51 @@ class ProductRepository {
 
         await history.save();
 
-        return { STATUS_CODES: STATUS_CODES.OK, data: "Product Updated" };
+        return { message: "Product Updated" };
       } else {
-        return {
-          STATUS_CODES: STATUS_CODES.NOT_FOUND,
-          data: "Product not found or already deleted",
-        };
+        return { message: "Product not found or already deleted" };
       }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      return {
-        STATUS_CODES: STATUS_CODES.INTERNAL_ERROR,
-        data: "Error updating product",
-      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Update Product");
     }
   }
 
   async deleteProduct(productInputs: productDeleteRequest) {
-    const findProduct = await productModel.findOne({
-      _id: productInputs._id,
-      isDeleted: false,
-    });
-    console.log("findProduct", findProduct);
-    if (findProduct) {
-      // soft delete product
-      const productResult = await productModel.updateOne(
-        { _id: productInputs._id },
-        { isDeleted: true }
-      );
-      // soft delete subproduct
-      // const subproductResult = await subProductModel.updateMany({ productId: productInputs._id }, { isDeleted: true });
-      // console.log("subproductResult", subproductResult)
-      //create history
-      const history = new historyModel({
-        productId: productInputs._id,
-        log: [
-          {
-            objectId: productInputs._id,
-            userId: productInputs.userId,
-            action: `productName = ${findProduct.name} deleted and subproduct also deleted`,
-            date: new Date().toISOString(),
-            time: Date.now(),
-          },
-        ],
+    try {
+      const findProduct = await productModel.findOne({
+        _id: productInputs._id,
+        isDeleted: false,
       });
-      await history.save();
-      return FormateData({ message: "Product Deleted" });
+      console.log("findProduct", findProduct);
+      if (findProduct) {
+        // soft delete product
+        const productResult = await productModel.updateOne(
+          { _id: productInputs._id },
+          { isDeleted: true }
+        );
+        // soft delete subproduct
+        // const subproductResult = await subProductModel.updateMany({ productId: productInputs._id }, { isDeleted: true });
+        // console.log("subproductResult", subproductResult)
+        //create history
+        const history = new historyModel({
+          productId: productInputs._id,
+          log: [
+            {
+              objectId: productInputs._id,
+              userId: productInputs.userId,
+              action: `productName = ${findProduct.name} deleted and subproduct also deleted`,
+              date: new Date().toISOString(),
+              time: Date.now(),
+            },
+          ],
+        });
+        await history.save();
+        return { message: "Product Deleted" };
+      }
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Update Product");
     }
   }
 }

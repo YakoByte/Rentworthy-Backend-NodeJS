@@ -1,6 +1,5 @@
 import PrivacyPolicyRepository from '../database/repository/privacyPolicy';
-import { FormateData } from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { privacyPolicyRequest, privacyPolicyUpdateRequest, privacyPolicyGetRequest, privacyPolicyDeleteRequest } from '../interface/privacyPolicy';
 
@@ -19,10 +18,9 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return FormateData ({ existingPrivacyPolicy });
+            return FormateData (existingPrivacyPolicy);
         } catch (err: any) {
-            console.log("err", err.message)
-            return ({ message: "Data Not found", err });
+            return FormateError({ error: "Failed to Create Privacy Policy" });
         }
     }
     // // get PrivacyPolicy by id
@@ -58,10 +56,9 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return FormateData({ existingPrivacyPolicy });
+            return FormateData(existingPrivacyPolicy);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get Privacy Policy" });
         }
     }
     // add images to PrivacyPolicy
@@ -71,10 +68,9 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return FormateData({ existingPrivacyPolicy });
+            return FormateData(existingPrivacyPolicy);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to add image Privacy Policy" });
         }
     }
     // update PrivacyPolicy by id
@@ -84,10 +80,9 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return FormateData({ existingPrivacyPolicy });
+            return FormateData(existingPrivacyPolicy);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to update Privacy Policy" });
         }
     }
     // delete PrivacyPolicy by id  (soft delete)
@@ -97,10 +92,9 @@ class PrivacyPolicyService {
                 PrivacyPolicyInputs
             );
 
-            return FormateData({ existingPrivacyPolicy });
+            return FormateData(existingPrivacyPolicy);
         } catch (err: any) {
-            console.log("err", err)
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Delete Privacy Policy" });
         }
     }
 

@@ -1,12 +1,5 @@
 import wishlistRepository from '../database/repository/wishlist';
-import {
-    FormateData,
-    // GeneratePassword,
-    // GenerateSalt,
-    // GenerateSignature,
-    // ValidatePassword,
-} from '../utils';
-import { APIError, BadRequestError } from '../utils/app-error';
+import { FormateData, FormateError } from '../utils';
 
 import { wishlistRequest, wishlistUpdateRequest, wishlistDeleteRequest, wishlistGetRequest } from '../interface/wishlist';
 
@@ -24,9 +17,9 @@ class wishlistService {
                 wishlistInputs
             );
 
-            return FormateData({ existingWishlist });
+            return FormateData(existingWishlist);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to create wishlist" });
         }
     }
     // get wishlist by id , userId or all wishlist
@@ -48,20 +41,20 @@ class wishlistService {
                 });
             }
 
-            return FormateData({ existingWishlist });
+            return FormateData(existingWishlist);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to Get wishlist" });
         }
     }
     // add product
     async addProductToWishlist(wishlistInputs: wishlistRequest) {
         try {
             const existingWishlist: any = await this.repository.updateWishlist(
-                { _id: wishlistInputs._id }, { $push: { productIds: wishlistInputs.productIds } }
+                { userId: wishlistInputs.userId }, { $push: { productIds: wishlistInputs.productIds } }
             );
-            return FormateData({ existingWishlist });
+            return FormateData(existingWishlist);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to add product in wishlist" });
         }
     }
 
@@ -69,11 +62,11 @@ class wishlistService {
     async removeProductFromWishlist(wishlistInputs: wishlistRequest) {
         try {
             const existingWishlist: any = await this.repository.updateWishlist(
-                { _id: wishlistInputs._id }, { $pull: { productIds: wishlistInputs.productIds } }
+                { userId: wishlistInputs.userId }, { $pull: { productIds: wishlistInputs.productIds } }
             );
-            return FormateData({ existingWishlist });
+            return FormateData(existingWishlist);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to remove product from wishlist" });
         }
     }
 
@@ -84,9 +77,9 @@ class wishlistService {
                 wishlistInputs
             );
 
-            return FormateData({ existingWishlist });
+            return FormateData(existingWishlist);
         } catch (err: any) {
-            throw new APIError("Data Not found", err);
+            return FormateError({ error: "Failed to delete wishlist" });
         }
     }
 

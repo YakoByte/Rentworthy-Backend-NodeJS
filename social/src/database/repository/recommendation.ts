@@ -1,13 +1,6 @@
 import { recommendationModel } from "../models";
-import {
-  FormateData,
-  // GeneratePassword,
-  //   GenerateSalt,
-  //   GenerateSignature,
-  //   ValidatePassword,
-} from "../../utils";
-import { APIError, BadRequestError, STATUS_CODES } from "../../utils/app-error";
 import { recommendationRequest } from "../../interface/recommendation";
+
 class RecommendationRepository {
   //create expandDate
   async Createrecommendation(recommendationInputs: recommendationRequest) {
@@ -43,10 +36,10 @@ class RecommendationRepository {
       } else {
         returnVal = await recommendationModel.create(recommendationInputs);
       }
-      FormateData(returnVal)
-    } catch (err) {
-      console.log("err", err);
-      return err;
+      return returnVal;
+    } catch (err: any) {
+      console.log("error", err);
+      throw new Error("Unable to Create Recommendation");
     }
   }
 }

@@ -71,7 +71,7 @@ class addressRepository {
         userId: addressInputs.userId,
         isDeleted: false,
       });
-      console.log("findAddress", findAddress);
+
       //if address exist
       if (findAddress) {
         const address = await addressModel.findOneAndUpdate(
@@ -83,7 +83,7 @@ class addressRepository {
           addressInputs,
           { new: true }
         );
-        return true;
+        return address;
       }
 
       return false;
