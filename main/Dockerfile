@@ -4,9 +4,6 @@ FROM node:18.17.1
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Create a directory in the container
-RUN mkdir -p public/images
-
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 

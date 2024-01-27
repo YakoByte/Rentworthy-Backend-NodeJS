@@ -38,7 +38,7 @@ export default (app: Express) => {
 
     // API = create new product
     app.post('/create-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
+        try {       
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body = { ...req.body }
