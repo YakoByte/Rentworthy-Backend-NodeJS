@@ -10,6 +10,8 @@ import fs from 'fs';
 import FormData from 'form-data';
 
 async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
+    console.log("uploadMultipleImagesWithToken", imagePaths, token);
+    
     const formData = new FormData();
 
     for (const imagePath of imagePaths) {

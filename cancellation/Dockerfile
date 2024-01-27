@@ -1,7 +1,7 @@
 FROM node:18.17.1 AS builder
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy the package.json and package-lock.json
 COPY package*.json ./
@@ -21,16 +21,16 @@ COPY . .
 FROM node:18.17.1
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install nodemon globally
 RUN npm install -g nodemon ts-node
 
 # Copy the built application from the previous stage
-COPY --from=builder /usr/src/app .
+COPY --from=builder /app .
 
 # If you have a build process, you might only need to copy the build output, e.g.,
-# COPY --from=builder /usr/src/app/dist ./dist
+# COPY --from=builder /app/dist ./dist
 
 # Expose port 5003 to the world outside this container
 EXPOSE 5008
