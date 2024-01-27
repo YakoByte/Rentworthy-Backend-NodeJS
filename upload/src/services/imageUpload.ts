@@ -159,7 +159,7 @@ class imageService {
       }
       return FormateData(data);
     } catch (err: any) {
-      return FormateError({ error: "Failed to delete the images By Name" });
+      return FormateError({ error: "Failed to Fetch the images" });
     }
   }
 
@@ -183,7 +183,7 @@ class imageService {
       if (!existingImage) return FormateError({ error: "No Image Found" });
       return FormateData(existingImage);
     } catch (err: any) {
-      return FormateError({ error: "Failed to Get the images By Name" });
+      return FormateError({ error: "Failed to Get the images By Id" });
     }
   }
 
@@ -194,7 +194,7 @@ class imageService {
       if (!existingImage) return FormateError({ error: "No Image Found" });
       return FormateData(existingImage);
     } catch (err: any) {
-      return FormateError({ error: "Failed to Get the images By Name" });
+      return FormateError({ error: "Failed to Get the images" });
     }
   }
 
@@ -204,7 +204,7 @@ class imageService {
       if (!existingImage) return FormateError({ error: "No Image Found" });
       return FormateData(existingImage);
     } catch (err: any) {
-      return FormateError({ error: "Failed to Get the images By Name" });
+      return FormateError({ error: "Failed to Update the images" });
     }
   }
 }
