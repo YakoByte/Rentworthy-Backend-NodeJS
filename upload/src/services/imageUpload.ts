@@ -151,9 +151,7 @@ class imageService {
       } else if (imageInputs.search) {
         data = await this.repository.GetImageByName(imageInputs.search || "");
       } else if (imageInputs.imageName) {
-        data = await this.repository.GetImageByName(
-          imageInputs.imageName || ""
-        );
+        data = await this.repository.GetImageByName(imageInputs.imageName || "");
       } else {
         data = await this.repository.GetAllImages();
       }
