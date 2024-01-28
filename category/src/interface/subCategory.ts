@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends Request {
 
 export interface SubCategory extends Document {
     name: string;
-    image: string;
+    image: Types.ObjectId;
     description: string;
     isActive?: boolean;
     userId: Types.ObjectId;

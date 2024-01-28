@@ -5,6 +5,8 @@ import wishlistModel from './wishlist';
 import bookingModel from './booking';
 import productModel from './product';
 import expandDatesModel from './expandDates';
+import imageModel from './image';
+
 // ... repeat for each model
 
 // Then, export them:
@@ -13,5 +15,6 @@ export {
     wishlistModel,
     bookingModel,
     productModel,
-    expandDatesModel
+    expandDatesModel,
+    imageModel
 };

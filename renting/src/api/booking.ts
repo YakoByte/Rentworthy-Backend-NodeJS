@@ -4,47 +4,49 @@ import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest, bookingRequest, postAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/booking';
 import upload from '../middlewares/imageStorage';
-import axios from 'axios';
-import fs from 'fs';
-import FormData from 'form-data';
+// import axios from 'axios';
+// import fs from 'fs';
+// import FormData from 'form-data';
 import { FormateData } from '../utils';
+import imageService from '../services/imageUpload';
 
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
-    const formData = new FormData();
+// async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
+//     const formData = new FormData();
 
-    for (const imagePath of imagePaths) {
-        formData.append('image', fs.createReadStream(imagePath));
-    }
+//     for (const imagePath of imagePaths) {
+//         formData.append('image', fs.createReadStream(imagePath));
+//     }
 
-    try {
-        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-            headers: {
-                ...formData.getHeaders(),
-                Authorization: token,
-            },
-        });
+//     try {
+//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
+//             headers: {
+//                 ...formData.getHeaders(),
+//                 Authorization: token,
+//             },
+//         });
     
-        const paths: string[] = response.data.map((element: any) => element._id);
+//         const paths: string[] = response.data.map((element: any) => element._id);
 
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
 
-        return paths;
-    } catch (error: any) {
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
-        return [error.message]; // Return an array to match the Promise<string[]> type
-    }
-}
+//         return paths;
+//     } catch (error: any) {
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
+//         return [error.message]; // Return an array to match the Promise<string[]> type
+//     }
+// }
 
 export default (app: Express) => {
     const service = new BookingService();
+    const image = new imageService();
 
     // API = create new booking
     app.post('/create-booking', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -52,8 +54,14 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.status = 'Processing'
-            if (req.files.length > 0) {                
-                req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            if (req.files.length > 0) {    
+                const imageData = {
+                    userId: authUser._id,
+                    imageDetails: req.files,
+                  }
+        
+                  req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
+                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             } else {
                 return res.status(400).json({ error: "No file provided" });
             }
@@ -95,8 +103,14 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
 
-            if (req.files.length > 0) {                
-                req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            if (req.files.length > 0) {    
+                const imageData = {
+                    userId: authUser._id,
+                    imageDetails: req.files,
+                  }
+        
+                  req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
+                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             } else {
                 return res.status(400).json({ error: "No file provided" });
             }
@@ -170,7 +184,12 @@ export default (app: Express) => {
         { name: 'images2', maxCount: 10 },
     ]),
     async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
-        try { 
+        try {
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+            req.body._id = String(req.query.bookingId);
+
+
             let images = req.files as any;
             let body = req.body as any;
             req.body.preRentalScreening = [];
@@ -186,16 +205,16 @@ export default (app: Express) => {
 
                 // Add the images if available
                 if (images[`images${i}`]) {
-                    screeningItem.images = await uploadMultipleImagesWithToken(images[`images${i}`].map((obj: { path: any; }) => obj.path), req.headers.authorization) as string[];
+                    const imageData = {
+                        userId: authUser._id,
+                        imageDetails: images[`images${i}`],
+                    }
+
+                    screeningItem.images = await image.CreateImages(imageData) as unknown as string[];
                 }
 
                 req.body.preRentalScreening.push(screeningItem);
             }
-
-            // call image upload api
-            let authUser: any = req.user;
-            req.body.userId = authUser._id;
-            req.body._id = String(req.query.bookingId);
            
             const data = await service.updatePreRentalScreeningById(req.body);
             return res.json(data);
