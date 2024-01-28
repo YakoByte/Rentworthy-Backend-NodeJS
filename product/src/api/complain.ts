@@ -3,46 +3,48 @@ import ComplainService from '../services/complain';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest } from '../interface/complain';
 import upload from '../middlewares/imageStorage';
-import axios from 'axios';
-import fs from 'fs';
-import FormData from 'form-data';
+import imageService from '../services/imageUpload';
+// import axios from 'axios';
+// import fs from 'fs';
+// import FormData from 'form-data';
 
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
-    const formData = new FormData();
+// async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
+//     const formData = new FormData();
 
-    for (const imagePath of imagePaths) {
-        formData.append('image', fs.createReadStream(imagePath));
-    }
+//     for (const imagePath of imagePaths) {
+//         formData.append('image', fs.createReadStream(imagePath));
+//     }
 
-    try {
-        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-            headers: {
-                ...formData.getHeaders(),
-                Authorization: token,
-            },
-        });
+//     try {
+//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
+//             headers: {
+//                 ...formData.getHeaders(),
+//                 Authorization: token,
+//             },
+//         });
     
-        const paths: string[] = response.data.map((element: any) => element._id);
+//         const paths: string[] = response.data.map((element: any) => element._id);
 
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
 
-        return paths;
-    } catch (error: any) {
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
-        return [error.message];
-    }
-}
+//         return paths;
+//     } catch (error: any) {
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
+//         return [error.message];
+//     }
+// }
 
 export default (app: Express) => {
     const service = new ComplainService();
+    const image = new imageService();
 
 
     // API = create new Complain
@@ -62,7 +64,15 @@ export default (app: Express) => {
             }
             delete req.body.startDate
             delete req.body.endDate
-            req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+
+            const imageData = {
+                userId: req.user._id,
+                imageDetails: req.files,
+            }
+
+            req.body.images = await image.CreateImages(imageData);
+
+            // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             console.log(req.body.images);
             
             const data = await service.CreateComplain(req.body);
@@ -90,9 +100,16 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
 
-            if (req.files.length > 0) {                
-                req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+            if (req.files.length > 0) {   
+                const imageData = {
+                    userId: req.user._id,
+                    imageDetails: req.files,
+                }
+    
+                req.body.images = await image.CreateImages(imageData);             
+                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             }
+            
             console.log(req.body);
 
             req.body = { ...req.body }

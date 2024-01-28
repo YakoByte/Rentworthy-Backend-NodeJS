@@ -2,7 +2,6 @@ import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/user';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLoginRequest, getCountAuthenticatedRequest } from '../interface/user';
-// import { validateCreateAdmin, validateLoginUser } from './userValidation';
 import RoleService from '../services/role';
 import OTPService from '../services/otp';
 

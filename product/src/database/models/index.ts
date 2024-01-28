@@ -9,6 +9,7 @@ import productReservationModel from './productreservation';
 import ComplainModel from './complain';
 import Bookings from './booking';
 import Wishlists from './wishlist';
+import imageModel from './image';
 
 // ... repeat for each model
 
@@ -22,5 +23,6 @@ export {
     productReservationModel,
     ComplainModel,
     Bookings,
-    Wishlists
+    Wishlists,
+    imageModel
 };

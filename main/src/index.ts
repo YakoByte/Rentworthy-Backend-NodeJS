@@ -12,7 +12,6 @@ import {
 } from "./gateway";
 import path from "path";
 import http from "http";
-import fs from "fs";
 import { Server as SocketIOServer } from "socket.io";
 import { setupSocketServer } from "./chat/chat";
 import { connectDB } from "./database";

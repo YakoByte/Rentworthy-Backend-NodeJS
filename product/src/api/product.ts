@@ -1,53 +1,52 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import ProductService from '../services/product';
 import UserAuth from '../middlewares/auth';
-import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest } from '../interface/product';
 import upload from '../middlewares/imageStorage';
-// import { func } from 'joi';
-import axios from 'axios';
-import fs from 'fs';
-import FormData from 'form-data';
+import imageService from '../services/imageUpload';
+// import axios from 'axios';
+// import fs from 'fs';
+// import FormData from 'form-data';
 
-async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
-    console.log("uploadMultipleImagesWithToken", imagePaths, token);
+// async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
+//     console.log("uploadMultipleImagesWithToken", imagePaths, token);
     
-    const formData = new FormData();
+//     const formData = new FormData();
 
-    for (const imagePath of imagePaths) {
-        formData.append('image', fs.createReadStream(imagePath));
-    }
+//     for (const imagePath of imagePaths) {
+//         formData.append('image', fs.createReadStream(imagePath));
+//     }
 
-    try {
-        const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-            headers: {
-                ...formData.getHeaders(),
-                Authorization: token,
-            },
-        });
+//     try {
+//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
+//             headers: {
+//                 ...formData.getHeaders(),
+//                 Authorization: token,
+//             },
+//         });
     
-        const paths: string[] = response.data.map((element: any) => element._id);
+//         const paths: string[] = response.data.map((element: any) => element._id);
 
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
 
-        return paths;
-    } catch (error: any) {
-        imagePaths.forEach(async (element: any) => {
-            if (fs.existsSync(element)) {
-              fs.unlinkSync(element);
-            }
-        });
-        return [error.message]; // Return an array to match the Promise<string[]> type
-    }
-}
+//         return paths;
+//     } catch (error: any) {
+//         imagePaths.forEach(async (element: any) => {
+//             if (fs.existsSync(element)) {
+//               fs.unlinkSync(element);
+//             }
+//         });
+//         return [error.message]; // Return an array to match the Promise<string[]> type
+//     }
+// }
 
 export default (app: Express) => {
     const service = new ProductService();
-
+    const image = new imageService();
 
     // API = create new product
     app.post('/create-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -72,7 +71,15 @@ export default (app: Express) => {
             
             delete req.body.startDate
             delete req.body.endDate
-            req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+
+            const imageData = {
+                userId: req.user._id,
+                imageDetails: req.files,
+            }
+
+            req.body.images = await image.CreateImages(imageData);
+
+            // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             console.log(req.body.images);
             
             const data = await service.CreateProduct(req.body);
@@ -123,7 +130,13 @@ export default (app: Express) => {
             }
             
             if (req.files.length > 0) { 
-                req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
+                const imageData = {
+                    userId: req.user._id,
+                    imageDetails: req.files,
+                }
+    
+                req.body.images = await image.CreateImages(imageData);
+                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             }
             
             const data = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });

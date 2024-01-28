@@ -1,10 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import LocationService from '../services/location';
 import UserAuth from '../middlewares/auth';
-// import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest } from '../interface/location';
-import { isAdmin } from '../middlewares/checkRole';
-// import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new LocationService();
@@ -12,7 +9,6 @@ export default (app: Express) => {
     app.post('/create-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.body)
         try {
             const data = await service.CreateLocation(req.body);
             return res.json(data);
@@ -25,7 +21,6 @@ export default (app: Express) => {
     app.get('/get-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.query)
         try {
             const data = await service.getLocationById(req.query);
             return res.json(data);
@@ -38,7 +33,6 @@ export default (app: Express) => {
     app.put('/update-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.body)
         try {
             const data = await service.updateLocationById(req.body);
             return res.json(data);
@@ -51,8 +45,6 @@ export default (app: Express) => {
     app.delete('/delete-location', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-
-        console.log("req.body", req.body)
         try {
             const data = await service.deleteLocationById(req.body);
             return res.json(data);

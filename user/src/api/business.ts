@@ -1,10 +1,8 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import BusinessService from '../services/business';
 import UserAuth from '../middlewares/auth';
-import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest } from '../interface/business';
 import { isAdmin } from '../middlewares/checkRole';
-// import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new BusinessService();
@@ -12,7 +10,6 @@ export default (app: Express) => {
     app.post('/create-business', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.body)
         try {
             const data = await service.createBusiness(req.body);
             return res.json(data);
@@ -26,7 +23,6 @@ export default (app: Express) => {
 
      // API = approve/reject business info
      app.put('/approval-business', UserAuth,isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        console.log("req.body", req.body)
         try {
             const data = await service.approveRejectBusiness(req.body);
             return res.json(data);
@@ -36,8 +32,7 @@ export default (app: Express) => {
     });
 
      // API = get business info
-     app.get('/get-business', UserAuth, isAdmin,async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        console.log("req.body", req.query)
+     app.get('/get-business', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.getBusiness(req.query);
             return res.json(data);

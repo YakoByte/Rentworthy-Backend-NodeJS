@@ -12,8 +12,7 @@ const s3Client = new S3Client({
     secretAccessKey: AWS_SECRET_ACCESS_KEY || '',
   },
   region: AWS_BUCKET_REGION || '',
-  signatureVersion: "v4",
-}as S3ClientConfig);
+});
 
 const bucketName = AWS_BUCKET_NAME || '';
 
