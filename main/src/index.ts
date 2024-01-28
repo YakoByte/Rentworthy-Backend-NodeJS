@@ -18,7 +18,7 @@ import { setupSocketServer } from "./chat/chat";
 import { connectDB } from "./database";
 
 const StartServer = async (): Promise<void> => {
-
+  
   // check if uploads folder exists
   const fs = require('fs');
   const dir = './uploads';
