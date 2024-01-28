@@ -1,4 +1,4 @@
-import { S3Client, S3ClientConfig, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 
@@ -12,8 +12,7 @@ const s3Client = new S3Client({
     secretAccessKey: AWS_SECRET_ACCESS_KEY || '',
   },
   region: AWS_BUCKET_REGION || '',
-  signatureVersion: "v4",
-}as S3ClientConfig);
+});
 
 const bucketName = AWS_BUCKET_NAME || '';
 
@@ -40,11 +39,11 @@ async function uploadS3File(filePath: string, newFileNameKey: string): Promise<s
 
     s3Client.send(new PutObjectCommand(params))
       .then(() => generatePresignedUrl(newFileNameKey))
-      .then((url) => {
+      .then((url: any) => {
         console.log(url);
         resolve(url);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error(`Error uploading file: ${err.message}`);
         reject(err);
       });
@@ -61,7 +60,7 @@ async function deleteS3File(newFileNameKey: string): Promise<void> {
     .then(() => {
       console.log(`File deleted successfully: ${newFileNameKey}`);
     })
-    .catch((err) => {
+    .catch((err: any) => {
       console.error(`Error deleting file: ${newFileNameKey}, ${err.message}`);
       throw err;
     });
