@@ -5,10 +5,10 @@ import { Request, Response, NextFunction } from 'express';
 // setup multer for multiple image upload and single image upload with file filter
 
 const storage = multer.diskStorage({
-    destination: (req: any, file, cb) => {
-        cb(null, '../public/images'); // Define the destination folder for uploaded images
-    },
-    filename: (req: any, file, cb) => {
+    destination: function (req: any, file: any, cb: any) {
+        cb(null, 'uploads/');
+      },
+      filename: function (req: any, file: any, cb: any) {
         const ext = path.extname(file.originalname);
         const fileName = `${Date.now()}-${Math.random()}${ext}`;
         cb(null, fileName);

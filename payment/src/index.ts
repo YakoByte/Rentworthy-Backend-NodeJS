@@ -7,6 +7,14 @@ import databaseConnection from './database/connection.ts';
 import { connectDB } from './database/index.ts';
 
 const StartServer = async (): Promise<void> => {
+
+    // check if uploads folder exists
+    const fs = require('fs');
+    const dir = './uploads';
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+    
     const app: Express = express();
 
     // Connect to the database

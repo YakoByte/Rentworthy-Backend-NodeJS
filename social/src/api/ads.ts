@@ -36,9 +36,19 @@ async function uploadMultipleImagesWithToken(
     );
 
     const paths: string[] = response.data.map((element: any) => element._id);
+    imagePaths.forEach(async (element: any) => {
+      if (fs.existsSync(element)) {
+        fs.unlinkSync(element);
+      }
+  });
 
     return paths;
   } catch (error: any) {
+    imagePaths.forEach(async (element: any) => {
+      if (fs.existsSync(element)) {
+        fs.unlinkSync(element);
+      }
+  });
     return [error.message]; // Return an array to match the Promise<string[]> type
   }
 }

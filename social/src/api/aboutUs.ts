@@ -29,8 +29,15 @@ async function uploadImageWithToken(
       }
     );
 
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
+
     return response.data._id;
   } catch (error: any) {
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
     return error.message;
   }
 }

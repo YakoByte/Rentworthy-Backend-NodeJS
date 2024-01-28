@@ -19,8 +19,15 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
             },
         });
 
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+
         return response.data._id;
     } catch (error: any) {
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
         return error.message;
     }
 }

@@ -10,6 +10,14 @@ import { connectDB } from './database';
 // import { setupSocketServer } from './api/chat';
 
 const startServer = async (): Promise<void> => {
+    
+    // check if uploads folder exists
+    const fs = require('fs');
+    const dir = './uploads';
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+
     const app: Express = express();
     // socket setup
 

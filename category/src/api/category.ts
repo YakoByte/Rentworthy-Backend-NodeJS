@@ -5,7 +5,6 @@ import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest } from '../interface/category';
 import upload from '../middlewares/imageStorage';
 
-// import upload from '../middlewares/imageStorage';
 import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
@@ -25,8 +24,15 @@ async function uploadImageWithToken(imagePath: string, token: string): Promise<s
             },
         });
 
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+
         return response.data._id;
     } catch (error: any) {
+        if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
         return error.message;
     }
 }
