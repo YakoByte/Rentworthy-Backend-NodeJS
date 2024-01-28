@@ -32,9 +32,9 @@ class TermConditionRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
       ]);
@@ -59,9 +59,9 @@ class TermConditionRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
       ]);
@@ -92,13 +92,11 @@ class TermConditionRepository {
   }
 
   //add images to TermCondition
-  async addImagesToTermCondition(
-    TermConditionInputs: termConditionUpdateRequest
-  ) {
+  async addImagesToTermCondition(TermConditionInputs: termConditionUpdateRequest) {
     try {
       const TermConditionResult = await TermConditionModel.findOneAndUpdate(
         { _id: TermConditionInputs._id },
-        { $set: { image: TermConditionInputs.image } },
+        { $set: { images: TermConditionInputs.images } },
         { new: true }
       );
       if (TermConditionResult) {
@@ -107,14 +105,12 @@ class TermConditionRepository {
       return false;
     } catch (err: any) {
       console.log("error", err);
-      throw new Error("Unable to add image Term & Condition");
+      throw new Error("Unable to add images Term & Condition");
     }
   }
 
   //update TermCondition by id
-  async updateTermConditionById(
-    TermConditionInputs: termConditionUpdateRequest
-  ) {
+  async updateTermConditionById(TermConditionInputs: termConditionUpdateRequest) {
     try {
       const TermConditionResult = await TermConditionModel.findOneAndUpdate(
         { _id: TermConditionInputs._id },

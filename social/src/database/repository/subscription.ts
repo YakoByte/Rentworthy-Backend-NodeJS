@@ -33,9 +33,9 @@ class SubscriptionRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
       ]);
@@ -60,9 +60,9 @@ class SubscriptionRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
       ]);

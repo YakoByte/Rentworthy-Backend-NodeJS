@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
+    files?: any;
     user?: {
         _id: string;
     };
@@ -27,21 +28,21 @@ export interface deleteAuthenticatedRequest extends Request {
 
 export interface aboutUS extends Document {
     title: string;
-    image: Types.ObjectId;
+    images?: [Types.ObjectId];
     description: string;
     isDeleted: boolean;
 }
 
 export interface aboutUSRequest {
     title: string;
-    image: string;
+    images: [string];
     description: string;
 }
 
 export interface aboutUSUpdateRequest {
     _id: string;
     title?: string;
-    image?: string;
+    images?: [string];
     description?: string;
 }
 

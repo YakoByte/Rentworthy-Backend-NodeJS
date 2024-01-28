@@ -1,78 +1,19 @@
 import { Express, Request, Response, NextFunction } from "express";
 import TermConditionService from "../services/termCondition";
 import UserAuth from "../middlewares/auth";
-import { isAdmin } from "../middlewares/checkRole";
 import {
   AuthenticatedRequest,
   deleteAuthenticatedRequest,
 } from "../interface/termCondition";
 import upload from "../middlewares/imageStorage";
-import axios from "axios";
-import fs from "fs";
-import FormData from "form-data";
-
-async function uploadImageWithToken(
-  imagePath: string,
-  token: string
-): Promise<string> {
-  const formData = new FormData();
-  formData.append("image", fs.createReadStream(imagePath));
-
-  try {
-    const response = await axios.post(
-      "https://backend.rentworthy.us/web/api/v1/upload/image-uploads",
-      formData,
-      {
-        headers: {
-          ...formData.getHeaders(),
-          Authorization: token,
-        },
-      }
-    );
-
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
-
-    return response.data._id;
-  } catch (error: any) {
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    }
-    return error.message;
-  }
-}
-
-async function deleteImageWithToken(
-  id: string,
-  token: string
-): Promise<string> {
-  try {
-    console.log(id, token);
-
-    const response = await axios.delete(
-      `https://backend.rentworthy.us/app/api/v1/upload/image-delete/${id}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    return response.data; // Assuming you are expecting a single image ID
-  } catch (error: any) {
-    return error.message;
-  }
-}
+import imageService from "../services/imageUpload";
 
 export default (app: Express) => {
   const service = new TermConditionService();
+  const image = new imageService();
 
   // API = create new termCondition
-  app.post(
-    "/create-termCondition",
-    UserAuth,
-    upload.single("image"),
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post("/create-termCondition", UserAuth, upload.array('images', 10),async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
@@ -80,11 +21,14 @@ export default (app: Express) => {
         console.log("req.body", req.body);
 
         // Check if req.file is defined before accessing its properties
-        if (req.file) {
-          req.body.image = await uploadImageWithToken(
-            req.file.path,
-            req.headers.authorization
-          );
+        if (req.files) {
+          const imageData = {
+            userId: authUser._id,
+            imageDetails: req.files,
+          }
+  
+            req.body.images = await image.CreateImages(imageData);
+          
         } else {
           return res.status(400).json({ error: "No file provided" });
         }
@@ -99,9 +43,7 @@ export default (app: Express) => {
   );
 
   // API = get termCondition by id and search and all termCondition
-  app.get(
-    "/get-termCondition",
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get("/get-termCondition", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         // let authUser = req.user as { _id: string; roleName: string; email: string; };
         // req.query.user = authUser;
@@ -142,20 +84,18 @@ export default (app: Express) => {
   //     }
   // });
   // API = add images to termCondition
-  app.post(
-    "/add-images-to-termCondition",
-    UserAuth,
-    upload.single("image"),
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post("/add-images-to-termCondition", UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
         
-        if (req.file) {
-          req.body.image = await uploadImageWithToken(
-            req.file.path,
-            req.headers.authorization
-          );
+        if (req.files) {
+          const imageData = {
+            userId: authUser._id,
+            imageDetails: req.files,
+          }
+
+          req.body.images = await image.CreateImages(imageData);
         }
 
         const data = await service.addImagesToTermCondition(req.body);
@@ -167,20 +107,18 @@ export default (app: Express) => {
   );
 
   // API = update termCondition by id
-  app.put(
-    "/update-termCondition",
-    UserAuth,
-    upload.single("image"),
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.put("/update-termCondition", UserAuth,upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
         if (req.file) {
-          req.body.image = await uploadImageWithToken(
-            req.file.path,
-            req.headers.authorization
-          );
+          const imageData = {
+            userId: authUser._id,
+            imageDetails: req.files,
+          }
+
+          req.body.images = await image.CreateImages(imageData);
         }
 
         const data = await service.updateById({
@@ -195,14 +133,7 @@ export default (app: Express) => {
   );
 
   //API = delete termCondition
-  app.delete(
-    "/delete-termCondition",
-    UserAuth,
-    async (
-      req: deleteAuthenticatedRequest,
-      res: Response,
-      next: NextFunction
-    ) => {
+  app.delete("/delete-termCondition", UserAuth, async ( req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;

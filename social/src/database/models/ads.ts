@@ -46,14 +46,14 @@ const adsSchema: Schema = new Schema<Ads>(
             ref: "product",
             // required: true,
         },
-        // startDate: {
-        //     type: Date,
-        //     required: true,
-        // },
-        // endDate: {
-        //     type: Date,
-        //     required: true,
-        // },
+        startDate: {
+            type: Date,
+            required: true,
+        },
+        endDate: {
+            type: Date,
+            required: true,
+        },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
@@ -63,21 +63,20 @@ const adsSchema: Schema = new Schema<Ads>(
             type: Boolean,
             default: false,
         },
-        image: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "image",
-            // required: true,
-        },
+        images: [
+            {
+              type: Schema.Types.ObjectId,
+              ref: "image",
+            },
+        ],
         location: {
             type: {
                 type: String,
                 enum: ["Point"],
                 default: "Point",
-                // required: true,
             },
             coordinates: {
                 type: [Number],
-                // required: true,
             },
         },
         isApproved: {

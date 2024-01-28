@@ -7,10 +7,6 @@ import {
   notificationRequest,
   deleteAuthenticatedRequest,
 } from "../interface/notification";
-import upload from "../middlewares/imageStorage";
-import axios from "axios";
-import fs from "fs";
-import FormData from "form-data";
 
 export default (app: Express) => {
   const service = new NotificationService();

@@ -6,11 +6,11 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    files?: any;
     headers: any;
     query: {
         _id?: string;
         title?: string;
-        image?: string;
         description?: string;
     },
 }
@@ -27,20 +27,20 @@ export interface deleteAuthenticatedRequest extends Request {
 
 export interface privacyPolicy extends Document { 
     title: string;
-    image: Types.ObjectId;
+    images?: [Types.ObjectId];
     description: string;
 }
 
 export interface privacyPolicyRequest {
     title: string;
-    image: string;
+    images?: [Types.ObjectId];
     description: string;
 }
 
 export interface privacyPolicyUpdateRequest {
     _id: string;
     title?: string;
-    image?: string;
+    images?: [Types.ObjectId];
     description?: string;
 }
 
@@ -48,7 +48,7 @@ export interface privacyPolicyGetRequest {
     _id?: string
    
     title?: string;
-    image?: string;
+    images?: [string];
     description?: string;
 }
 

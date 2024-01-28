@@ -58,18 +58,18 @@ class AboutUSRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
         {
-          $unwind: "$image",
+          $unwind: "$images",
         },
         {
           $project: {
             _id: 1,
-            image: 1,
+            images: 1,
             title: 1,
             description: 1,
             isDeleted: 1,
@@ -92,7 +92,7 @@ class AboutUSRepository {
     try {
       const aboutUSResult = await AboutUSModel.findOneAndUpdate(
         { _id: aboutUSInputs._id, isDeleted: false },
-        { $set: { image: aboutUSInputs.image } },
+        { $set: { images: aboutUSInputs.images } },
         { new: true }
       );
       if (aboutUSResult) {
@@ -101,7 +101,7 @@ class AboutUSRepository {
       return false;
     } catch (err: any) {
       console.log("error", err);
-      throw new Error("Unable to Add image to about us");
+      throw new Error("Unable to Add images to about us");
     }
   }
 

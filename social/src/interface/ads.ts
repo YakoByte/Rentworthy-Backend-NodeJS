@@ -7,10 +7,10 @@ export interface postAuthenticatedRequest extends Request {
         _id: string;
     };
     body: {
-        categoryId: string;
+        categoryId?: string;
         subCategoryId?: string;
-        productId: string;
-        description: string;
+        productId?: string;
+        description?: string;
         location?: {
             type: string;
             coordinates: number[];
@@ -23,14 +23,14 @@ export interface postAuthenticatedRequest extends Request {
         };
         brand?: string;
         distance?: number;
-        isGlobal: boolean;
-        startDate: Date;
-        endDate: Date;
-        startTime: string;
-        endTime: string;
-        url: string;
-        userId: string;
-        image: string;
+        isGlobal?: boolean;
+        startDate?: Date;
+        endDate?: Date;
+        startTime?: string;
+        endTime?: string;
+        url?: string;
+        userId?: string;
+        images?: [Types.ObjectId];
     }
 
 }
@@ -95,7 +95,7 @@ export interface Ads extends Document {
     description: string;
     productId: Types.ObjectId;
     isDeleted: boolean;
-    image: Types.ObjectId
+    images?: [Types.ObjectId]
     location: {
         type: string;
         coordinates: number[];
@@ -119,10 +119,10 @@ export interface Ads extends Document {
 
 export interface adsRequest {
     _id?: string;
-    categoryId: string;
+    categoryId?: string;
     subCategoryId?: string;
-    productId: string;
-    description: string;
+    productId?: string;
+    description?: string;
     location?: {
         type: string;
         coordinates: number[];
@@ -137,13 +137,13 @@ export interface adsRequest {
     approvedBy?: string;
     distance?: number;
     isGlobal: boolean;
-    startDate: Date;
-    endDate: Date;
-    startTime: string;
-    endTime: string;
-    url: string;
-    userId: string;
-    image: string;
+    startDate?: Date;
+    endDate?: Date;
+    startTime?: string;
+    endTime?: string;
+    url?: string;
+    userId?: string;
+    images?: [Types.ObjectId];
 }
 
 export interface adsUpdateRequest {
@@ -172,7 +172,7 @@ export interface adsUpdateRequest {
     endTime?: string;
     url?: string;
     userId?: string;
-    image?: string;
+    images?: [string];
 }
 
 // for get ads

@@ -61,9 +61,9 @@ class PrivacyPolicyRepository {
         {
           $lookup: {
             from: "images",
-            localField: "image",
+            localField: "images",
             foreignField: "_id",
-            as: "image",
+            as: "images",
           },
         },
       ]);
@@ -84,7 +84,7 @@ class PrivacyPolicyRepository {
     try {
       const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate(
         { _id: PrivacyPolicyInputs._id },
-        { $set: { image: PrivacyPolicyInputs.image } },
+        { $set: { images: PrivacyPolicyInputs.images } },
         { new: true }
       );
       if (PrivacyPolicyResult) {
@@ -93,7 +93,7 @@ class PrivacyPolicyRepository {
       return false;
     } catch (err: any) {
       console.log("error", err);
-      throw new Error("Unable to add image to Privacy");
+      throw new Error("Unable to add images to Privacy");
     }
   }
 

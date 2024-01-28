@@ -8,10 +8,12 @@ const privacyPolicySchema: Schema = new Schema<privacyPolicy>(
             type: String,
             required: true,
         },
-        image: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "image",
-        },
+        images: [
+            {
+              type: Schema.Types.ObjectId,
+              ref: "image",
+            },
+        ],
         description: {
             type: String,
         }

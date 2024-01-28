@@ -7,10 +7,12 @@ const categorySchema: Schema = new Schema<Product>(
         name: {
             type: String,
         },
-        images: [{
-            type: Schema.Types.ObjectId,
-            ref: "image",
-        }],
+        images: [
+            {
+              type: Schema.Types.ObjectId,
+              ref: "image",
+            },
+        ],
         description: {
             type: String,
         },

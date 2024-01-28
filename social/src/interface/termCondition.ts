@@ -6,11 +6,12 @@ export interface AuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    files?: any;
     headers: any;
     query: {
         _id?: string;
         title?: string;
-        image?: string;
+        images?: string;
         description?: string;
     },
 }
@@ -27,20 +28,20 @@ export interface deleteAuthenticatedRequest extends Request {
 
 export interface termCondition extends Document { 
     title: string;
-    image: Types.ObjectId;
+    images: [Types.ObjectId];
     description: string;
 }
 
 export interface termConditionRequest {
     title: string;
-    image: string;
+    images: [Types.ObjectId];
     description: string;
 }
 
 export interface termConditionUpdateRequest {
     _id: string;
     title?: string;
-    image?: string;
+    images?: [Types.ObjectId];
     description?: string;
 }
 
@@ -52,7 +53,7 @@ export interface termConditionGetRequest {
     //     email: string;
     // };
     title?: string;
-    image?: string;
+    images?: string;
     description?: string;
 }
 

@@ -11,7 +11,7 @@ const categorySchema: Schema = new Schema<Recommendation>(
         },
         subCategoryId: [{
             type: Schema.Types.ObjectId,
-            ref: "image",
+            ref: "SubCategory",
         }]
     },
     { timestamps: true }

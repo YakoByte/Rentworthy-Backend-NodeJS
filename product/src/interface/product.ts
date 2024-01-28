@@ -71,6 +71,7 @@ export interface productRequest {
     link: string;
     cancellationTimeLimit?: number;
 }
+
 export interface productUpdateRequest {
     _id: string
     name?: string;

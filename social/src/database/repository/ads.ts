@@ -6,7 +6,7 @@ import {
   adsGetRequest,
   adsUpdateRequest,
 } from "../../interface/ads";
-import ads from "../../api/ads";
+
 class AdsRepository {
   //create ads
   async CreateAds(adsInputs: adsRequest) {
@@ -116,9 +116,9 @@ class AdsRepository {
             {
               $lookup: {
                 from: "images",
-                localField: "image",
+                localField: "images",
                 foreignField: "_id",
-                as: "image",
+                as: "images",
               },
             },
             {
@@ -166,7 +166,7 @@ class AdsRepository {
     try {
       const adsResult = await adsModel.findOneAndUpdate(
         { _id: adsInputs._id, isDeleted: false },
-        { $set: { image: adsInputs.image } },
+        { $set: { images: adsInputs.images } },
         { new: true }
       );
       if (adsResult) {
@@ -174,7 +174,7 @@ class AdsRepository {
       }
     } catch (err: any) {
       console.log("error", err);
-      throw new Error("Unable to add image Ads");
+      throw new Error("Unable to add images Ads");
     }
   }
   
