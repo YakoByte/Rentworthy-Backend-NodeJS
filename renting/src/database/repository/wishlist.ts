@@ -162,14 +162,14 @@ class WishlistRepository {
         userId: wishlistRequest.userId,
         isDeleted: false,
       });
-      console.log("findWishlist", findWishlist);
+
       if (findWishlist) {
         const wishlistResult = await wishlistModel.updateOne(
           { userId: wishlistRequest.userId },
           wishlistInputs
         );
-        console.log("wishlistResult", wishlistResult);
-        return { message: "Wishlist Updated" };
+
+        return wishlistResult;
       }
       return { message: "Wishlist not found" };
     } catch (err) {
