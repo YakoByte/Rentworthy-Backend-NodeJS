@@ -43,7 +43,7 @@ export interface productRequest {
 export interface productUpdateRequest {
     _id: string
     name?: string;
-    images?: [string];
+    images?: [Types.ObjectId];
     description?: string;
     isShow?: boolean;
     userId?: string;
@@ -69,6 +69,7 @@ export interface productGetRequest {
     categoryId?: string;
     subCategoryId?: string;
     userId?: string;
+    images?: [string];
 }
 
 // for delete Product

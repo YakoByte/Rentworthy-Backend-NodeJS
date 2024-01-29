@@ -23,6 +23,7 @@ class AboutUSService {
             return FormateError({ error: "Failed to Create aboutUs" });
         }
     }
+    
     // get AboutUS by id
     // async getAboutUSById(AboutUSInputs: aboutUSGetRequest) {
     //     try {

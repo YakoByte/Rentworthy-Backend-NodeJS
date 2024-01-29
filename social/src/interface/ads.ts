@@ -172,7 +172,7 @@ export interface adsUpdateRequest {
     endTime?: string;
     url?: string;
     userId?: string;
-    images?: [string];
+    images?: [Types.ObjectId];
 }
 
 // for get ads
@@ -197,6 +197,7 @@ export interface adsGetRequest {
     city?: string;
     state?: string;
     country?: string;
+    images?: [string];
 }
 
 // for delete ads

@@ -35,14 +35,14 @@ export interface aboutUS extends Document {
 
 export interface aboutUSRequest {
     title: string;
-    images: [string];
+    images: [Types.ObjectId];
     description: string;
 }
 
 export interface aboutUSUpdateRequest {
     _id: string;
     title?: string;
-    images?: [string];
+    images?: [Types.ObjectId];
     description?: string;
 }
 
@@ -50,6 +50,7 @@ export interface aboutUSGetRequest {
     _id?: string
     title?: string;
     description?: string;
+    images?: [string];
 }
 
 export interface aboutUSDeleteRequest {
