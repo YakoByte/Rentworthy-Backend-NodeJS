@@ -86,6 +86,21 @@ export interface PaymentChargeDetails {
     currency?: string;
 }
 
+export interface PaymentIntendDetail {
+    productId: Types.ObjectId;
+    userId: Types.ObjectId;
+    quantity: number;
+    card: {
+        name: string;
+        number: string;
+        exp_month: number;
+        exp_year: number;
+        cvc: string;
+    };
+    amount: number;
+    currency: string;
+}
+
 export interface PaymentCount {
     productId?: string;
     userId?: string;

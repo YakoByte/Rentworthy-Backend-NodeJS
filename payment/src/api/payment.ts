@@ -36,10 +36,11 @@ export default (app: Express) => {
     })
 
     // API = verify stripe Id
-    app.get('/verify-stripe-id/:stripeId', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/verify-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let userId:any = req.user?._id
-            const data = await service.VerifyStripeId(req.params.stripeId, userId);
+            let stripeId: any = req.query.stripeId;
+            const data = await service.VerifyStripeId(stripeId, userId);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -68,6 +69,17 @@ export default (app: Express) => {
     app.post('/create-charge', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const data = await service.createCharges(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/payment-intent-payment', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+            const data = await service.paymentIntentPayment(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

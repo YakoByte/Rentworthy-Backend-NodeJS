@@ -4,6 +4,7 @@ import {
   PaymentConfirmDetails,
   PaymentCount,
   PaymentDetails,
+  PaymentIntendDetail,
   PaymentMethodDetails,
 } from "../interface/payment";
 import paymentRepository from "../database/repository/payment";
@@ -16,6 +17,20 @@ class PaymentService {
 
   constructor() {
     this.repository = new paymentRepository();
+  }
+
+  async VerifyStripeId(stripeId: string, userId: string) {
+    try {
+      const customer = await stripe.accounts.retrieve(stripeId);
+      console.log("Stripe ID is valid:", customer.id);
+      if (customer) {
+        await this.repository.VerifyStripeId(stripeId, userId);
+      }
+      return FormateData({ customer });
+    } catch (error: any) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Verify the striprID" });
+    }
   }
 
   async createPaymentIntent(PaymentDetails: PaymentDetails) {
@@ -31,21 +46,6 @@ class PaymentService {
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create the Payment Intent" });
-    }
-  }
-
-  // verify stripe Id
-  async VerifyStripeId(stripeId: string, userId: string) {
-    try {
-      const customer = await stripe.paymentIntents.retrieve(stripeId);
-      console.log("Stripe ID is valid:", customer.id);
-      if (customer) {
-        await this.repository.VerifyStripeId(stripeId, userId);
-      }
-      return FormateData({ customer });
-    } catch (error: any) {
-      console.log("error: ", error);
-      return FormateError({ error: "Failed to Verify the striprID" });
     }
   }
 
@@ -68,13 +68,11 @@ class PaymentService {
           paymentId: payDetails._id,
         });
       } else if (paymentIntent.status === "requires_action") {
-        // Payment requires additional action (e.g., 3D Secure authentication)
         return FormateData({
           message: "Additional action required for payment!",
           payStatus: paymentIntent.status,
         });
       } else {
-        // Payment failed or requires a different payment method
         return FormateData({
           message: "Payment failed or requires a different payment method!",
           payStatus: paymentIntent.status,
@@ -123,7 +121,8 @@ class PaymentService {
       const addedCard = await stripe.customers.createSource(
         paymentDetails.customer_id,
         {
-          source: token.id,
+          source: "tok_visa",
+          // source: token.id,
         }
       );
 
@@ -146,6 +145,71 @@ class PaymentService {
       });
 
       return FormateData({ createCharge });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to create charge" });
+    }
+  }
+
+  async paymentIntentPayment(paymentDetails: PaymentIntendDetail) {
+    try {      
+      // const token = await stripe.tokens.create({
+      //   card: paymentDetails.card,
+      // });
+
+      // const paymentMethod = await stripe.paymentMethods.create({
+      //   type: "card",
+      //   card: paymentDetails.card
+      // });
+
+      const paymentMethod = await stripe.paymentMethods.create({
+        type: "card",
+        card: {
+          token: "tok_visa",
+        },
+      });
+
+      const payment = await stripe.paymentIntents.create({
+        payment_method: paymentMethod.id,
+        amount: Math.floor(paymentDetails.amount * 100),
+        currency: paymentDetails.currency,
+        confirm: true,
+        payment_method_types: ["card"],
+      });
+
+      if (payment.status === "succeeded") {
+        const paymentData = {
+          paymentMethodId: paymentMethod.id,
+          paymentIntentId: payment.id,
+          productId: paymentDetails.productId,
+          userId: paymentDetails.userId,
+          amount: paymentDetails.amount,
+          quantity: paymentDetails.quantity,
+          currency: paymentDetails.currency,
+        }
+
+        // Payment succeeded
+        let payDetails: any = await this.repository.CreatePayment(paymentData);
+        return FormateData({
+          message: "Payment succeeded!",
+          payStatus: payment.status,
+          paymentData: payDetails,
+          stripeData: payment
+        });
+      } else if (payment.status === "requires_action") {
+        return FormateData({
+          message: "Additional action required for payment!",
+          payStatus: payment.status,
+          stripeData: payment
+        });
+      } else {
+        return FormateData({
+          message: "Payment failed or requires a different payment method!",
+          payStatus: payment.status,
+        });
+      }
+
+      return FormateData({ error: "Payment Failed" });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create charge" });
