@@ -59,7 +59,7 @@ class productService {
         productId: productInputs.productId || "",
       });
 
-      return FormateData(LikeCount);
+      return FormateData({ LikeCount });
     } catch (err: any) {
       return FormateError({ error: "Data not Found" });
     }

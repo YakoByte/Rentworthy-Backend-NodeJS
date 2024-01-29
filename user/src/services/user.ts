@@ -221,15 +221,15 @@ class AdminService {
           if (criteria === "month") {
             const UserCount: any = await this.repository.getCountOfUserPerMonth();
     
-            return FormateData({ UserCount });
+            return FormateData(UserCount);
           } else if (criteria === "week") {
             const UserCount: any = await this.repository.getCountOfUserPerWeek();
     
-            return FormateData({ UserCount });
+            return FormateData(UserCount);
           } else {
             const UserCount: any = await this.repository.getCountOfUserPerDay();
     
-            return FormateData({ UserCount });
+            return FormateData(UserCount);
           }
         } catch (err: any) {
           console.log("error", err);
