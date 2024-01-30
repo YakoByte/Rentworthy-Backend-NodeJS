@@ -15,6 +15,7 @@ import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { setupSocketServer } from "./chat/chat";
 import { connectDB } from "./database";
+import { ValidateKey } from "./middlewares/sharedKey";
 
 const StartServer = async (): Promise<void> => {
   
@@ -30,6 +31,9 @@ const StartServer = async (): Promise<void> => {
   try {
     // Connect to the database
     await connectDB();
+
+    // validator
+    app.use(ValidateKey);
 
     // app.use(express.json({ limit: "10mb" }));
 

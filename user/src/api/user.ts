@@ -1,20 +1,18 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import AdminService from '../services/user';
 import UserAuth from '../middlewares/auth';
-import { AuthenticatedRequest, userSignRequest, userLoginRequest, socialUserLoginRequest, getCountAuthenticatedRequest } from '../interface/user';
-import RoleService from '../services/role';
+import { AuthenticatedRequest, userLoginRequest, socialUserLoginRequest, getCountAuthenticatedRequest } from '../interface/user';
 import OTPService from '../services/otp';
+import { validateEmail, validateNumber, validatePassword } from '../middlewares/vaildateInput';
 
 export default (app: Express) => {
 
   const adminService = new AdminService();
-  const roleService = new RoleService();
   const otpService = new OTPService();
 
   // API = create new admin
-  app.post('/admin/signup', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/admin/signup', validateEmail, validateNumber, validatePassword, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
       req.body.roleName = "admin";
       const data = await adminService.SignUp(req.body);
       return res.status(200).json(data);
@@ -24,9 +22,8 @@ export default (app: Express) => {
   });
 
   // API = create new user
-  app.post('/signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post('/signup', validateEmail, validateNumber, validatePassword, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
       req.body.roleName = "user";
       const data = await adminService.SignUp(req.body);
       return res.status(200).json(data);
