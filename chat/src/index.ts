@@ -7,6 +7,7 @@ import { configureExpress } from './express-config';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { connectDB } from './database';
+import helmet from 'helmet';
 // import { setupSocketServer } from './api/chat';
 
 const startServer = async (): Promise<void> => {
@@ -26,10 +27,12 @@ const startServer = async (): Promise<void> => {
     await connectDB();
 
     // Configure Express app
-    configureExpress(app); // This should not be async unless the function actually returns a promise
+    configureExpress(app); 
+
+    // Use Helmet!
+    app.use(helmet());
 
     // Setup socket server
-
     const server = http.createServer(app);
     // const io = new SocketIOServer(server, {
     //     cors: {

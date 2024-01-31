@@ -4,6 +4,7 @@ import { PORT } from "./config";
 import { configureExpress } from "./express-config.ts";
 import { connectDB } from "./database/index.ts";
 import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 
 const StartServer = async (): Promise<void> => {
   // check if uploads folder exists
@@ -20,6 +21,9 @@ const StartServer = async (): Promise<void> => {
 
   // Configure Express app using the module
   await configureExpress(app);
+
+  // Use Helmet!
+  app.use(helmet());
 
   // rate limit
   const limiter = rateLimit({
