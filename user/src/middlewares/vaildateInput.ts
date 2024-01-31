@@ -51,7 +51,7 @@ const validateEmail = (req: Request, res: Response, next: NextFunction) => {
     return next();
   }
 
-  return FormateError({ error: "Invalid Email" });
+  return res.status(401).json({ error: "Invalid Email" });
 };
 
 const validatePassword = (req: Request, res: Response, next: NextFunction) => {
@@ -60,7 +60,7 @@ const validatePassword = (req: Request, res: Response, next: NextFunction) => {
   if (isValidPassword) {
     return next();
   }
-  return FormateError({ error: "Invalid password" });
+  return res.status(401).json({ error: "Invalid Password" });
 };
 
 const validateNumber = (req: Request, res: Response, next: NextFunction) => {
@@ -69,7 +69,7 @@ const validateNumber = (req: Request, res: Response, next: NextFunction) => {
   if (isValidNumber) {
     return next();
   }
-  return FormateError({ error: "Invalid Number" });
+  return res.status(401).json({ error: "Invalid Number" });
 };
 
 export { validateEmail, validatePassword, validateNumber };

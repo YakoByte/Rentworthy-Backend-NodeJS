@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GEOLOCATION_API_KEY = exports.AWS_BUCKET_NAME = exports.AWS_BUCKET_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.GOOGLE_EMAIL = exports.GOOGLE_PASS = exports.SECRET_KEY = exports.DATABASE = exports.PORT = void 0;
+exports.APP_IDENTIFIER = exports.WEB_IDENTIFIER = exports.GEOLOCATION_API_KEY = exports.AWS_BUCKET_NAME = exports.AWS_BUCKET_REGION = exports.AWS_SECRET_ACCESS_KEY = exports.AWS_ACCESS_KEY_ID = exports.GOOGLE_EMAIL = exports.GOOGLE_PASS = exports.SECRET_KEY = exports.DATABASE = exports.PORT = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.PORT = process.env.PORT || '';
@@ -16,3 +16,5 @@ exports.AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || '';
 exports.AWS_BUCKET_REGION = process.env.AWS_BUCKET_REGION || '';
 exports.AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME || '';
 exports.GEOLOCATION_API_KEY = process.env.GEOLOCATION_API_KEY || '';
+exports.WEB_IDENTIFIER = process.env.WEB_IDENTIFIER || '';
+exports.APP_IDENTIFIER = process.env.APP_IDENTIFIER || '';

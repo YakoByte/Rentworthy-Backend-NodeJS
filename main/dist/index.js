@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const helmet_1 = __importDefault(require("helmet"));
 const config_1 = require("./config");
 const gateway_1 = require("./gateway");
 const path_1 = __importDefault(require("path"));
@@ -11,10 +12,11 @@ const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const chat_1 = require("./chat/chat");
 const database_1 = require("./database");
+const sharedKey_1 = require("./middlewares/sharedKey");
 const StartServer = async () => {
     // check if uploads folder exists
-    const fs = require('fs');
-    const dir = './uploads';
+    const fs = require("fs");
+    const dir = "./uploads";
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
     }
@@ -22,6 +24,10 @@ const StartServer = async () => {
     try {
         // Connect to the database
         await (0, database_1.connectDB)();
+        // validator
+        app.use(sharedKey_1.ValidateKey);
+        // Use Helmet!
+        app.use((0, helmet_1.default)());
         // app.use(express.json({ limit: "10mb" }));
         app.get("/", (req, res) => {
             res.status(200).send({ message: "Microservices called........" });

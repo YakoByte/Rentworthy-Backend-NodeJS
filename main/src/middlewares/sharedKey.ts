@@ -1,19 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import { FormateError } from "../utils";
 import { WEB_IDENTIFIER, APP_IDENTIFIER } from "../config";
 
 interface CustomHeaders {
-  IDENTIFIER: string;
+  identifier: string;
 }
 
-const ValidateKey = (req: Request<{}, {}, {}, CustomHeaders>, res: Response, next: NextFunction) => {
-  const isKeyValid = req.headers.IDENTIFIER === APP_IDENTIFIER || req.headers.IDENTIFIER === WEB_IDENTIFIER;
+const ValidateKey = async (req: Request<{}, {}, {}, CustomHeaders>, res: Response, next: NextFunction) => {
+  let isKeyValid = false;
+  if (req.headers.identifier === APP_IDENTIFIER || req.headers.identifier === WEB_IDENTIFIER) {
+    isKeyValid = true;
+  }
 
   if (isKeyValid) {
     return next();
   }
 
-  return FormateError({ error: "Not Authorized" });
+  return res.status(401).json({ error: "Not Authorized.....!" });
 };
 
-export { ValidateKey };
+export { ValidateKey }

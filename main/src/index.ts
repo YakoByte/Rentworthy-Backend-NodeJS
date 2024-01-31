@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import helmet from "helmet";
 import { PORT } from "./config";
 import {
   product,
@@ -18,14 +19,13 @@ import { connectDB } from "./database";
 import { ValidateKey } from "./middlewares/sharedKey";
 
 const StartServer = async (): Promise<void> => {
-  
   // check if uploads folder exists
-  const fs = require('fs');
-  const dir = './uploads';
+  const fs = require("fs");
+  const dir = "./uploads";
   if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
+    fs.mkdirSync(dir);
   }
-  
+
   const app: Express = express();
 
   try {
@@ -34,6 +34,9 @@ const StartServer = async (): Promise<void> => {
 
     // validator
     app.use(ValidateKey);
+
+    // Use Helmet!
+    app.use(helmet());
 
     // app.use(express.json({ limit: "10mb" }));
 
