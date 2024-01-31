@@ -86,12 +86,18 @@ export interface PaymentChargeDetails {
     currency?: string;
 }
 
+export interface PaymentCancel {
+    userId: string;
+    stripId: string;
+}
+
 export interface PaymentIntendDetail {
+    email?: string;
     productId: Types.ObjectId;
     userId: Types.ObjectId;
     quantity: number;
     card: {
-        name: string;
+        // name: string;
         number: string;
         exp_month: number;
         exp_year: number;
@@ -104,4 +110,16 @@ export interface PaymentIntendDetail {
 export interface PaymentCount {
     productId?: string;
     userId?: string;
+}
+
+export interface UpdatePayment {
+    _id: Types.ObjectId;
+    productId?: Types.ObjectId;
+    bookingId?: Types.ObjectId;
+    paymentIntentId?: string
+    paymentMethodId?: string
+    userId?: Types.ObjectId;
+    quantity?: number;
+    amount?: number;
+    isDeleted?: boolean;
 }

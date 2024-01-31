@@ -1,6 +1,6 @@
 import { UserModel, paymentModel } from "../models";
 import moment from "moment";
-import { PaymentConfirmDetails, PaymentCount } from "../../interface/payment";
+import { PaymentConfirmDetails, PaymentCount, UpdatePayment } from "../../interface/payment";
 
 class PaymentRepository {
   async CreatePayment(PaymentInputs: PaymentConfirmDetails) {
@@ -229,6 +229,36 @@ class PaymentRepository {
       return [];
     }
   }
+
+  async GetOwnerData(userID: string) {
+    try {
+      let response = await UserModel.findById(userID);
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to fetch Owner");
+    }
+  }
+
+  async GetPaymentData(userId: string, paymentIntentId: string) {
+    try {
+      let response = await UserModel.findOne({userId, paymentIntentId});
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to fetch Payment");
+    }
+  }
+
+  async UpdatePaymentData(paymentDetail: UpdatePayment) {
+    try {
+      let response = await paymentModel.findByIdAndUpdate(paymentDetail._id, paymentDetail, { new: true });
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to update Payment");
+    }
+  }  
 }
 
 export default PaymentRepository;

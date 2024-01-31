@@ -75,11 +75,22 @@ export default (app: Express) => {
         }
     });
 
-    app.post('/payment-intent-payment', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/payment-intent-payment/create', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser:any = req.user?._id;
             req.body.userId = authUser;
             const data = await service.paymentIntentPayment(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/payment-intent-payment/cancel', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+            const data = await service.CancelPayment(req.body);
             return res.json(data);
         } catch (err) {
             next(err);

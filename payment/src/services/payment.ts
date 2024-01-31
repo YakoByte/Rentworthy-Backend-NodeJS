@@ -1,11 +1,13 @@
 import { stripe } from "../utils/stripe";
 import {
+  PaymentCancel,
   PaymentChargeDetails,
   PaymentConfirmDetails,
   PaymentCount,
   PaymentDetails,
   PaymentIntendDetail,
   PaymentMethodDetails,
+  UpdatePayment,
 } from "../interface/payment";
 import paymentRepository from "../database/repository/payment";
 
@@ -170,6 +172,7 @@ class PaymentService {
       });
 
       const payment = await stripe.paymentIntents.create({
+        receipt_email: paymentDetails.email,
         payment_method: paymentMethod.id,
         amount: Math.floor(paymentDetails.amount * 100),
         currency: paymentDetails.currency,
@@ -212,7 +215,31 @@ class PaymentService {
       return FormateData({ error: "Payment Failed" });
     } catch (error) {
       console.log("error: ", error);
-      return FormateError({ error: "Failed to create charge" });
+      return FormateError({ error: "Failed to create Payment" });
+    }
+  }
+
+  async CancelPayment(paymentDetails: PaymentCancel) {
+    try {
+      const payment = await this.repository.GetPaymentData(paymentDetails.userId, paymentDetails.stripId);
+      if(!payment){
+        throw new Error('No such payment found');
+      }
+
+      const createCharge = await stripe.paymentIntents.cancel(
+        paymentDetails.stripId
+      );
+
+      const updatePayment: UpdatePayment = {
+        _id: payment._id,
+        isDeleted: true,
+      }
+      await this.repository.UpdatePaymentData(updatePayment);
+
+      return FormateData({ createCharge });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Cancle Payment" });
     }
   }
 
