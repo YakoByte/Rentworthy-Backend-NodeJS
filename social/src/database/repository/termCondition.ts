@@ -4,6 +4,7 @@ import {
   termConditionGetRequest,
   termConditionUpdateRequest,
 } from "../../interface/termCondition";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class TermConditionRepository {
   //create TermCondition
@@ -41,6 +42,17 @@ class TermConditionRepository {
       if (!TermConditionResult) {
         return { message: "No TermCondition" };
       }
+
+      await Promise.all(
+        TermConditionResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
       
       return TermConditionResult;
     } catch (err: any) {
@@ -68,6 +80,18 @@ class TermConditionRepository {
       if (!TermConditionResult) {
         return { message: "No TermCondition" };
       }
+
+      await Promise.all(
+        TermConditionResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+      
       return TermConditionResult;
     } catch (err: any) {
       console.log("error", err);

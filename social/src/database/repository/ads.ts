@@ -6,6 +6,7 @@ import {
   adsGetRequest,
   adsUpdateRequest,
 } from "../../interface/ads";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class AdsRepository {
   //create ads
@@ -153,6 +154,16 @@ class AdsRepository {
       }
 
       if (adsResult) {
+        await Promise.all(
+          adsResult.map(async (about: any) => {
+            await Promise.all(
+              about.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return adsResult;
       }
     } catch (err: any) {

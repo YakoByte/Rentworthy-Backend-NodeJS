@@ -4,6 +4,7 @@ import {
   subscriptionGetRequest,
   subscriptionUpdateRequest,
 } from "../../interface/subscription";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class SubscriptionRepository {
   //create Subscription
@@ -42,6 +43,17 @@ class SubscriptionRepository {
       if (!SubscriptionResult) {
         return { message: "No Subscription" };
       }
+
+      await Promise.all(
+        SubscriptionResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
       return SubscriptionResult;
     } catch (err: any) {
       console.log("error", err);
@@ -69,6 +81,18 @@ class SubscriptionRepository {
       if (!SubscriptionResult) {
         return { message: "No Subscription" };
       }
+
+      await Promise.all(
+        SubscriptionResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+      
       return SubscriptionResult;
     } catch (err: any) {
       console.log("error", err);

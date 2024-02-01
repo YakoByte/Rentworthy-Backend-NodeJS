@@ -166,10 +166,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
-          // element.images.forEach(async(element: any) => {
-          //   let newPath = await generatePresignedUrl(element.imageName);
-          //   element.path = newPath;
-          // });
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -254,6 +254,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -341,6 +345,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -430,6 +438,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -510,6 +522,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -603,6 +619,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -687,6 +707,10 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -777,7 +801,6 @@ class ProductRepository {
         _id: productInputs._id,
         isDeleted: false,
       });
-      console.log("findProduct", findProduct);
       if (findProduct) {
         // soft delete product
         const productResult = await productModel.updateOne(

@@ -1,6 +1,7 @@
 import { profileModel, historyModel } from "../models";
 import { profileRequest, getProfileRequest } from "../../interface/profile";
 import { Types } from "mongoose";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class profileRepository {
   async CreateProfile(profileInputs: profileRequest) {
@@ -8,7 +9,7 @@ class profileRepository {
       const findProfile = await profileModel.findOne({
         userId: profileInputs.userId,
       });
-      console.log("findProfile", findProfile);
+
       if (findProfile) {
         const profile = await profileModel.findOneAndUpdate(
           {
@@ -78,7 +79,17 @@ class profileRepository {
         },
       ]);
 
-      console.log("findProfile", findProfile);
+
+      await Promise.all(
+        findProfile.map(async (profile: any) => {
+          await Promise.all(
+            profile.profileImage.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
 
       return findProfile;
     } catch (error) {
@@ -123,8 +134,17 @@ class profileRepository {
         },
       ]);
 
-      console.log("findProfile", findProfile);
-      
+      await Promise.all(
+        findProfile.map(async (profile: any) => {
+          await Promise.all(
+            profile.profileImage.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+            
       return findProfile;
     } catch (error) {
       console.log("error", error);

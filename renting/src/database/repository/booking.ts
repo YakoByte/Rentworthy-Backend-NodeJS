@@ -12,6 +12,7 @@ import {
   bookingRequestWithPayment,
 } from "../../interface/booking";
 import { sendEmail } from "../../template/emailTemplate";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class BookingRepository {
   //create booking
@@ -140,7 +141,7 @@ class BookingRepository {
       } else if (bookingInputs.status == "requested") {
         criteria.status = "accepted";
       }
-      console.log("criteria", criteria);
+
       // const findBooking = await bookingModel.find(criteria);
       const findBooking = await bookingModel.aggregate([
         {
@@ -251,8 +252,18 @@ class BookingRepository {
           },
         },
       ]);
-      console.log("findBooking", findBooking);
+
       if (findBooking) {
+        await Promise.all(
+          findBooking.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findBooking;
       }
       return { message: "Booking not found" };
@@ -394,8 +405,18 @@ class BookingRepository {
           },
         ])
         .sort({ createdAt: -1 });
-      console.log("findBooking", findBooking);
-      if (findBooking) {
+
+        if (findBooking) {
+          await Promise.all(
+            findBooking.map(async (complaint: any) => {
+              await Promise.all(
+                complaint.images.map(async (element: any) => {
+                  const newPath = await generatePresignedUrl(element.imageName);
+                  element.path = newPath;
+                })
+              );
+            })
+          );
         return findBooking;
       }
       return { message: "Booking not found" };
@@ -461,7 +482,7 @@ class BookingRepository {
           };
         }
       }
-      console.log("criteria", criteria);
+
       const findBooking = await bookingModel.aggregate([
         {
           $match: criteria,
@@ -574,8 +595,18 @@ class BookingRepository {
           },
         },
       ]);
-      console.log("findBooking", findBooking);
+
       if (findBooking) {
+        await Promise.all(
+          findBooking.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findBooking;
       } 
       return { message: "Booking not found" };

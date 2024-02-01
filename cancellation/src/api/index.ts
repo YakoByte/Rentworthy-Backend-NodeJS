@@ -1,3 +1,4 @@
 export = {
-    Wishlist: require('./wishlist').default,
+    cancelBooking: require('./cancelBooking').default,
+    cancellationPlan: require('./cancellationPlan').default,
 };

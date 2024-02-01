@@ -9,6 +9,7 @@ import {
   expandDateGetRequest,
   expandDateUpdateRequest,
 } from "../../interface/expandDate";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class ExpandDateRepository {
   //create expandDate
@@ -196,8 +197,18 @@ class ExpandDateRepository {
           },
         },
       ]);
-      console.log("findExpandDate", findExpandDate);
+
       if (findExpandDate) {
+        await Promise.all(
+          findExpandDate.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findExpandDate;
       }
       return { message: "Expand Date not found" };

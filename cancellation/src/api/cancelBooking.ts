@@ -1,12 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import CancelBookingService from '../services/cancelBooking';
 import UserAuth from '../middlewares/auth';
-import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest, postAuthenticatedRequest, updateAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/cancelBooking';
-import upload from '../middlewares/imageStorage';
-// import multer from 'multer';
-// import path from 'path';
-// import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new CancelBookingService();

@@ -4,6 +4,7 @@ import {
   aboutUSGetRequest,
   aboutUSUpdateRequest,
 } from "../../interface/aboutUs";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class AboutUSRepository {
   //create aboutUS
@@ -76,10 +77,21 @@ class AboutUSRepository {
           },
         },
       ]);
+
       if (!aboutUSResult) {
         return { message: "No aboutUS" };
       }
 
+      await Promise.all(
+        aboutUSResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
       return aboutUSResult;
     } catch (err) {
       console.log("error", err);

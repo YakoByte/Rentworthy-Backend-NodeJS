@@ -4,6 +4,7 @@ import {
   privacyPolicyGetRequest,
   privacyPolicyUpdateRequest,
 } from "../../interface/privacyPolicy";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class PrivacyPolicyRepository {
   //create PrivacyPolicy
@@ -70,6 +71,18 @@ class PrivacyPolicyRepository {
       if (!PrivacyPolicyResult) {
         return { message: "No PrivacyPolicy" };
       }
+
+      await Promise.all(
+        PrivacyPolicyResult.map(async (about: any) => {
+          await Promise.all(
+            about.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+
       return PrivacyPolicyResult;
     } catch (err: any) {
       console.log("error", err);

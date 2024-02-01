@@ -6,6 +6,7 @@ import {
   ComplainUpdateRequest,
   ComplainGetRequest,
 } from "../../interface/complain";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class ComplainRepository {
   //create Complain
@@ -61,7 +62,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -78,7 +79,17 @@ class ComplainRepository {
         },
       ]);
 
-      if (findComplain) {
+      if (findComplain.length > 0) {
+        await Promise.all(
+          findComplain.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };
@@ -103,7 +114,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -120,8 +131,17 @@ class ComplainRepository {
         },
       ]);
 
-      console.log("findComplain", findComplain);
       if (findComplain) {
+        await Promise.all(
+          findComplain.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };
@@ -146,7 +166,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -163,8 +183,17 @@ class ComplainRepository {
         },
       ]);
 
-      console.log("findComplain", findComplain);
       if (findComplain) {
+        await Promise.all(
+          findComplain.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };
@@ -177,7 +206,6 @@ class ComplainRepository {
   //get all Complain
   async getAllComplain({ skip, limit }: { skip: number; limit: number }) {
     try {
-      console.log("skip", skip, "limit", limit);
       const findComplain = await ComplainModel.aggregate([
         { $match: { isDeleted: false } },
         { $skip: skip },
@@ -187,7 +215,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -203,8 +231,17 @@ class ComplainRepository {
           },
         },
       ]);
-      console.log("findComplain", findComplain);
       if (findComplain) {
+        await Promise.all(
+          findComplain.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };
@@ -236,7 +273,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -252,8 +289,13 @@ class ComplainRepository {
           },
         },
       ]);
-      console.log("findComplain", findComplain);
       if (findComplain) {
+        await Promise.all(
+          findComplain[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };
@@ -278,7 +320,7 @@ class ComplainRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -296,6 +338,16 @@ class ComplainRepository {
       ]);
 
       if (findComplain) {
+        await Promise.all(
+          findComplain.map(async (complaint: any) => {
+            await Promise.all(
+              complaint.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          })
+        );
         return findComplain;
       }
       return { message: "No Data Found" };

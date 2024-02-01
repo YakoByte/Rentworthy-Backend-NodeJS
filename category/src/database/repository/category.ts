@@ -7,6 +7,7 @@ import {
   categoryUpdateRequest,
   categoryGetRequest,
 } from "../../interface/category";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class CategoryRepository {
   //create category
@@ -15,14 +16,14 @@ class CategoryRepository {
       const findCategory = await categoryModel.findOne({
         name: categoryInputs.name,
       });
-      console.log("findCategory", findCategory);
+
       if (findCategory) {
         return { id: findCategory._id, name: findCategory.name };
       }
 
       const category = new categoryModel(categoryInputs);
       const categoryResult = await category.save();
-      console.log("categoryResult", categoryResult);
+
       const history = new historyModel({
         categoryId: categoryResult._id,
         log: [
@@ -38,7 +39,6 @@ class CategoryRepository {
         ],
       });
       await history.save();
-      console.log("history", history);
 
       return categoryResult;
     } catch (error) {
@@ -50,7 +50,6 @@ class CategoryRepository {
   //get category by id
   async getCategoryById(categoryInputs: { _id: string }) {
     try {
-      // const findCategory = await categoryModel.findOne({ _id: categoryInputs._id, isDeleted: false, isActive: true }, { _id: 1, name: 1, description: 1, image: 1 });
       const findCategory = await categoryModel.aggregate([
         {
           $match: {
@@ -64,7 +63,7 @@ class CategoryRepository {
             from: "images",
             localField: "image",
             foreignField: "_id",
-            pipeline: [{ $project: { path: 1, _id: 0 } }],
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "image",
           },
         },
@@ -78,8 +77,14 @@ class CategoryRepository {
           },
         },
       ]);
-      console.log("findCategory", findCategory);
+
       if (findCategory) {
+        await Promise.all(
+          findCategory[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findCategory;
       }
 
@@ -105,20 +110,19 @@ class CategoryRepository {
           },
         },
         { $unwind: "$image" },
-        // {
-        //     $project: {
-        //         _id: 1,
-        //         name: 1,
-        //         description: 1,
-        //         image: "$image.path"
-        //     }
-        // },
         { $skip: skip },
         { $limit: limit },
       ]);
-      console.log("findCategory", findCategory);
 
       if (findCategory) {
+        for (const category of findCategory) {
+          await Promise.all(
+            category.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        }
         return findCategory;
       }
 
@@ -160,8 +164,14 @@ class CategoryRepository {
           },
         },
       ]);
-      console.log("findCategory", findCategory);
+
       if (findCategory) {
+        await Promise.all(
+          findCategory[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findCategory;
       }
       return { message: "Data not found" };

@@ -6,6 +6,7 @@ import {
   subCategoryGetRequest,
   subCategoryUpdateRequest,
 } from "../../interface/subCategory";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class SubCategoryRepository {
   //create subCategory
@@ -14,7 +15,7 @@ class SubCategoryRepository {
       const findSubCategory = await subCategoryModel.findOne({
         name: subCategoryInputs.name,
       });
-      console.log("findSubCategory", findSubCategory);
+
       if (findSubCategory) {
         return { id: findSubCategory._id, name: findSubCategory.name };
       }
@@ -42,6 +43,7 @@ class SubCategoryRepository {
       throw new Error("Unable to Create Category");
     }
   }
+
   //get subCategory by id
   async getSubCategoryById(subCategoryInputs: { _id: string }) {
     try {
@@ -87,8 +89,13 @@ class SubCategoryRepository {
         },
       ]);
 
-      console.log("findSubCategory", findSubCategory);
       if (findSubCategory) {
+        await Promise.all(
+          findSubCategory[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findSubCategory;
       }
       return { message: "Data not found" };
@@ -101,12 +108,6 @@ class SubCategoryRepository {
   // get subCategory by categoryId
   async getSubCategoryByCategoryId(subCategoryInputs: subCategoryGetRequest) {
     try {
-      // const findSubCategory =
-      //     await subCategoryModel
-      //         .find({ categoryId: subCategoryInputs.categoryId, isDeleted: false, isActive: true })
-      //         .skip(Number(subCategoryInputs.page))
-      //         .limit(Number(subCategoryInputs.limit));
-
       const findSubCategory = await subCategoryModel.aggregate([
         {
           $match: {
@@ -149,8 +150,14 @@ class SubCategoryRepository {
         { $skip: Number(subCategoryInputs.page) },
         { $limit: Number(subCategoryInputs.limit) },
       ]);
-      console.log("findSubCategory", findSubCategory);
+
       if (findSubCategory) {
+        await Promise.all(
+          findSubCategory[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findSubCategory;
       }
       return { message: "Data not found" };
@@ -163,11 +170,6 @@ class SubCategoryRepository {
   //get all subCategory
   async getAllSubCategory(subCategoryInputs: subCategoryGetRequest) {
     try {
-      // const findSubCategory =
-      //     await subCategoryModel
-      //         .find({ isDeleted: false, isActive: true })
-      //         .skip(Number(subCategoryInputs.page))
-      //         .limit(Number(subCategoryInputs.limit));
       const findSubCategory = await subCategoryModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
         {
@@ -204,8 +206,16 @@ class SubCategoryRepository {
         { $skip: Number(subCategoryInputs.page) },
         { $limit: Number(subCategoryInputs.limit) },
       ]);
-      console.log("findSubCategory", findSubCategory);
+
       if (findSubCategory) {
+        for (const category of findSubCategory) {
+          await Promise.all(
+            category.images.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        }
         return findSubCategory;
       }
       return { message: "Data not found" };
@@ -218,7 +228,6 @@ class SubCategoryRepository {
   // get subCategory by name and search using regex
   async getSubCategoryByName(subCategoryInputs: { name: string }) {
     try {
-      // const findSubCategory = await subCategoryModel.find({ name: { $regex: subCategoryInputs.name, $options: 'i' }, isDeleted: false, isActive: true });
       const findSubCategory = await subCategoryModel.aggregate([
         {
           $match: {
@@ -259,8 +268,14 @@ class SubCategoryRepository {
           },
         },
       ]);
-      console.log("findSubCategory", findSubCategory);
+
       if (findSubCategory) {
+        await Promise.all(
+          findSubCategory[0].images.map(async (element: any) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          })
+        );
         return findSubCategory;
       }
       return { message: "Data not found" };

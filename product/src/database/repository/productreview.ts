@@ -3,11 +3,7 @@ import {
   historyModel,
   productRatingModel,
 } from "../models";
-import {
-  productReviewRequest,
-  getProductReviewRequest,
-  AuthenticatedRequest,
-} from "../../interface/productreview";
+import { getProductReviewRequest } from "../../interface/productreview";
 import axios from "axios";
 import { getAllProductLike } from "../../interface/productlike";
 
@@ -20,12 +16,12 @@ class ProductReviewRepository {
           userId: productInputs.userId,
         })
         .lean();
-      let tempBody: any = {
+      
+        let tempBody: any = {
         productId: productInputs.productId,
         userId: productInputs.userId,
       };
-      console.log("productInputs.token", productInputs.token);
-      console.log("tempBody", tempBody);
+
       let bookings = await axios.get(
         "https://backend.rentworthy.us/app/api/v1/renting/get-booking",
         {
