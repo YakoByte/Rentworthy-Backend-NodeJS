@@ -13,4 +13,6 @@ export const AWS_BUCKET_NAME: string | undefined = process.env.AWS_BUCKET_NAME |
 export const GOOGLE_PASS: string | undefined = process.env.GOOGLE_PASS || '';
 export const GOOGLE_EMAIL: string | undefined = process.env.GOOGLE_EMAIL || '';
 
+export const SENDGRID_API_KEY: string | undefined = process.env.SENDGRID_API_KEY || '';
+
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';

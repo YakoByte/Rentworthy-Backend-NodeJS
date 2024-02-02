@@ -1,30 +1,30 @@
 // emailService.ts
 
-import * as nodemailer from 'nodemailer';
-import * as fs from 'fs';
-import { GOOGLE_EMAIL, GOOGLE_PASS } from '../config';
+import * as nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
+import { GOOGLE_EMAIL, GOOGLE_PASS, SENDGRID_API_KEY } from "../config";
 
 interface EmailOptions {
-    toUser: string;
-    subject: string;
-    templateVariables: { [key: string]: string };
+  toUser: string;
+  subject: string;
+  templateVariables: { [key: string]: string };
 }
 
 export function sendEmail(options: EmailOptions): void {
-    const transporter = nodemailer.createTransport({
-        service: 'Gmail', // e.g., 'Gmail'
-        auth: {
-            user: GOOGLE_EMAIL,
-            pass: GOOGLE_PASS
-        }
-    });
+  const transporter = nodemailer.createTransport({
+    service: "Gmail", // e.g., 'Gmail'
+    auth: {
+      user: GOOGLE_EMAIL,
+      pass: GOOGLE_PASS,
+    },
+  });
 
-    // Define the email content with template variables
-    const mailOptions = {
-        from: GOOGLE_EMAIL,
-        to: options.toUser,
-        subject: options.subject,
-        html: `<!DOCTYPE html>
+  // Define the email content with template variables
+  const mailOptions = {
+    to: options.toUser,
+    from: GOOGLE_EMAIL || '',
+    subject: options.subject,
+    html: `<!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
@@ -85,15 +85,27 @@ export function sendEmail(options: EmailOptions): void {
                 <p>RentWorthy team<p>
             </div>
         </body>
-        </html>`
-    };
+        </html>`,
+  };
 
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Email sending failed:', error);
-        } else {
-            console.log('Email sent:', info.response);
-        }
-    });
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Email sending failed:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
+
+  //send email with sendGrid
+  //   sgMail.setApiKey(SENDGRID_API_KEY || "");
+
+  //   sgMail
+  //     .send(mailOptions)
+  //     .then((response: any) => {
+  //       console.log("Email sent:", response[0]);
+  //     })
+  //     .catch((error: any) => {
+  //       console.error("Email sending failed:", error);
+  //     });
 }

@@ -13,4 +13,6 @@ export const AWS_SECRET_ACCESS_KEY: string | undefined = process.env.AWS_SECRET_
 export const AWS_BUCKET_REGION: string | undefined = process.env.AWS_BUCKET_REGION || '';
 export const AWS_BUCKET_NAME: string | undefined = process.env.AWS_BUCKET_NAME || '';
 
+export const SENDGRID_API_KEY: string | undefined = process.env.SENDGRID_API_KEY || '';
+
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';
