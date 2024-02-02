@@ -100,6 +100,16 @@ services:
       - "5008"
     env_file:
       - ./cancellation/.env
+  subscription:
+    build: ./subscription
+    container_name: subscription
+    restart: unless-stopped
+    volumes:
+      - ./common/public:/app/public
+    expose:
+      - "5010"
+    env_file:
+      - ./subscription/.env
   caddy_backend:
     image: caddy:2
     container_name: caddy_service

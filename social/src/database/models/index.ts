@@ -8,7 +8,6 @@ import TermConditionModel from "./termsCondition";
 import PrivacyPolicyModel from "./privacyPolicy";
 import AboutUSModel from "./aboutUs";
 import NotificationModel from "./notification";
-import SubscriptionModel from "./subscription";
 import imageModel from './image';
 // ... repeat for each model
 
@@ -18,7 +17,6 @@ export {
   adsModel,
   productModel,
   NotificationModel,
-  SubscriptionModel,
   recommendationModel,
   contactUsModel,
   TermConditionModel,

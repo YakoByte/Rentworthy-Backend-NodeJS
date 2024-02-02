@@ -3,9 +3,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
-// import wishlist from './api/wishlist.ts';
-// import Admin from './api/user.ts';
-// import Role from './api/role.ts';
 import ads from './api/ads.ts';
 import recommendation from './api/recommendation.ts';
 import contactus from './api/contactus.ts';

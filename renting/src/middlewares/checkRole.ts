@@ -1,9 +1,6 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../interface/wishlist'
-// import RoleRepository from '../../../user/src/database/repository/role';
-// import UserSchema from '../../../user/src/database/models/user';
-// import RoleSchema from '../../../user/src/database/models/role';
 
 export async function isAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     // check req.user.roleName

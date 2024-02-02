@@ -21,6 +21,7 @@ const chatMicroservice: string = "http://chat:5006";
 const paymentMicroservice: string = "http://payment:5007";
 const cancellationMicroservice: string = "http://cancellation:5008";
 const socialMicroservice: string = "http://social:5009";
+const subscriptionMicroservice: string = "http://subscription:5010"
 
 // User microservice
 const user = (req: IncomingMessage, res: ServerResponse) => {
@@ -70,9 +71,16 @@ const social = (req: IncomingMessage, res: ServerResponse) => {
   gateway.web(req, res, { target: socialMicroservice });
 };
 
+//cancel microservice
 const cancelBooking = (req: IncomingMessage, res: ServerResponse) => {
-  console.log("Routing to social microservice", req.url);
+  console.log("Routing to cancel microservice", req.url);
   gateway.web(req, res, { target: cancellationMicroservice });
+};
+
+//subscription microservice
+const subscription = (req: IncomingMessage, res: ServerResponse) => {
+  console.log("Routing to subscription microservice", req.url);
+  gateway.web(req, res, { target: subscriptionMicroservice });
 };
 
 export {
@@ -85,4 +93,5 @@ export {
   payment,
   social,
   cancelBooking,
+  subscription,
 };

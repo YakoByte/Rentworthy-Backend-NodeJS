@@ -47,7 +47,7 @@ export default (app: Express) => {
       try {
         // let authUser = req.user as { _id: string; roleName: string; email: string; };
         // req.query.user = authUser;
-        console.log("req.query", req.query);
+
         // console.log("authUser", authUser)
         const data = await service.getTermCondition(req.query);
         return res.json(data);

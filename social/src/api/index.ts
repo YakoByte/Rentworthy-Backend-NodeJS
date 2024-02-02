@@ -5,4 +5,5 @@ export = {
     termCondition: require('./termCondition'),
     privacyPolicy: require('./privacyPolicy'),
     AboutUs: require('./aboutUs'),
+    Notification: require('./notification'),
 };

@@ -10,6 +10,7 @@ import {
   cancelBooking,
   payment,
   social,
+  subscription,
 } from "./gateway";
 import path from "path";
 import http from "http";
@@ -61,6 +62,8 @@ const StartServer = async (): Promise<void> => {
     app.use("/app/api/v1/social", social);
     app.use("/web/api/v1/cancel-booking", cancelBooking);
     app.use("/app/api/v1/cancel-booking", cancelBooking);
+    app.use("/web/api/v1/subscription", subscription);
+    app.use("/app/api/v1/subscription", subscription);
 
     const imagesDirectory = path.join(__dirname, "../../public/images");
 

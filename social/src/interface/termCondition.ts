@@ -47,11 +47,6 @@ export interface termConditionUpdateRequest {
 
 export interface termConditionGetRequest {
     _id?: string
-    // user: {
-    //     _id: string;
-    //     roleName: string;
-    //     email: string;
-    // };
     title?: string;
     images?: string;
     description?: string;
