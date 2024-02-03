@@ -37,6 +37,7 @@ export interface User extends Document {
     isPhoneNoVerified?: boolean;
     stripeId?: string;
     isStripIdVerified?: boolean;
+    isSubscribed?: boolean;
 }
 export interface userSignRequest {
     // userName?: string;

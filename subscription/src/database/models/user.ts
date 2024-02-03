@@ -4,9 +4,6 @@ import { User } from "../../interface/user";
 
 const userSchema: Schema = new Schema<User>(
   {
-    // userName: {
-    //   type: String,
-    // },
     phoneNo: {
       type: Number,
     },

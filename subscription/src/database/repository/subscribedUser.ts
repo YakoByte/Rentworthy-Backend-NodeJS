@@ -1,4 +1,4 @@
-import { SubscribedUserModel } from "../models";
+import { SubscribedUserModel, UsersModel } from "../models";
 import {
     SubscribedUserRequest,
   SubscribedUserGetRequest,
@@ -13,6 +13,7 @@ class SubscribedUserRepository {
         SubscribedUserInputs
       );
       if (SubscribedUserResult) {
+        await UsersModel.findByIdAndUpdate(SubscribedUserInputs.userId, { isSubscribed: true }, { new: true });
         return SubscribedUserResult;
       }
       return { message: "Failed to create SubscribedUser" };
@@ -208,6 +209,10 @@ class SubscribedUserRepository {
         { new: true }
       );
 
+      if(SubscribedUserInputs.paymentId) {
+        await UsersModel.findByIdAndUpdate(SubscribedUserResult?.userId, { isSubscribed: true }, { new: true });
+      }
+
       if (SubscribedUserResult) {
         return SubscribedUserResult;
       }
@@ -245,6 +250,7 @@ class SubscribedUserRepository {
       );
   
       if (SubscribedUserResult) {
+        await UsersModel.findByIdAndUpdate(SubscribedUserResult?.userId, { isSubscribed: false }, { new: true });
         return { message: "SubscribedUser Deleted" };
       }
   
