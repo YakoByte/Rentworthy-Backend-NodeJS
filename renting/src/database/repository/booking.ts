@@ -67,12 +67,12 @@ class BookingRepository {
         productId: bookingInputs.productId,
         isDeleted: false,
       });
-      console.log("findAllBooking", findAllBooking);
+
       let totalQuantity = 0;
       findAllBooking.forEach((element: any) => {
         totalQuantity += element.quantity;
       });
-      console.log("totalQuantity", totalQuantity);
+
       if (
         totalQuantity + Number(bookingInputs.quantity) >
         Number(product.quantity)
@@ -130,6 +130,7 @@ class BookingRepository {
       throw new Error("Unable to Create Booking");
     }
   }
+
   // get active booking, panding, completed, requested
   async getBooking(bookingInputs: bookingGetRequest) {
     try {
@@ -633,6 +634,7 @@ class BookingRepository {
       throw new Error("Unable to add image Booking");
     }
   }
+  
   //remove images from booking
   async removeImagesFromBooking(bookingInputs: bookingRequest) {
     try {
