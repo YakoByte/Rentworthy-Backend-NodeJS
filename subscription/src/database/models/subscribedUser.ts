@@ -21,6 +21,7 @@ const imageSchema: Schema = new Schema<SubscribedUser>(
         },
         DateofSubscription: {
             type: String,
+            default: `${new Date()}`,
         },
         timelimit: {
             type: String,

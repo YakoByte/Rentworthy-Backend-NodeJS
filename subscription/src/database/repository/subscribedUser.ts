@@ -222,19 +222,35 @@ class SubscribedUserRepository {
   //delete SubscribedUser by id
   async deleteSubscribedUserById(SubscribedUserInputs: { _id: string }) {
     try {
+      const existingSubscribedUser = await SubscribedUserModel.findById(SubscribedUserInputs._id);
+  
+      if (!existingSubscribedUser) {
+        return { message: "SubscribedUser not found" };
+      }
+  
+      const currentTime = new Date();
+      const updatedAtTime = new Date(existingSubscribedUser.DateofSubscription);
+      const timeDifference = currentTime.getTime() - updatedAtTime.getTime();
+      const daysDifference = timeDifference / (1000 * 60 * 60 * 24);
+  
+      // Check if updatedAt is more than or equal to 2 days
+      if (daysDifference >= 2) {
+        return { message: "Cannot delete SubscribedUser after 2 days of last update" };
+      }
+    
       const SubscribedUserResult = await SubscribedUserModel.findOneAndUpdate(
         { _id: SubscribedUserInputs._id },
         { isDeleted: true },
         { new: true }
       );
-
+  
       if (SubscribedUserResult) {
         return { message: "SubscribedUser Deleted" };
       }
-
+  
       return false;
     } catch (err: any) {
-      console.log("error", err);
+      console.error("Error", err);
       throw new Error("Unable to Delete SubscribedUser");
     }
   }
