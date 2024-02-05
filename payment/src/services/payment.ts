@@ -7,6 +7,8 @@ import {
   PaymentIntendDetail,
   PaymentMethodDetails,
   PaymentUpdateMethodDetails,
+  PlanProductPricedetail,
+  SubscriptionPayment,
   UpdatePayment,
 } from "../interface/payment";
 import paymentRepository from "../database/repository/payment";
@@ -435,6 +437,73 @@ class PaymentService {
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to Cancle Payment" });
+    }
+  }
+
+  async CreatePlanProduct(paymentDetails: PlanProductPricedetail) {
+    try {
+      const price = await stripe.prices.create({
+        currency: paymentDetails.currency,
+        unit_amount: paymentDetails.amount,
+        recurring: {
+          interval: 'month',
+        },
+        product_data: {
+          name: paymentDetails.planType,
+        },
+      });
+
+      return FormateData({ price });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to subcription Payment" });
+    }
+  }
+
+  async retrivePlanProduct(paymentDetails: {priceId: string}) {
+    try {
+      const price = await stripe.prices.retrieve(paymentDetails.priceId);
+
+      return FormateData({ price });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to subcription Payment" });
+    }
+  }
+
+  async SubscriptionPayment(paymentDetails: SubscriptionPayment) {
+    try {
+      const price = await stripe.prices.retrieve(paymentDetails.stripePriceId);
+      if(!price) {
+        throw new Error('Invalid Price Id');
+      }
+
+      const subscription = await stripe.subscriptions.create({
+        customer: paymentDetails.customerId,
+        items: [
+          {
+            price: paymentDetails.stripePriceId,
+          },
+        ],
+      });
+
+      if(subscription) {
+        const paymentData = {
+          paymentId: subscription.id,
+          productId: paymentDetails.productId,
+          userId: paymentDetails.userId,
+          amount:  price.unit_amount || 0,
+          quantity: 1,
+          currency: price.currency || 'usd',
+          status: "succeeded",
+        };
+
+        await this.repository.CreatePayment(paymentData);
+      }
+      return FormateData({ subscription });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to subcription Payment" });
     }
   }
 

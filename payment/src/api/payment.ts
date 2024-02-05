@@ -160,6 +160,43 @@ export default (app: Express) => {
         }
     });
 
+    app.post('/create-plan-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+            const data = await service.CreatePlanProduct(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/retrive-plan-product', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            let priceId = req.query.price as string || '';
+            
+            if (priceId === '') {
+                res.status(401).json({ error: 'Missing parameter' })
+            }
+
+            const data = await service.retrivePlanProduct({priceId});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/create-subscription-plan', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+            const data = await service.SubscriptionPayment(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     app.get('/get-payment-sum', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const productId = req.query.productId?.toString() || '';
