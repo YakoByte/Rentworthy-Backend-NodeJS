@@ -14,11 +14,8 @@ const PaymentSchema: Schema = new Schema<Payment>(
             ref: "booking",
             required: true,
         },
-        paymentIntentId: {
-            type: String
-        },
-        paymentMethodId: {
-            type: String
+        paymentId: {
+            type: String,
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -36,6 +33,9 @@ const PaymentSchema: Schema = new Schema<Payment>(
         isDeleted: {
             type: Boolean,
             default: false,
+        },
+        status: {
+            type: String,
         }
     },
     { timestamps: true }

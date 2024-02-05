@@ -2,7 +2,6 @@ import { Request } from 'express';
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
-    // Additional properties or methods specific to AuthenticatedRequest
     user?: {
         _id: string;
     };
@@ -20,12 +19,12 @@ export interface getCountAuthenticatedRequest extends Request {
 export interface Payment extends Document {
     productId: Types.ObjectId;
     bookingId: Types.ObjectId;
-    paymentIntentId: string
-    paymentMethodId: string
+    paymentId: string;
     userId: Types.ObjectId;
     quantity: number;
     amount: number;
     isDeleted: boolean;
+    status: string;
 }
 
 export interface postAuthenticatedRequest extends Request {
@@ -43,8 +42,8 @@ export interface confirmIntentRequest extends Request {
         _id: string;
     };
     body: {
-        paymentMethodId: string;
-        paymentIntentId: string
+        paymentId: string;
+        BookingId: string;
         productId: Types.ObjectId;
         userId: Types.ObjectId;
         amount: number;
@@ -59,13 +58,13 @@ export interface PaymentDetails {
 }
 
 export interface PaymentConfirmDetails {
-    paymentMethodId: string;
-    paymentIntentId: string;
+    paymentId: string;
     amount: number;
     productId: Types.ObjectId;
     userId: Types.ObjectId;
     quantity: number;
     currency: string;
+    status: string;
 }
 
 export interface PaymentMethodDetails {
@@ -87,17 +86,21 @@ export interface PaymentChargeDetails {
 }
 
 export interface PaymentCancel {
+    paymentId?: string;
     userId: string;
     stripId: string;
 }
 
 export interface PaymentIntendDetail {
+    ownerId?: sr
+    stripeId?: string; 
+    name?: string;
     email?: string;
     productId: Types.ObjectId;
     userId: Types.ObjectId;
     quantity: number;
     card: {
-        // name: string;
+        name: string;
         number: string;
         exp_month: number;
         exp_year: number;
@@ -116,10 +119,10 @@ export interface UpdatePayment {
     _id: Types.ObjectId;
     productId?: Types.ObjectId;
     bookingId?: Types.ObjectId;
-    paymentIntentId?: string
-    paymentMethodId?: string
+    paymentId?: string;
     userId?: Types.ObjectId;
     quantity?: number;
     amount?: number;
     isDeleted?: boolean;
+    status?: string;
 }

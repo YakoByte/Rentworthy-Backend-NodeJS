@@ -1,39 +1,11 @@
 import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
-import { postAuthenticatedRequest, confirmIntentRequest, AuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/payment';
+import { AuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/payment';
 
 
 export default (app: Express) => {
     const service = new PaymentService();
-
-    // API = create new payment intent
-    app.post('/create-payment-intent', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
-            const data = await service.createPaymentIntent(req.body);
-            return res.json(data);
-        } catch (err) {
-            next(err);
-        }
-    });
-
-    app.post('/confirm-payment-intent', UserAuth, async (req: confirmIntentRequest, res: Response, next: NextFunction) => {
-        try {
-            const data = await service.confirmPaymentIntent(req.body);
-            return res.json(data);
-        } catch (err) {
-            next(err);
-        }
-    });
-
-    app.post('/transfer-payment', UserAuth, async (req: confirmIntentRequest, res: Response, next: NextFunction) => {
-        try {
-            const data = await service.PaymentTransfer(req.body);
-            return res.json(data);
-        } catch (err) {
-            next(err);
-        }
-    })
 
     // API = verify stripe Id
     app.get('/verify-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -41,6 +13,29 @@ export default (app: Express) => {
             let userId:any = req.user?._id
             let stripeId: any = req.query.stripeId;
             const data = await service.VerifyStripeId(stripeId, userId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = retirve payment status
+    app.get('/retrive-payment-status', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId:any = req.user?._id
+            let stripeId: any = req.query.stripeId;
+            const data = await service.retrivePaymentStatus(stripeId, userId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = create account
+    app.post('/create-account', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId:any = req.user?._id
+            const data = await service.createAccount(userId);
             return res.json(data);
         } catch (err) {
             next(err);

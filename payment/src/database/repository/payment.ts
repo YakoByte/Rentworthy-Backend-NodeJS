@@ -240,9 +240,9 @@ class PaymentRepository {
     }
   }
 
-  async GetPaymentData(userId: string, paymentIntentId: string) {
+  async GetPaymentData(userId: string, paymentId: string) {
     try {
-      let response = await UserModel.findOne({userId, paymentIntentId});
+      let response = await UserModel.findOne({userId, paymentId});
       return response;
     } catch (err) {
       console.log("error", err);
