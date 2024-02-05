@@ -69,7 +69,6 @@ export interface PaymentConfirmDetails {
 
 export interface PaymentMethodDetails {
     card?: {
-        name: string;
         number: string;
         exp_month: string;
         exp_year: string;
@@ -102,9 +101,8 @@ export interface PaymentChargeDetails {
 }
 
 export interface PaymentCancel {
-    paymentId?: string;
+    paymentId: string;
     userId: string;
-    stripId: string;
 }
 
 export interface PaymentIntendDetail {
@@ -116,7 +114,6 @@ export interface PaymentIntendDetail {
     userId: string;
     quantity: number;
     card: {
-        name: string;
         number: string;
         exp_month: number;
         exp_year: number;

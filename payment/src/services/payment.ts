@@ -37,7 +37,7 @@ class PaymentService {
 
   async VerifyCustomerStripeId(stripeId: string, userId: string) {
     try {
-      const customer = await stripe.accounts.retrieve(stripeId);
+      const customer = await stripe.customers.retrieve(stripeId);
 
       if (customer) {
         await this.repository.VerifyCustomerStripeId(stripeId, userId);
@@ -170,8 +170,8 @@ class PaymentService {
       const addedCard = await stripe.customers.createSource(
         paymentDetails.customer_id,
         {
-          source: "tok_visa",
-          // source: token.id,
+          // source: "tok_visa",
+          source: token.id,
         }
       );
 
@@ -203,7 +203,7 @@ class PaymentService {
 
   async deleteCard(paymentDetails: PaymentDeleteMethodDetails) {
     try {
-      const deleteCard = await stripe.customers.updateSource(
+      const deleteCard = await stripe.customers.deleteSource(
         paymentDetails.account_Id,
         paymentDetails.card_Id
       );
@@ -333,27 +333,13 @@ class PaymentService {
 
   async paymentIntentPayment(paymentDetails: PaymentIntendDetail) {
     try {
-      // const token = await stripe.tokens.create({
-      //   card: paymentDetails.card,
-      // });
-
-      // const paymentMethod = await stripe.paymentMethods.create({
-      //   type: "card",
-      //   card: paymentDetails.card
-      // });
-
       const paymentMethod = await stripe.paymentMethods.create({
         type: "card",
-        card: {
-          token: "tok_visa",
-        },
+        card: paymentDetails.card
       });
 
       let customer;
-      if (
-        paymentDetails.stripeId === null ||
-        paymentDetails.stripeId === undefined
-      ) {
+      if (paymentDetails.stripeId === null || paymentDetails.stripeId === undefined) {
         customer = await stripe.customers.create({
           name: paymentDetails.name,
           email: paymentDetails.email,
@@ -363,10 +349,10 @@ class PaymentService {
       let owner = await this.repository.GetOwnerData(paymentDetails.OwnerId);
 
       const payment = await stripe.paymentIntents.create({
+        amount: Math.floor(paymentDetails.amount * 100),
         receipt_email: paymentDetails.email,
         customer: paymentDetails.stripeId || customer?.id,
         payment_method: paymentMethod.id,
-        amount: Math.floor(paymentDetails.amount * 100),
         currency: paymentDetails.currency,
         metadata: {
           integration_check: "accept_a_payment",
@@ -422,14 +408,14 @@ class PaymentService {
     try {
       const payment = await this.repository.GetPaymentData(
         paymentDetails.userId,
-        paymentDetails.stripId
+        paymentDetails.paymentId
       );
       if (!payment) {
         throw new Error("No such payment found");
       }
 
-      const createCharge = await stripe.paymentIntents.cancel(
-        paymentDetails.stripId
+      const createCancel = await stripe.paymentIntents.cancel(
+        paymentDetails.paymentId
       );
 
       const updatePayment: UpdatePayment = {
@@ -440,12 +426,12 @@ class PaymentService {
       await this.repository.UpdatePaymentData(updatePayment);
 
       const refundResult = await stripe.refunds.create({
-        payment_intent: paymentDetails.stripId,
+        payment_intent: paymentDetails.paymentId,
         refund_application_fee: true,
         reverse_transfer: true,
       });
 
-      return FormateData({ createCharge, refundResult });
+      return FormateData({ createCancel, refundResult });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to Cancle Payment" });
