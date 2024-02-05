@@ -10,7 +10,6 @@ import {
 import paymentRepository from "../database/repository/payment";
 
 import { FormateData, FormateError } from "../utils";
-import { VENDOR_STRIPE_ACCOUNT_ID } from "../config";
 
 class PaymentService {
   private repository: paymentRepository;
@@ -165,15 +164,14 @@ class PaymentService {
       });
 
       let customer;
-      if (
-        paymentDetails.stripeId === null ||
-        paymentDetails.stripeId === undefined
-      ) {
+      if (paymentDetails.stripeId === null || paymentDetails.stripeId === undefined) {
         customer = await stripe.customers.create({
           name: paymentDetails.name,
           email: paymentDetails.email,
         });
       }
+
+      let owner = await this.repository.GetOwnerData(paymentDetails.OwnerId)
 
       const payment = await stripe.paymentIntents.create({
         receipt_email: paymentDetails.email,
@@ -188,7 +186,7 @@ class PaymentService {
         payment_method_types: ["card"],
         confirm: true,
         transfer_data: {
-          destination: VENDOR_STRIPE_ACCOUNT_ID || "",
+          destination: owner?.stripeId || '',
         },
       });
 

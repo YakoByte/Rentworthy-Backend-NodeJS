@@ -70,7 +70,7 @@ export default (app: Express) => {
         }
     });
 
-    app.post('/payment-intent-payment/create', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/payment-intent-create', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser:any = req.user?._id;
             req.body.userId = authUser;

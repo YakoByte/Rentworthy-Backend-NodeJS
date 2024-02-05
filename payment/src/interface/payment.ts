@@ -92,7 +92,7 @@ export interface PaymentCancel {
 }
 
 export interface PaymentIntendDetail {
-    ownerId?: sr
+    OwnerId: string;
     stripeId?: string; 
     name?: string;
     email?: string;
