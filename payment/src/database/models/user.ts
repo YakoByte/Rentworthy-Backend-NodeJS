@@ -4,9 +4,9 @@ import { User } from "../../interface/user";
 
 const userSchema: Schema = new Schema<User>(
   {
-    // userName: {
-    //   type: String,
-    // },
+    name: {
+      type: String,
+    },
     phoneNo: {
       type: Number,
       default: null,
@@ -71,11 +71,19 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false
     },
-    stripeId: {
+    stripAccountId: {
       type: String,
       unique: true
     },
-    isStripIdVerified: {
+    isStripeAccountVerified: {
+      type: Boolean,
+      default: false
+    },
+    stripeCustomerId: {
+      type: String,
+      unique: true
+    },
+    isStripeCustomerVerified: {
       type: Boolean,
       default: false
     }

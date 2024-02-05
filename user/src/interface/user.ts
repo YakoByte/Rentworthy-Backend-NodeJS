@@ -18,7 +18,7 @@ export interface getCountAuthenticatedRequest extends Request {
 }
 
 export interface User extends Document {
-    // userName?: string;
+    name: string;
     phoneNo?: number;
     phoneCode?: string;
     email?: string;
@@ -35,12 +35,14 @@ export interface User extends Document {
     os?: string;
     isEmailVerified?: boolean;
     isPhoneNoVerified?: boolean;
-    stripeId?: string;
-    isStripIdVerified?: boolean;
-    isSubscribed?: boolean;
+    stripAccountId?: string;
+    isStripeAccountVerified?: boolean;
+    stripeCustomerId?: string;
+    isStripeCustomerVerified?: boolean;
 }
+
 export interface userSignRequest {
-    // userName?: string;
+    name?: string;
     phoneNo?: number;
     phoneCode?: string;
     bussinessType?: string;
@@ -57,6 +59,7 @@ export interface userSignRequest {
     roleName?: string;
     loginType?: string;
 }
+
 export interface userLoginRequest {
     email?: string;
     phoneNo?: string;
@@ -78,7 +81,7 @@ export interface findMe {
 }
 
 export interface socialUserSignRequest {
-    // userName?: string;
+    name?: string;
     phoneNo?: number;
     phoneCode?: string;
     bussinessType?: string;

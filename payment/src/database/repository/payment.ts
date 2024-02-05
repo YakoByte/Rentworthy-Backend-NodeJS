@@ -13,11 +13,25 @@ class PaymentRepository {
     }
   }
 
-  async VerifyStripeId(stripeId: string, userId: string) {
+  async VerifyAccountStripeId(account_Id: string, userId: string) {
     try {
       let response = await UserModel.findOneAndUpdate(
         { _id: userId },
-        { isStripIdVerified: true, stripeId: stripeId },
+        { isStripeAccountVerified: true, stripAccountId: account_Id },
+        { new: true }
+      );
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Verify StripeId");
+    }
+  }
+
+  async VerifyCustomerStripeId(customer_Id: string, userId: string) {
+    try {
+      let response = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        { isStripeCustomerVerified: true, stripeCustomerId: customer_Id },
         { new: true }
       );
       return response;

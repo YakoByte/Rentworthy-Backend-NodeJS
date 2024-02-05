@@ -44,8 +44,8 @@ export interface confirmIntentRequest extends Request {
     body: {
         paymentId: string;
         BookingId: string;
-        productId: Types.ObjectId;
-        userId: Types.ObjectId;
+        productId: string;
+        userId: string;
         amount: number;
         quantity: number;
         currency: string;
@@ -60,8 +60,8 @@ export interface PaymentDetails {
 export interface PaymentConfirmDetails {
     paymentId: string;
     amount: number;
-    productId: Types.ObjectId;
-    userId: Types.ObjectId;
+    productId: string;
+    userId: string;
     quantity: number;
     currency: string;
     status: string;
@@ -78,11 +78,27 @@ export interface PaymentMethodDetails {
     customer_id: string;
 }
 
+export interface PaymentUpdateMethodDetails {
+    account_Id: string;
+    card_Id: string;
+    exp_month: string;
+    exp_year: string;
+    name: string;
+}
+
+export interface PaymentDeleteMethodDetails {
+    account_Id: string;
+    card_Id: string;
+}
+
 export interface PaymentChargeDetails {
-    email?: string;
-    customer_id: string;
+    customer_id?: string;
+    token_id?: string;
     amount: number;
     currency?: string;
+    userId: string;
+    productId: string;
+    quantity: number;
 }
 
 export interface PaymentCancel {
@@ -96,8 +112,8 @@ export interface PaymentIntendDetail {
     stripeId?: string; 
     name?: string;
     email?: string;
-    productId: Types.ObjectId;
-    userId: Types.ObjectId;
+    productId: string;
+    userId: string;
     quantity: number;
     card: {
         name: string;
@@ -117,10 +133,10 @@ export interface PaymentCount {
 
 export interface UpdatePayment {
     _id: Types.ObjectId;
-    productId?: Types.ObjectId;
-    bookingId?: Types.ObjectId;
+    productId?: string;
+    bookingId?: string;
     paymentId?: string;
-    userId?: Types.ObjectId;
+    userId?: string;
     quantity?: number;
     amount?: number;
     isDeleted?: boolean;

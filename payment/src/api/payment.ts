@@ -7,12 +7,24 @@ import { AuthenticatedRequest, getCountAuthenticatedRequest } from '../interface
 export default (app: Express) => {
     const service = new PaymentService();
 
-    // API = verify stripe Id
-    app.get('/verify-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    // API = verify account stripe Id
+    app.get('/verify-account-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let userId:any = req.user?._id
             let stripeId: any = req.query.stripeId;
-            const data = await service.VerifyStripeId(stripeId, userId);
+            const data = await service.VerifyAccountStripeId(stripeId, userId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+    
+    // API = verify account stripe Id
+    app.get('/verify-customer-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId:any = req.user?._id
+            let stripeId: any = req.query.stripeId;
+            const data = await service.VerifyAccountStripeId(stripeId, userId);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -43,15 +55,28 @@ export default (app: Express) => {
     });
 
     // API = create customer
-    app.post('/create-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/create-customer', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const data = await service.createCustomer(req.body.name, req.body.email);
+            let userId:any = req.user?._id
+            const data = await service.createCustomer(userId);
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
 
+    // API = create Token
+    app.post('/token', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId:any = req.user?._id
+            const data = await service.CreateToken(userId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = add card
     app.post('/add-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
             const data = await service.addNewCard(req.body);
@@ -61,9 +86,52 @@ export default (app: Express) => {
         }
     });
 
-    app.post('/create-charge', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    // API = update card
+    app.put('/update-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const data = await service.createCharges(req.body);
+            const data = await service.updateCard(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = delete card
+    app.delete('/delete-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.deleteCard(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = get all card
+    app.get('/get-all-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const customer_Id = req.query.customer_Id as string || '';
+            if (customer_Id === '') {
+                res.status(401).json({ error: 'Missing parameter' })
+            }
+            const data = await service.listPaymentCard({customer_Id});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/create-charge-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.createChargesByCustomer(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/create-charge-token', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.createChargesByToken(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -81,7 +149,7 @@ export default (app: Express) => {
         }
     });
 
-    app.post('/payment-intent-payment/cancel', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/payment-intent-cancel', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser:any = req.user?._id;
             req.body.userId = authUser;
