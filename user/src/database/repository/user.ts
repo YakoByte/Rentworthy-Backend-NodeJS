@@ -16,15 +16,12 @@ class AdminRepository {
   async CreateUser(userInputs: userSignRequest) {
     try {
       // check signup role
-      console.log("userInputs", userInputs.roleName);
       let roleId = await roleModel.findOne({ name: userInputs.roleName });
       if (!roleId) {
-        console.error(`Role with name '${userInputs.roleName}' not found.`);
+        throw new Error(`Role with name '${userInputs.roleName}' not found.`);
       } else {
         roleId = roleId._id;
       }
-
-      console.log("roleId", roleId);
 
       let query = {};
       if (userInputs.email) {
@@ -34,7 +31,6 @@ class AdminRepository {
       }
 
       const findUser = await userModel.findOne(query);
-      console.log(findUser, "user");
 
       if (findUser) {
         return true;
@@ -43,7 +39,7 @@ class AdminRepository {
       // generate salt and password
       let salt = await GenerateSalt();
       let userPassword = await GeneratePassword(userInputs.password, salt);
-      console.log("userPassword", userPassword);
+
       userInputs.password = userPassword;
 
       // create user
@@ -67,7 +63,6 @@ class AdminRepository {
         ],
       });
       await history.save();
-      console.log("userResult", userResult);
 
       // return userResult;
       return userResult;
@@ -85,10 +80,8 @@ class AdminRepository {
       } else if (userInputs.phoneNo) {
         query = { phoneNo: userInputs.phoneNo };
       }
-      console.log("query", query);
 
       const userResult: any = await userModel.findOne(query).populate("roleId");
-      console.log("userResult", userResult);
 
       return userResult;
     } catch (error) {
@@ -143,40 +136,32 @@ class AdminRepository {
   async SocialCreateUser(userInputs: socialUserSignRequest) {
     try {
       // check signup role
-      console.log("userInputs", userInputs.roleName);
-      let roleId = await roleModel
-        .findOne({ name: userInputs.roleName })
-        .distinct("_id");
-      console.log("roleId", roleId);
+      let roleId = await roleModel.findOne({ name: userInputs.roleName });
+      if (!roleId) {
+        throw new Error(`Role with name '${userInputs.roleName}' not found.`);
+      } else {
+        roleId = roleId._id;
+      }
 
       // check if user already exist
       let findUser;
       if (userInputs.email) {
         findUser = await userModel.findOne({
-          $or: [
-            { email: userInputs.email },
-            // { phoneNo: userInputs.phoneNo },
-          ],
+         email: userInputs.email 
         });
       } else if (userInputs.phoneNo) {
         findUser = await userModel.findOne({
-          $or: [
-            // { email: userInputs.email },
-            { phoneNo: userInputs.phoneNo },
-          ],
+         phoneNo: userInputs.phoneNo
         });
       }
-      console.log(findUser, "user");
+
       if (findUser) {
         return true;
       }
 
       // create user
-      const user = new userModel({ ...userInputs, roleId: roleId[0] });
-      console.log("user", user);
-
+      const user = new userModel({ ...userInputs, roleId: roleId });
       const userResult = await user.save();
-      console.log("userInputs", userInputs);
 
       // create history
       const history = new historyModel({
@@ -191,7 +176,6 @@ class AdminRepository {
         ],
       });
       await history.save();
-      console.log("userResult", userResult);
 
       // return userResult;
       return userResult;
