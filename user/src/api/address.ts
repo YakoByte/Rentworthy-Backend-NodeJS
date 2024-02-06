@@ -2,7 +2,6 @@ import { Express, Request, Response, NextFunction } from 'express';
 import AddressService from '../services/address';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest } from '../interface/address';
-// import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new AddressService();
