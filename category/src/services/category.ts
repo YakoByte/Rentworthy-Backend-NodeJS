@@ -46,7 +46,7 @@ class categoryService {
             return FormateData(existingCategory);
         } catch (err: any) {
             console.log("service err", err)
-            return FormateData({ message: "Data Not found", err });
+            return FormateData({ message: "Data Not found" });
         }
     }
     // update category
@@ -58,7 +58,7 @@ class categoryService {
 
             return FormateData(existingCategory);
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            return FormateError({ error: "Data not Updated" });
         }
     }
 
@@ -71,7 +71,7 @@ class categoryService {
 
             return FormateData(existingCategory);
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            return FormateError({ error: "Data not Deleted" });
         }
     }
 

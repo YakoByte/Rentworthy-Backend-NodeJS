@@ -48,7 +48,7 @@ class subCategoryService {
 
             return FormateData(existingSubCategory);
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            return FormateError({ error: "Data not found" });
         }
     }
     // update subCategory
@@ -60,7 +60,7 @@ class subCategoryService {
 
             return FormateData(existingSubCategory);
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            return FormateError({ error: "Data not Udated" });
         }
     }
 
@@ -73,7 +73,7 @@ class subCategoryService {
 
             return FormateData(existingSubCategory);
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            return FormateError({ error: "Data not Deleted" });
         }
     }
 
