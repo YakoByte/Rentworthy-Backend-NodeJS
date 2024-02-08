@@ -1,7 +1,6 @@
 // import e from 'express';
 import multer from 'multer';
 import path from 'path';
-import { Request, Response, NextFunction } from 'express';
 // setup multer for multiple image upload and single image upload with file filter
 
 const storage = multer.diskStorage({
