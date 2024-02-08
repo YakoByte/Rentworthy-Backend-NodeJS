@@ -139,27 +139,14 @@ class SubCategoryRepository {
         },
         {
           $unwind: "$image",
-        },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            category: "$category.name",
-            description: 1,
-            image: "$image.path",
-          },
-        },
-        { $skip: Number(subCategoryInputs.page) },
-        { $limit: Number(subCategoryInputs.limit) },
+        }
       ]);
 
       if (findSubCategory) {
-        await Promise.all(
-          findSubCategory[0].images.map(async (element: any) => {
-            const newPath = await generatePresignedUrl(element.imageName);
-            element.path = newPath;
-          })
-        );
+        if(findSubCategory[0].image){
+          const newPath = await generatePresignedUrl(findSubCategory[0].image.imageName);
+          findSubCategory[0].image.path = newPath;
+        }
         return findSubCategory;
       }
       return { message: "Data not found" };
@@ -212,12 +199,10 @@ class SubCategoryRepository {
 
       if (findSubCategory) {
         for (const category of findSubCategory) {
-          await Promise.all(
-            category.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
+          if(category.image){
+              const newPath = await generatePresignedUrl(category.image.imageName);
+              category.image.path = newPath;
+          }
         }
         return findSubCategory;
       }
@@ -262,24 +247,13 @@ class SubCategoryRepository {
         {
           $unwind: "$image",
         },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            category: "$category.name",
-            description: 1,
-            image: "$image.path",
-          },
-        },
       ]);
 
       if (findSubCategory) {
-        await Promise.all(
-          findSubCategory[0].images.map(async (element: any) => {
-            const newPath = await generatePresignedUrl(element.imageName);
-            element.path = newPath;
-          })
-        );
+        if(findSubCategory[0].image){
+          const newPath = await generatePresignedUrl(findSubCategory[0].image.imageName);
+          findSubCategory[0].image.path = newPath;
+        }
         return findSubCategory;
       }
       return { message: "Data not found" };

@@ -68,23 +68,13 @@ class CategoryRepository {
           },
         },
         { $unwind: "$image" },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            description: 1,
-            image: "$image.path",
-          },
-        },
       ]);
 
       if (findCategory) {
-        await Promise.all(
-          findCategory[0].images.map(async (element: any) => {
-            const newPath = await generatePresignedUrl(element.imageName);
-            element.path = newPath;
-          })
-        );
+        if(findCategory[0].image){
+          const newPath = await generatePresignedUrl(findCategory[0].image.imageName);
+          findCategory[0].image.path = newPath;
+        }
         return findCategory;
       }
 
@@ -116,12 +106,10 @@ class CategoryRepository {
 
       if (findCategory) {
         for (const category of findCategory) {
-          await Promise.all(
-            category.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
+          if(category.image){
+              const newPath = await generatePresignedUrl(category.image.imageName);
+              category.image.path = newPath;
+          }
         }
         return findCategory;
       }
@@ -155,23 +143,13 @@ class CategoryRepository {
           },
         },
         { $unwind: "$image" },
-        {
-          $project: {
-            _id: 1,
-            name: 1,
-            description: 1,
-            image: "$image.path",
-          },
-        },
       ]);
 
       if (findCategory) {
-        await Promise.all(
-          findCategory[0].images.map(async (element: any) => {
-            const newPath = await generatePresignedUrl(element.imageName);
-            element.path = newPath;
-          })
-        );
+        if(findCategory[0].image){
+          const newPath = await generatePresignedUrl(findCategory[0].image.imageName);
+          findCategory[0].image.path = newPath;
+        }
         return findCategory;
       }
       return { message: "Data not found" };
