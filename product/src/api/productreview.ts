@@ -19,7 +19,7 @@ export default (app: Express) => {
         }
     });
 
-    // // API = get product Review by either userwise or productwise
+    // API = get product Review by either userwise or productwise
     app.get('/get-productreview', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.getProductReview(req.query);
