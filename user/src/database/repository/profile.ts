@@ -162,13 +162,10 @@ class profileRepository {
       });
 
       if (!findProfile) {
-        //create new profile
         let profile = new profileModel(profileInputs);
         profile = await profile.save();
         return profile;
       }
-
-      console.log("findProfile", findProfile);
 
       const profile = await profileModel.findOneAndUpdate(
         {

@@ -23,9 +23,9 @@ class ProductRatingRepository {
       let bookings = await axios.get(
         "https://backend.rentworthy.us/app/api/v1/renting/get-booking",
         {
-          // params: tempBody,
+          params: tempBody,
           headers: {
-            Authorization: productInputs.headers,
+            Authorization: productInputs.token,
           },
         }
       );

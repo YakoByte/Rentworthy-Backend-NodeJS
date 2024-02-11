@@ -41,16 +41,15 @@ export default (app: Express) => {
     app.post('/create-profile', UserAuth, upload.single("image"), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.file", req.file)
+
         if (req.file) {
-            // req.body.profileImage = await uploadImageWithToken(req.file.path, req.headers.authorization);
             const imageData = {
                userId: authUser._id,
                imageDetail: req.file,
             }
             req.body.profileImage = await image.CreateImage(imageData);
         }
-        console.log("req.body", req.body)
+
         try {
             const data = await service.CreateProfile(req.body);
             return res.json(data);
@@ -64,11 +63,10 @@ export default (app: Express) => {
         let body: getProfileRequest = req.query
         let authUser: any = req.user
         req.body.userId = authUser._id
-        console.log("req.body", req.body)
+
         try {
             let data
             if (authUser.roleName === "admin") {
-                console.log("admin")
                 data = await service.getAllProfile(body);
             }
             else {
@@ -85,14 +83,12 @@ export default (app: Express) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
         if (req.file) {
-            // req.body.profileImage = await uploadImageWithToken(req.file.path, req.headers.authorization);
             const imageData = {
                 userId: authUser._id,
                 imageDetail: req.file,
              }
              req.body.profileImage = await image.CreateImage(imageData);
         }
-        console.log("req.body", req.body)
         try {
             const data = await service.updateProfileById(req.body);
             return res.json(data);

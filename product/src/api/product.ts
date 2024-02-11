@@ -107,6 +107,7 @@ export default (app: Express) => {
             req.query = {...req.query}
             let authUser: any = req.user
             req.query.userId = authUser._id;
+            req.query.token = req.headers.authorization || ''
 
             const data = await service.getProduct(req.query);
             return res.status(200).json(data);

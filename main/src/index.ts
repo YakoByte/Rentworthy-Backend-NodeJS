@@ -99,8 +99,6 @@ const StartServer = async (): Promise<void> => {
   }
 };
 
-// Uncomment the line below if you want to call StartServer directly
-// StartServer();
 StartServer().catch((error) => {
   console.error("Failed to start the server:", error);
 });
