@@ -86,8 +86,8 @@ export default (app: Express) => {
             const imageData = {
                 userId: authUser._id,
                 imageDetail: req.file,
-             }
-             req.body.profileImage = await image.CreateImage(imageData);
+            }
+            req.body.profileImage = await image.CreateImage(imageData);
         }
         try {
             const data = await service.updateProfileById(req.body);

@@ -13,7 +13,26 @@ interface AuthenticatedSocket extends Socket {
 export function setupSocketServer(io: Server) {
     const roomService = new RoomService();
     const chatService = new ChatService();
+
     // Authentication middleware that will be used to authenticate socket connections
+    io.use((socket, next) => {
+        const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
+        if (!token) {
+            return next(new Error('Authentication error. Token missing.'));
+        }
+
+        try {
+            const decoded = jwt.verify(token, SECRET_KEY as string) as JwtPayload;
+            const authenticatedSocket: AuthenticatedSocket = Object.assign(socket, { user: decoded });
+
+            // Assign the modified socket back
+            socket = authenticatedSocket;
+
+            next();
+        } catch (error) {
+            return next(new Error('Authentication error. Invalid token.'));
+        }
+    });
     
     // socket connection
     io.on('connection', (socket: any) => {
@@ -28,6 +47,7 @@ export function setupSocketServer(io: Server) {
             socket.emit('roomCreated', data);
             console.log('room created');
         });
+        
         //join a room
         socket.on('joinRoom', async (roomDetail: getRoomRequest) => {
             const data: any = await roomService.GetRoom(roomDetail);

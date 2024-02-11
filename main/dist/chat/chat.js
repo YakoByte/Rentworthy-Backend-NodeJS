@@ -6,10 +6,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupSocketServer = void 0;
 const room_1 = __importDefault(require("../services/room"));
 const messages_1 = __importDefault(require("../services/messages"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = require("../config");
 function setupSocketServer(io) {
     const roomService = new room_1.default();
     const chatService = new messages_1.default();
     // Authentication middleware that will be used to authenticate socket connections
+    io.use((socket, next) => {
+        const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
+        if (!token) {
+            return next(new Error('Authentication error. Token missing.'));
+        }
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, config_1.SECRET_KEY);
+            const authenticatedSocket = Object.assign(socket, { user: decoded });
+            // Assign the modified socket back
+            socket = authenticatedSocket;
+            next();
+        }
+        catch (error) {
+            return next(new Error('Authentication error. Invalid token.'));
+        }
+    });
     // socket connection
     io.on('connection', (socket) => {
         console.log('A user connected', socket);
