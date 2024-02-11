@@ -5,7 +5,7 @@ interface CustomHeaders {
   identifier: string;
 }
 
-const ValidateKey = async (req: Request<{}, {}, {}, CustomHeaders>, res: Response, next: NextFunction) => {
+const ValidateKey = async (req: Request<{}, {}, {}, CustomHeaders>, res: Response, next: NextFunction) => {  
   let isKeyValid = false;
   if (req.headers.identifier === APP_IDENTIFIER || req.headers.identifier === WEB_IDENTIFIER) {
     isKeyValid = true;
