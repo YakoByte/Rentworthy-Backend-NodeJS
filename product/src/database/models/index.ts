@@ -10,6 +10,7 @@ import ComplainModel from './complain';
 import Bookings from './booking';
 import Wishlists from './wishlist';
 import imageModel from './image';
+import ProfileModel from './profile';
 
 // ... repeat for each model
 
@@ -24,5 +25,6 @@ export {
     ComplainModel,
     Bookings,
     Wishlists,
-    imageModel
+    imageModel,
+    ProfileModel
 };

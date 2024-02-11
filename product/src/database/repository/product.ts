@@ -1,4 +1,4 @@
-import { productModel, historyModel, Bookings, Wishlists } from "../models";
+import { productModel, historyModel, Bookings, Wishlists, ProfileModel } from "../models";
 import { Types } from "mongoose";
 import {
   productRequest,
@@ -165,7 +165,29 @@ class ProductRepository {
       );
 
       const wishlistPromises = await Promise.all(
-        findProduct.map(async (element) => {
+        findProduct.map(async (element) => {          
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -254,6 +276,28 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }  
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -310,7 +354,6 @@ class ProductRepository {
   // get product by subcategory id
   async getProductBySubCategoryId(productInputs: productGetRequest) {
     try {
-      console.log("skip", productInputs.page, "limit", productInputs.limit);
       const findProduct = await productModel.aggregate([
         {
           $match: {
@@ -319,8 +362,6 @@ class ProductRepository {
             isActive: true,
           },
         },
-        // { $skip: productInputs.page as number },
-        // { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -345,6 +386,28 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }  
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -409,7 +472,6 @@ class ProductRepository {
     userId: string;
   }) {
     try {
-      console.log("skip", skip, "limit", limit);
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
         { $skip: skip },
@@ -438,6 +500,28 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);                       
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }          
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -522,6 +606,28 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);                    
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }  
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -619,6 +725,29 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);                    
+          
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }  
+
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -707,6 +836,28 @@ class ProductRepository {
 
       const wishlistPromises = await Promise.all(
         findProduct.map(async (element) => {
+          let profileData = await ProfileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId[0]._id
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);                    
+          if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }
+          
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;

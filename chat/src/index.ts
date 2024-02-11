@@ -8,7 +8,7 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { connectDB } from './database';
 import helmet from 'helmet';
-// import { setupSocketServer } from './api/chat';
+import { setupSocketServer } from './chat/chat';
 
 const startServer = async (): Promise<void> => {
     
@@ -22,7 +22,6 @@ const startServer = async (): Promise<void> => {
     const app: Express = express();
     // socket setup
 
-
     // Connect to the database
     await connectDB();
 
@@ -34,12 +33,12 @@ const startServer = async (): Promise<void> => {
 
     // Setup socket server
     const server = http.createServer(app);
-    // const io = new SocketIOServer(server, {
-    //     cors: {
-    //         origin: '*', // Be cautious with this in production
-    //     }
-    // });
-    // setupSocketServer(io);
+    const io = new SocketIOServer(server, {
+        cors: {
+            origin: '*', // Be cautious with this in production
+        }
+    });
+    setupSocketServer(io);
 
     // Define a simple root route
     console.log("called");

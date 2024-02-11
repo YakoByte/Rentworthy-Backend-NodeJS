@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cancelBooking = exports.social = exports.payment = exports.chatApi = exports.renting = exports.product = exports.upload = exports.category = exports.user = void 0;
+exports.subscription = exports.cancelBooking = exports.social = exports.payment = exports.chatApi = exports.renting = exports.product = exports.upload = exports.category = exports.user = void 0;
 const httpProxy = __importStar(require("http-proxy"));
 const httpProxyAny = httpProxy;
 const gateway = httpProxyAny.createProxyServer();
@@ -43,6 +43,7 @@ const chatMicroservice = "http://chat:5006";
 const paymentMicroservice = "http://payment:5007";
 const cancellationMicroservice = "http://cancellation:5008";
 const socialMicroservice = "http://social:5009";
+const subscriptionMicroservice = "http://subscription:5010";
 // User microservice
 const user = (req, res) => {
     console.log("Routing to user microservice", req.url);
@@ -91,8 +92,15 @@ const social = (req, res) => {
     gateway.web(req, res, { target: socialMicroservice });
 };
 exports.social = social;
+//cancel microservice
 const cancelBooking = (req, res) => {
-    console.log("Routing to social microservice", req.url);
+    console.log("Routing to cancel microservice", req.url);
     gateway.web(req, res, { target: cancellationMicroservice });
 };
 exports.cancelBooking = cancelBooking;
+//subscription microservice
+const subscription = (req, res) => {
+    console.log("Routing to subscription microservice", req.url);
+    gateway.web(req, res, { target: subscriptionMicroservice });
+};
+exports.subscription = subscription;

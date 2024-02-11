@@ -24,13 +24,13 @@ class PaymentService {
 
   async VerifyAccountStripeId(stripeId: string, userId: string) {
     try {
-      const customer = await stripe.accounts.retrieve(stripeId);
+      const account = await stripe.accounts.retrieve(stripeId);
 
-      if (customer) {
+      if (account) {
         await this.repository.VerifyAccountStripeId(stripeId, userId);
       }
 
-      return FormateData({ customer });
+      return FormateData({ account });
     } catch (error: any) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to Verify the striprID" });

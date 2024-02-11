@@ -49,6 +49,8 @@ const StartServer = async () => {
         app.use("/app/api/v1/social", gateway_1.social);
         app.use("/web/api/v1/cancel-booking", gateway_1.cancelBooking);
         app.use("/app/api/v1/cancel-booking", gateway_1.cancelBooking);
+        app.use("/web/api/v1/subscription", gateway_1.subscription);
+        app.use("/app/api/v1/subscription", gateway_1.subscription);
         const imagesDirectory = path_1.default.join(__dirname, "../../public/images");
         // Check if the directory exists, and create it if not
         if (!fs.existsSync(imagesDirectory)) {
@@ -77,8 +79,6 @@ const StartServer = async () => {
         console.error("Failed to start the server:", error);
     }
 };
-// Uncomment the line below if you want to call StartServer directly
-// StartServer();
 StartServer().catch((error) => {
     console.error("Failed to start the server:", error);
 });

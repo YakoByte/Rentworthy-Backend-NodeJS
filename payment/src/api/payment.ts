@@ -24,7 +24,7 @@ export default (app: Express) => {
         try {
             let userId:any = req.user?._id
             let stripeId: any = req.query.stripeId;
-            const data = await service.VerifyAccountStripeId(stripeId, userId);
+            const data = await service.VerifyCustomerStripeId(stripeId, userId);
             return res.json(data);
         } catch (err) {
             next(err);
