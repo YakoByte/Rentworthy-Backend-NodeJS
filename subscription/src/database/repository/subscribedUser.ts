@@ -1,4 +1,5 @@
 import { SubscribedUserModel, UsersModel } from "../models";
+import { Types } from "mongoose";
 import {
     SubscribedUserRequest,
   SubscribedUserGetRequest,
@@ -23,12 +24,12 @@ class SubscribedUserRepository {
     }
   }
 
-  //get all SubscribedUser
+  //get SubscribedUser
   async getSubscribedUserById(SubscribedUserInputs: SubscribedUserGetRequest) {
     try {
       const SubscribedUserResult = await SubscribedUserModel.aggregate([
         {
-          $match: { _id: SubscribedUserInputs._id, isDeleted: false },
+          $match: { _id: new Types.ObjectId(SubscribedUserInputs._id), isDeleted: false, isActive: true },
         },
         {
           $lookup: {
@@ -53,15 +54,6 @@ class SubscribedUserRepository {
             foreignField: "_id",
             as: "paymentDetails",
           },
-        },
-        {
-          $unwind: "$userDetail",
-        },
-        {
-          $unwind: "$subscriptionPlan",
-        },
-        {
-          $unwind: "$paymentDetails",
         },
       ]);
   
@@ -79,11 +71,8 @@ class SubscribedUserRepository {
   //get all SubscribedUser
   async getAllSubscribedUser() {
     try {
-      // const SubscribedUserResult = await SubscribedUserModel.find();
       const SubscribedUserResult = await SubscribedUserModel.aggregate([
-        {
-          $match: { isDeleted: false },
-        },
+        {$match: { isDeleted: false, isActive: true }},
         {
           $lookup: {
             from: "users",
@@ -103,24 +92,15 @@ class SubscribedUserRepository {
         {
           $lookup: {
             from: "payments",
-            localField: "Payment",
+            localField: "paymentId",
             foreignField: "_id",
             as: "paymentDetails",
           },
         },
-        {
-          $unwind: "$userDetail",
-        },
-        {
-          $unwind: "$subscriptionPlan",
-        },
-        {
-          $unwind: "$paymentDetails",
-        },
       ]);
 
-      if (!SubscribedUserResult) {
-        return { message: "No SubscribedUser" };
+      if (!SubscribedUserResult || SubscribedUserResult.length === 0) {
+        return { message: "No SubscribedUser found" };
       }
       
       return SubscribedUserResult;
@@ -132,10 +112,10 @@ class SubscribedUserRepository {
 
   //get SubscribedUser By userId
   async getSubscribedUserByUserId(SubscribedUserInputs: SubscribedUserGetRequest) {
-    try {
+    try {      
       const SubscribedUserResult = await SubscribedUserModel.aggregate([
         {
-          $match: { _id: SubscribedUserInputs.userId, isDeleted: false },
+          $match: { userId: new Types.ObjectId(SubscribedUserInputs.userId), isDeleted: false, isActive: true },
         },
         {
           $lookup: {
@@ -156,25 +136,17 @@ class SubscribedUserRepository {
         {
           $lookup: {
             from: "payments",
-            localField: "Payment",
+            localField: "paymentId",
             foreignField: "_id",
             as: "paymentDetails",
           },
         },
-        {
-          $unwind: "$userDetail",
-        },
-        {
-          $unwind: "$subscriptionPlan",
-        },
-        {
-          $unwind: "$paymentDetails",
-        },
       ]);
 
-      if (!SubscribedUserResult) {
-        return { message: "No SubscribedUser" };
+      if (!SubscribedUserResult || SubscribedUserResult.length === 0) {
+        return { message: "No SubscribedUser found" };
       }
+
       return SubscribedUserResult;
     } catch (err: any) {
       console.log("error", err);
@@ -182,21 +154,47 @@ class SubscribedUserRepository {
     }
   }
 
-  //get one SubscribedUser
-  async getSubscribedUser(SubscriptionInputs: SubscribedUserGetRequest) {
+  //get SubscribedUser By paymentId
+  async getSubscribedUserByPaymentId(SubscribedUserInputs: SubscribedUserGetRequest) {
     try {
-      const SubscriptionResult = await SubscribedUserModel.find(
-        SubscriptionInputs
-      );
+      const SubscribedUserResult = await SubscribedUserModel.aggregate([
+        {
+          $match: { paymentId: new Types.ObjectId(SubscribedUserInputs.paymentId), isDeleted: false, isActive: true },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userDetail",
+          },
+        },
+        {
+          $lookup: {
+            from: "subscriptions",
+            localField: "subscriptionPlan",
+            foreignField: "_id",
+            as: "subscriptionPlan",
+          },
+        },
+        {
+          $lookup: {
+            from: "payments",
+            localField: "paymentId",
+            foreignField: "_id",
+            as: "paymentDetails",
+          },
+        },
+      ]);
 
-      if (!SubscriptionResult) {
-        return { message: "No Subscription" };
+      if (!SubscribedUserResult || SubscribedUserResult.length === 0) {
+        return { message: "No SubscribedUser found" };
       }
-      
-      return SubscriptionResult;
+
+      return SubscribedUserResult;
     } catch (err: any) {
       console.log("error", err);
-      throw new Error("Unable to Get Subscription");
+      throw new Error("Unable to Get SubscribedUser");
     }
   }
 

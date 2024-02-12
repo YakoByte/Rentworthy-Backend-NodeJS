@@ -25,37 +25,18 @@ class SubscribedUserService {
     }
 
     // get SubscribedUsers by id
-    async getSubscribedUserById(SubscribedUserInputs: SubscribedUserGetRequest) {
-        try {
-            let existingSubscribedUsers = await this.repository.getSubscribedUserById(
-                SubscribedUserInputs
-            );
-
-            return FormateData(existingSubscribedUsers);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get SubscribedUser" });
-        }
-    }
-
-    // get All SubscribedUsers
-    async getAllSubscribedUser(SubscribedUserInputs: SubscribedUserGetRequest) {
-        try {
-            let existingSubscribedUsers: any
-            existingSubscribedUsers = await this.repository.getAllSubscribedUser();
-
-            return FormateData(existingSubscribedUsers);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get all SubscribedUser" });
-        }
-    }
-
-    // get SubscribedUsers by id
     async getSubscribedUser(SubscribedUserInputs: SubscribedUserGetRequest) {
         try {
             let existingSubscribedUsers: any
-            existingSubscribedUsers = await this.repository.getSubscribedUser(
-                SubscribedUserInputs
-            );
+            if(SubscribedUserInputs._id){ 
+                existingSubscribedUsers = await this.repository.getSubscribedUserById(SubscribedUserInputs);
+            } else if(SubscribedUserInputs.userId) {
+                existingSubscribedUsers = await this.repository.getSubscribedUserByUserId(SubscribedUserInputs)
+            } else if(SubscribedUserInputs.paymentId) {
+                existingSubscribedUsers = await this.repository.getSubscribedUserByPaymentId(SubscribedUserInputs)
+            } else {
+                existingSubscribedUsers = await this.repository.getAllSubscribedUser();
+            }
 
             return FormateData(existingSubscribedUsers);
         } catch (err: any) {

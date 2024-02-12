@@ -26,7 +26,6 @@ export interface SubscribedUser extends Document {
     subscriptionPlan: Types.ObjectId,
     paymentId: Types.ObjectId,
     DateofSubscription: string,
-    timelimit: string,
     isActive: boolean,
     isDeleted: boolean,
 }
@@ -37,7 +36,6 @@ export interface SubscribedUserRequest {
     subscriptionPlan?: Types.ObjectId,
     paymentId?: Types.ObjectId,
     DateofSubscription?: string,
-    timelimit?: string,
     isActive?: boolean,
     isDeleted?: boolean,
 }
@@ -48,7 +46,6 @@ export interface SubscribedUserUpdateRequest {
     subscriptionPlan?: Types.ObjectId,
     paymentId?: Types.ObjectId,
     DateofSubscription?: string,
-    timelimit?: string,
     isActive?: boolean,
     isDeleted?: boolean,
 }
@@ -65,7 +62,6 @@ export interface SubscribedUserGetRequest {
     subscriptionPlan?: Types.ObjectId,
     paymentId?: Types.ObjectId,
     DateofSubscription?: string,
-    timelimit?: string,
     isActive?: boolean,
     isDeleted?: boolean,
 }

@@ -16,6 +16,9 @@ const subscriptionSchema: Schema = new Schema<Subscription>(
             type: String,
             required: true,
         },
+        timelimit: {
+            type: String,
+        },
         title: {
             type: String,
             required: true,
@@ -28,11 +31,11 @@ const subscriptionSchema: Schema = new Schema<Subscription>(
         ],
         isActive: {
             type: Boolean,
-            required: true,
+            default: true,
         },
         isDeleted: {
             type: Boolean,
-            required: true,
+            default: false,
         },
     },
     { timestamps: true }

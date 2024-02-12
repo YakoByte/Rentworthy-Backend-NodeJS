@@ -28,10 +28,7 @@ export default (app: Express) => {
   );
 
   // API = get SubscribedUser by id and search and all SubscribedUser
-  app.get(
-    "/get-SubscribedUser",
-    UserAuth,
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get("/get-SubscribedUser", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         const data = await service.getSubscribedUser(req.query);
         return res.json(data);
@@ -41,10 +38,7 @@ export default (app: Express) => {
     }
   );
 
-  app.get(
-    "/get-SubscribedUser/userId",
-    UserAuth,
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get("/get-SubscribedUser/user", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.query.userId = authUser._id;

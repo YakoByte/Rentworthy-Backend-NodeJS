@@ -13,7 +13,6 @@ class SubscriptionService {
     // create Subscription
     async CreateSubscription(SubscriptionInputs: subscriptionRequest) {
         try {
-            console.log("SubscriptionInputs", SubscriptionInputs)
             const existingSubscription: any = await this.repository.CreateSubscription(
                 SubscriptionInputs
             );
@@ -25,37 +24,24 @@ class SubscriptionService {
     }
 
     // get Subscriptions by id
-    async getSubscriptionById(SubscriptionInputs: subscriptionGetRequest) {
-        try {
-            let existingSubscriptions = await this.repository.getSubscriptionById(
-                SubscriptionInputs
-            );
-
-            return FormateData(existingSubscriptions);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get Subscription" });
-        }
-    }
-
-    // get All Subscriptions
-    async getAllSubscription(SubscriptionInputs: subscriptionGetRequest) {
-        try {
-            let existingSubscriptions: any
-            existingSubscriptions = await this.repository.getAllSubscription();
-
-            return FormateData(existingSubscriptions);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get all Subscription" });
-        }
-    }
-
-    // get Subscriptions by id
     async getSubscription(SubscriptionInputs: subscriptionGetRequest) {
         try {
             let existingSubscriptions: any
-            existingSubscriptions = await this.repository.getSubscription(
-                SubscriptionInputs
-            );
+            if(SubscriptionInputs._id) {
+                existingSubscriptions = await this.repository.getSubscriptionById(SubscriptionInputs)
+            } else if(SubscriptionInputs.title) {
+                existingSubscriptions = await this.repository.getSubscriptionByTitle(SubscriptionInputs)
+            } else if(SubscriptionInputs.points) {
+                existingSubscriptions = await this.repository.getSubscriptionByPoint(SubscriptionInputs)
+            } else if(SubscriptionInputs.price) {
+                existingSubscriptions = await this.repository.getSubscriptionByPrice(SubscriptionInputs)
+            }
+            else if(SubscriptionInputs.timelimit) {
+                existingSubscriptions = await this.repository.getSubscriptionByTimeLimit(SubscriptionInputs)
+            }
+            else {
+                existingSubscriptions = await this.repository.getAllSubscription()
+            }
 
             return FormateData(existingSubscriptions);
         } catch (err: any) {
