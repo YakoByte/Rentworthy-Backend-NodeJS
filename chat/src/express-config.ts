@@ -3,9 +3,8 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import HandleErrors from './utils/error-handler';
-import http from 'http';
 import { Server } from 'socket.io';
-import chat from './api/chat.ts';
+import chat from './api/chat'; 
 
 export const configureExpress = async (app: Express) => {
   app.use(express.json({ limit: '1mb' }));

@@ -16,6 +16,7 @@ import {
   payment,
   social,
   subscription,
+  chatApi,
 } from "./gateway";
 
 import { setupSocketServer } from "./chat/chat";
@@ -65,6 +66,8 @@ const StartServer = async (): Promise<void> => {
     app.use("/app/api/v1/product", product);
     app.use("/web/api/v1/renting", renting);
     app.use("/app/api/v1/renting", renting);
+    app.use("/web/api/v1/chat", chatApi);
+    app.use("/app/api/v1/chat", chatApi);
     app.use("/web/api/v1/payment", payment);
     app.use("/app/api/v1/payment", payment);
     app.use("/web/api/v1/social", social);
@@ -78,7 +81,11 @@ const StartServer = async (): Promise<void> => {
     const server = http.createServer(app);
 
     // Initialize Socket.IO server
-    const io = new SocketIOServer(server);
+    const io = new SocketIOServer(server, {
+      cors: {
+        origin: '*', 
+      }
+    });
     setupSocketServer(io);
 
     server.listen(PORT, () => {

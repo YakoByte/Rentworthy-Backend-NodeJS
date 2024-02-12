@@ -40,7 +40,6 @@ class RoomRepository {
       if (roomInputs.productId) {
         criteria = { ...criteria, productId: roomInputs.productId };
         roomInputs.lastMessage = true;
-        // room = await roomModel.findOne(criteria);
       }
       if (roomInputs._id) {
         criteria = { ...criteria, _id: roomInputs._id };
