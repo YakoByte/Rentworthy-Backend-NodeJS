@@ -15,6 +15,8 @@ const StartServer = async (): Promise<void> => {
     fs.mkdirSync(dir);
   }
 
+  console.log('1111');
+
   const app: Express = express();
 
   // Connect to the database
@@ -26,6 +28,8 @@ const StartServer = async (): Promise<void> => {
   // Use Helmet!
   app.use(helmet());
 
+  console.log('2222');
+
   // rate limit
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -35,12 +39,16 @@ const StartServer = async (): Promise<void> => {
 
   app.use(limiter);
 
+  console.log('4444');
+
   // Define a simple root route
   console.log("Called");
   app.get("/", (req: Request, res: Response) => {
     console.log("Called");
     res.status(200).send({ message: "Social microservices called........" });
   });
+
+  console.log('5555');
 
   // Start the Express server
   app
