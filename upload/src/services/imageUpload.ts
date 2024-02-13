@@ -108,11 +108,11 @@ class imageService {
 
       return FormateData(existingImage);
     } catch (err: any) {
-      imageInputs.imageDetails.forEach(async (element: any) => {
-        if (fs.existsSync(element.path)) {
-          fs.unlinkSync(element.path);
+      for (let i = 0; i < imageInputs.imageDetails.length; i++) {
+        if (fs.existsSync(imageInputs.imageDetails[i].path)) {
+          fs.unlinkSync(imageInputs.imageDetails[i].path);
         }
-      });
+      }
       return FormateError({ error: "Failed to create the multiple images" });
     }
   }
