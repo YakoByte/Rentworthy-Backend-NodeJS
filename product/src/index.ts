@@ -15,16 +15,22 @@ const StartServer = async (): Promise<void> => {
     fs.mkdirSync(dir);
   }
 
+  console.log('1111');
+
   const app: Express = express();
 
   // Connect to the database
   await connectDB();
+
+  console.log('2222');
 
   // Configure Express app using the module
   await configureExpress(app);
 
   // Use Helmet!
   app.use(helmet());
+
+  console.log('3333');
 
   // rate limit
   const limiter = rateLimit({
@@ -42,6 +48,8 @@ const StartServer = async (): Promise<void> => {
     // console.log("hello sir")
     res.status(200).send({ message: "Product microservices called........" });
   });
+
+  console.log('4444');
 
   // Start the Express server
   app
