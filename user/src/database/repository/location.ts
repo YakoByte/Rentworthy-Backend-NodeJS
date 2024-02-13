@@ -6,6 +6,11 @@ const { geocode } = require("opencage-api-client");
 class locationRepository {
   async CreateLocation(locationInputs: locationRequest) {
     try {
+      const existingLocation = await locationModel.findOne({userId: locationInputs.userId, location: locationInputs.location});
+      if(existingLocation) {
+        throw new Error('A location with this userId and coodination already exists');
+      }
+
       const location = new locationModel(locationInputs);
       const locationResult = await location.save();
       let findProfile = await profileModel.findOne({
@@ -48,7 +53,7 @@ class locationRepository {
       const findLocation = await locationModel.find({
         userId: locationInputs.userId,
       });
-      console.log("findLocation", findLocation);
+
       return findLocation;
     } catch (error) {
       console.log("error", error);
@@ -62,7 +67,7 @@ class locationRepository {
       const findLocation = await locationModel.findOne({
         _id: locationInputs._id,
       });
-      console.log("findLocation", findLocation);
+
       if (findLocation) {
         return findLocation;
       }
@@ -80,7 +85,7 @@ class locationRepository {
         isDeleted: false,
         isBlocked: false,
       });
-      console.log("findLocation", findLocation);
+
       //if location exist
       if (findLocation) {
         const location = await locationModel.findOneAndUpdate(
@@ -110,7 +115,7 @@ class locationRepository {
         isDeleted: false,
         isBlocked: false,
       });
-      console.log("findLocation", findLocation);
+
       //if location exist
       if (findLocation) {
         const location = await locationModel.findOneAndUpdate(
