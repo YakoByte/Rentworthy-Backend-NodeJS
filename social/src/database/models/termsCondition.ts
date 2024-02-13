@@ -16,6 +16,10 @@ const termConditionSchema: Schema = new Schema<termCondition>(
         ],
         description: {
             type: String,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }

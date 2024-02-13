@@ -1,4 +1,5 @@
 import { TermConditionModel } from "../models";
+import { Types } from "mongoose";
 import {
   termConditionRequest,
   termConditionGetRequest,
@@ -10,6 +11,11 @@ class TermConditionRepository {
   //create TermCondition
   async CreateTermCondition(TermConditionInputs: termConditionRequest) {
     try {
+      const existingTermCondition = await TermConditionModel.findOne({title: TermConditionInputs.title, isDeleted: false});
+      if(existingTermCondition){
+        return existingTermCondition;
+      }
+
       const TermConditionResult = await TermConditionModel.create(
         TermConditionInputs
       );
@@ -23,91 +29,58 @@ class TermConditionRepository {
     }
   }
 
-  //get all TermCondition
-  async getTermConditionById(TermConditionInputs: termConditionGetRequest) {
-    try {
-      const TermConditionResult = await TermConditionModel.aggregate([
-        {
-          $match: { ...TermConditionInputs, isDeleted: false },
-        },
-        {
-          $lookup: {
-            from: "images",
-            localField: "images",
-            foreignField: "_id",
-            as: "images",
-          },
-        },
-      ]);
-      if (!TermConditionResult) {
-        return { message: "No TermCondition" };
-      }
-
-      await Promise.all(
-        TermConditionResult.map(async (about: any) => {
-          await Promise.all(
-            about.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
-        })
-      );
-      
-      return TermConditionResult;
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Get Term & Condition");
-    }
-  }
-
-  //get all TermCondition
-  async getAllTermCondition() {
-    try {
-      const TermConditionResult = await TermConditionModel.aggregate([
-        {
-          $match: { isDeleted: false },
-        },
-        {
-          $lookup: {
-            from: "images",
-            localField: "images",
-            foreignField: "_id",
-            as: "images",
-          },
-        },
-      ]);
-      if (!TermConditionResult) {
-        return { message: "No TermCondition" };
-      }
-
-      await Promise.all(
-        TermConditionResult.map(async (about: any) => {
-          await Promise.all(
-            about.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
-        })
-      );
-      
-      return TermConditionResult;
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Get Term & Condition");
-    }
-  }
-
   //get one TermCondition
   async getTermCondition(TermConditionInputs: termConditionGetRequest) {
     try {
-      const TermConditionResult = await TermConditionModel.find(
-        TermConditionInputs
-      );
-      if (!TermConditionResult) {
-        return { message: "No TermCondition" };
+      let criteria: any = { isDeleted: false };
+      
+      if (TermConditionInputs._id) {
+        criteria._id = new Types.ObjectId(TermConditionInputs._id);
       }
+      if (TermConditionInputs.description) {
+        criteria.description = TermConditionInputs.description;
+      }
+      if (TermConditionInputs.title) {
+        criteria.title = TermConditionInputs.title;
+      }
+      if (TermConditionInputs.images && TermConditionInputs.images.length > 0) {
+        criteria.images = { $in: TermConditionInputs.images.map(image => new Types.ObjectId(image)) };
+      }
+
+      const TermConditionResult = await TermConditionModel.aggregate([
+        {
+          $match: criteria,
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            as: "images",
+          },
+        },
+        {
+          $unwind: "$images",
+        }
+      ]);
+      
+      if (!TermConditionResult || TermConditionResult.length === 0) {
+        return { message: "No Privacy Policy" };
+      }
+  
+      await Promise.all(
+        TermConditionResult.map(async (terms) => {
+          if(terms.images.length > 0) {
+            await Promise.all(
+              terms.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          } 
+        })
+      );
+
       return TermConditionResult;
     } catch (err: any) {
       console.log("error", err);

@@ -1,15 +1,22 @@
 import { AboutUSModel } from "../models";
+import { Types } from "mongoose";
 import {
   aboutUSRequest,
   aboutUSGetRequest,
   aboutUSUpdateRequest,
 } from "../../interface/aboutUs";
 import { generatePresignedUrl } from "../../utils/aws";
+import mongoose from "mongoose";
 
 class AboutUSRepository {
   //create aboutUS
   async CreateAboutUS(aboutUSInputs: aboutUSRequest) {
     try {
+      const existingAboutUS = await AboutUSModel.findOne({title: aboutUSInputs.title, isDeleted: false});
+      if(existingAboutUS){
+        return existingAboutUS;
+      }
+
       const aboutUSResult = await AboutUSModel.create(aboutUSInputs);
       if (aboutUSResult) {
         return aboutUSResult;
@@ -21,40 +28,27 @@ class AboutUSRepository {
     }
   }
 
-  //get all aboutUS
-  // async getAboutUSById(aboutUSInputs: aboutUSGetRequest) {
-  //     try {
-  //         const aboutUSResult = await AboutUSModel.findById(aboutUSInputs._id);
-  //         if (!aboutUSResult) {
-  //             return FormateData("No aboutUS");
-  //         }
-  //         return FormateData(aboutUSResult);
-  //     } catch (err: any) {
-  //         console.log("err", err)
-  //         throw new APIError("Data Not found", err);
-  //     }
-  // }
-  // //get all aboutUS
-  // async getAllAboutUS() {
-  //     try {
-  //         const aboutUSResult = await AboutUSModel.find({ isDeleted: false });
-  //         if (!aboutUSResult) {
-  //             return FormateData("No aboutUS");
-  //         }
-  //         return FormateData(aboutUSResult);
-  //     } catch (err: any) {
-  //         console.log("err", err)
-  //         throw new APIError("Data Not found", err);
-  //     }
-  // }
-
   //get one aboutUS
   async getAboutUS(aboutUSInputs: aboutUSGetRequest) {
     try {
-      // const aboutUSResult = await AboutUSModel.find({ ...aboutUSInputs, isDeleted: false });
+      let criteria: any = { isDeleted: false };
+      
+      if (aboutUSInputs._id) {
+        criteria._id = new Types.ObjectId(aboutUSInputs._id);
+      }
+      if (aboutUSInputs.description) {
+        criteria.description = aboutUSInputs.description;
+      }
+      if (aboutUSInputs.title) {
+        criteria.title = aboutUSInputs.title;
+      }
+      if (aboutUSInputs.images && aboutUSInputs.images.length > 0) {
+        criteria.images = { $in: aboutUSInputs.images.map(image => new Types.ObjectId(image)) };
+      }
+  
       const aboutUSResult = await AboutUSModel.aggregate([
         {
-          $match: { ...aboutUSInputs, isDeleted: false },
+          $match: criteria,
         },
         {
           $lookup: {
@@ -67,35 +61,29 @@ class AboutUSRepository {
         {
           $unwind: "$images",
         },
-        {
-          $project: {
-            _id: 1,
-            images: 1,
-            title: 1,
-            description: 1,
-            isDeleted: 1,
-          },
-        },
       ]);
-
-      if (!aboutUSResult) {
+  
+      if (!aboutUSResult || aboutUSResult.length === 0) {
         return { message: "No aboutUS" };
       }
-
+  
       await Promise.all(
-        aboutUSResult.map(async (about: any) => {
-          await Promise.all(
-            about.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
+        aboutUSResult.map(async (about) => {
+          if(about.images.length > 0) {
+            await Promise.all(
+              about.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          } 
         })
       );
+  
       return aboutUSResult;
     } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to Get Abount US");
+      console.error("Error:", err);
+      throw new Error("Unable to Get About US");
     }
   }
 

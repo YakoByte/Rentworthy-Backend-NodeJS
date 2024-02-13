@@ -13,7 +13,6 @@ class AboutUSService {
     // create AboutUS
     async CreateAboutUS(AboutUSInputs: aboutUSRequest) {
         try {
-            console.log("AboutUSInputs", AboutUSInputs)
             const existingAboutUS: any = await this.repository.CreateAboutUS(
                 AboutUSInputs
             );
@@ -24,31 +23,6 @@ class AboutUSService {
         }
     }
     
-    // get AboutUS by id
-    // async getAboutUSById(AboutUSInputs: aboutUSGetRequest) {
-    //     try {
-    //         let existingAboutUS = await this.repository.getAboutUSById(
-    //             AboutUSInputs
-    //         );
-
-    //         return FormateData({ existingAboutUS });
-    //     } catch (err: any) {
-    //         console.log("err", err)
-    //         return FormateData(err)
-    //     }
-    // }
-    // // get All AboutUS
-    // async getAllAboutUS(AboutUSInputs: aboutUSGetRequest) {
-    //     try {
-    //         let existingAboutUS: any
-    //         existingAboutUS = await this.repository.getAllAboutUS();
-
-    //         return FormateData({ existingAboutUS });
-    //     } catch (err: any) {
-    //         console.log("err", err)
-    //         return FormateData(err)
-    //     }
-    // }
     // get AboutUS by id
     async getAboutUS(AboutUSInputs: aboutUSGetRequest) {
         try {
@@ -75,6 +49,7 @@ class AboutUSService {
             return FormateError({ error: "Failed to add image aboutUs" });
         }
     }
+
     // update AboutUS by id
     async updateById(AboutUSInputs: aboutUSUpdateRequest) {
         try {
@@ -100,7 +75,6 @@ class AboutUSService {
             return FormateError({ error: "Failed to Delete aboutUs" });
         }
     }
-
 }
 
 export = AboutUSService;

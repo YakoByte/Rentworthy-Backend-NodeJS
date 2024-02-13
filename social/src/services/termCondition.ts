@@ -23,29 +23,7 @@ class TermConditionService {
             return FormateError({ error: "Failed to Create Term & Condition" });
         }
     }
-    // get TermConditions by id
-    async getTermConditionById(TermConditionInputs: termConditionGetRequest) {
-        try {
-            let existingTermConditions = await this.repository.getTermConditionById(
-                TermConditionInputs
-            );
 
-            return FormateData(existingTermConditions);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get Term & Condition" });
-        }
-    }
-    // get All TermConditions
-    async getAllTermCondition(TermConditionInputs: termConditionGetRequest) {
-        try {
-            let existingTermConditions: any
-            existingTermConditions = await this.repository.getAllTermCondition();
-
-            return FormateData(existingTermConditions);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get Term & Condition" });
-        }
-    }
     // get TermConditions by id
     async getTermCondition(TermConditionInputs: termConditionGetRequest) {
         try {
@@ -59,6 +37,7 @@ class TermConditionService {
             return FormateError({ error: "Failed to Get Term & Condition" });
         }
     }
+
     // add images to TermCondition
     async addImagesToTermCondition(TermConditionInputs: termConditionUpdateRequest) {
         try {
@@ -71,6 +50,7 @@ class TermConditionService {
             return FormateError({ error: "Failed to add image Term & Condition" });
         }
     }
+
     // update TermCondition by id
     async updateById(TermConditionInputs: termConditionUpdateRequest) {
         try {
@@ -83,6 +63,7 @@ class TermConditionService {
             return FormateError({ error: "Failed to update Term & Condition" });
         }
     }
+
     // delete TermCondition by id  (soft delete)
     async deleteTermCondition(TermConditionInputs: termConditionDeleteRequest) {
         try {
@@ -95,7 +76,6 @@ class TermConditionService {
             return FormateError({ error: "Failed to delete Term & Condition" });
         }
     }
-
 }
 
 export = TermConditionService;

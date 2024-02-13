@@ -7,44 +7,35 @@ const adsSchema: Schema = new Schema<Ads>(
         categoryId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "category",
-            // required: true,
         },
         brand: {
             type: String,
-            // required: true,
         },
         title: {
             type: String,
-            // required: true,
         },
         description: {
             type: String,
-            // required: true,
         },
         min_qty: {
             type: Number,
             default: 0,
-            // required: true,
         },
         max_qty: {
             type: Number,
             default: 0,
-            // required: true,
         },
         min_price: {
             type: Number,
             default: 0,
-            // required: true,
         },
         max_price: {
             type: Number,
             default: 0,
-            // required: true,
         },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",
-            // required: true,
         },
         startDate: {
             type: Date,
@@ -57,7 +48,6 @@ const adsSchema: Schema = new Schema<Ads>(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
-            // required: true,
         },
         isDeleted: {
             type: Boolean,

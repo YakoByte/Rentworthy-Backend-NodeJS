@@ -11,7 +11,7 @@ export interface AuthenticatedRequest extends Request {
     query: {
         _id?: string;
         title?: string;
-        images?: string;
+        image?: string;
         description?: string;
     },
 }
@@ -30,6 +30,7 @@ export interface termCondition extends Document {
     title: string;
     images: [Types.ObjectId];
     description: string;
+    isDeleted: boolean;
 }
 
 export interface termConditionRequest {
@@ -48,8 +49,8 @@ export interface termConditionUpdateRequest {
 export interface termConditionGetRequest {
     _id?: string
     title?: string;
-    images?: string;
     description?: string;
+    images?: [string];
 }
 
 export interface termConditionDeleteRequest {

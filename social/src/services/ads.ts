@@ -10,10 +10,10 @@ class adsService {
     constructor() {
         this.repository = new adsRepository();
     }
+    
     // create ads
     async CreateAds(adsInputs: adsRequest) {
         try {
-            console.log("adsInputs", adsInputs)
             const existingAds: any = await this.repository.CreateAds(
                 adsInputs
             );
@@ -23,6 +23,7 @@ class adsService {
             return FormateError({ error: "Failed to Create ads" });
         }
     }
+
     // get ads by id , userId or all ads
     async getAds(adsInputs: adsGetRequest) {
         try {
@@ -36,6 +37,7 @@ class adsService {
             return FormateError({ error: "Failed to get ads" });
         }
     }
+
     // add images to ads
     async addImagesToAds(adsInputs: adsRequest) {
         try {
@@ -48,6 +50,7 @@ class adsService {
             return FormateError({ error: "Failed to add image ads" });
         }
     }
+
     // approve ads
     async approveAds(adsInputs: adsUpdateRequest) {
         try {
@@ -68,6 +71,7 @@ class adsService {
             return FormateError({ error: "Failed to approve ads" });
         }
     }
+
     // update ads by id
     async updateAdsById(adsInputs: adsRequest) {
         try {
@@ -80,6 +84,7 @@ class adsService {
             return FormateError({ error: "Failed to update ads" });
         }
     }
+
     // delete ads by id  (soft delete)
     async deleteAds(adsInputs: adsDeleteRequest) {
         try {
@@ -92,7 +97,6 @@ class adsService {
             return FormateError({ error: "Failed to delete ads" });
         }
     }
-
 }
 
 export = adsService;

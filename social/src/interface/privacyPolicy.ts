@@ -29,6 +29,7 @@ export interface privacyPolicy extends Document {
     title: string;
     images?: [Types.ObjectId];
     description: string;
+    isDeleted: boolean;
 }
 
 export interface privacyPolicyRequest {
@@ -46,7 +47,6 @@ export interface privacyPolicyUpdateRequest {
 
 export interface privacyPolicyGetRequest {
     _id?: string
-   
     title?: string;
     images?: [string];
     description?: string;

@@ -23,44 +23,19 @@ class PrivacyPolicyService {
             return FormateError({ error: "Failed to Create Privacy Policy" });
         }
     }
-    // // get PrivacyPolicy by id
-    // async getPrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyGetRequest) {
-    //     try {
-    //         let existingPrivacyPolicy = await this.repository.getPrivacyPolicyById(
-    //             PrivacyPolicyInputs
-    //         );
-
-    //         return FormateData({ existingPrivacyPolicy });
-    //     } catch (err: any) {
-    //         console.log("err", err)
-    //         throw new APIError("Data Not found", err);
-    //     }
-    // }
-    // // get All PrivacyPolicy
-    // async getAllPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
-    //     try {
-    //         let existingPrivacyPolicy: any
-    //         existingPrivacyPolicy = await this.repository.getAllPrivacyPolicy();
-
-    //         return FormateData({ existingPrivacyPolicy });
-    //     } catch (err: any) {
-    //         console.log("err", err)
-    //         throw new APIError("Data Not found", err);
-    //     }
-    // }
-    // get PrivacyPolicy by id
+   
+    // get PrivacyPolicy
     async getPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
         try {
             let existingPrivacyPolicy: any
-            existingPrivacyPolicy = await this.repository.getPrivacyPolicy(
-                PrivacyPolicyInputs
-            );
+                existingPrivacyPolicy = await this.repository.getPrivacyPolicy(PrivacyPolicyInputs);
 
             return FormateData(existingPrivacyPolicy);
         } catch (err: any) {
             return FormateError({ error: "Failed to Get Privacy Policy" });
         }
     }
+
     // add images to PrivacyPolicy
     async addImagesToPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyUpdateRequest) {
         try {
@@ -73,6 +48,7 @@ class PrivacyPolicyService {
             return FormateError({ error: "Failed to add image Privacy Policy" });
         }
     }
+
     // update PrivacyPolicy by id
     async updateById(PrivacyPolicyInputs: privacyPolicyUpdateRequest) {
         try {
@@ -85,6 +61,7 @@ class PrivacyPolicyService {
             return FormateError({ error: "Failed to update Privacy Policy" });
         }
     }
+
     // delete PrivacyPolicy by id  (soft delete)
     async deletePrivacyPolicy(PrivacyPolicyInputs: privacyPolicyDeleteRequest) {
         try {
@@ -97,7 +74,6 @@ class PrivacyPolicyService {
             return FormateError({ error: "Failed to Delete Privacy Policy" });
         }
     }
-
 }
 
 export = PrivacyPolicyService;

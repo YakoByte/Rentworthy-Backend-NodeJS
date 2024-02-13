@@ -42,48 +42,6 @@ export default (app: Express) => {
   // API = get AboutUS by id and search and all AboutUS
   app.get( "/get-aboutUS", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
-        let authUser = req.user as {
-          _id: string;
-          roleName: string;
-          email: string;
-        };
-
-        const data = await service.getAboutUS(req.query);
-        return res.json(data);
-      } catch (err) {
-        next(err);
-      }
-    }
-  );
-
-  // API = get AboutUS by id and search and all AboutUS
-  app.get("/get-aboutUS/title", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      try {
-        let authUser = req.user as {
-          _id: string;
-          roleName: string;
-          email: string;
-        };
-        // req.query.user = authUser;
-        console.log("req.query", req.query);
-        console.log("authUser", authUser);
-        const data = await service.getAboutUS(req.query);
-        return res.json(data);
-      } catch (err) {
-        next(err);
-      }
-    }
-  );
-
-  // API = get AboutUS by id and search and all AboutUS
-  app.get("/get-aboutUS/all", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      try {
-        let authUser = req.user as {
-          _id: string;
-          roleName: string;
-          email: string;
-        };
-        // req.query.user = authUser;
         const data = await service.getAboutUS(req.query);
         return res.json(data);
       } catch (err) {

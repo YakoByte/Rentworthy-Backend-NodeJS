@@ -13,7 +13,6 @@ class ContactUsService {
     // create ContactUs
     async createContactUs(ContactUsInputs: ContactUsInput) {
         try {
-            console.log("ContactUsInputs", ContactUsInputs)
             const existingContactUs: any = await this.repository.CreateContactUs(
                 ContactUsInputs
             );

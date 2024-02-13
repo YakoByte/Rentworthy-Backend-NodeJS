@@ -89,7 +89,6 @@ export default (app: Express) => {
           roleName: string;
           email: string;
         };
-        // req.query.user = authUser;
         
         const data = await service.getAds({ ...req.query, user: authUser });
         return res.json(data);
@@ -119,7 +118,7 @@ export default (app: Express) => {
       } catch (err) {
         next(err);
       }
-    });
+  });
 
   // API = update ads by id
   app.put("/update-ads-by-id", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

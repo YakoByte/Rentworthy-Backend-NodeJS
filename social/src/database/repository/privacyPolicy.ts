@@ -1,4 +1,5 @@
 import { PrivacyPolicyModel } from "../models";
+import { Types } from "mongoose";
 import {
   privacyPolicyRequest,
   privacyPolicyGetRequest,
@@ -10,6 +11,11 @@ class PrivacyPolicyRepository {
   //create PrivacyPolicy
   async CreatePrivacyPolicy(PrivacyPolicyInputs: privacyPolicyRequest) {
     try {
+      const existingPrivacyPolicy = await PrivacyPolicyModel.findOne({title: PrivacyPolicyInputs.title, isDeleted: false});
+      if(existingPrivacyPolicy){
+        return existingPrivacyPolicy;
+      }
+
       const PrivacyPolicyResult = await PrivacyPolicyModel.create(
         PrivacyPolicyInputs
       );
@@ -23,41 +29,27 @@ class PrivacyPolicyRepository {
     }
   }
 
-  //get all PrivacyPolicy
-  async getPrivacyPolicyById(PrivacyPolicyInputs: privacyPolicyGetRequest) {
-    try {
-      const PrivacyPolicyResult = await PrivacyPolicyModel.findById(
-        PrivacyPolicyInputs._id
-      );
-      if (!PrivacyPolicyResult) {
-        return { message: "No PrivacyPolicy" };
-      }
-      return PrivacyPolicyResult;
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Get Privacy");
-    }
-  }
-
-  //get all PrivacyPolicy
-  async getAllPrivacyPolicy() {
-    try {
-      const PrivacyPolicyResult = await PrivacyPolicyModel.find();
-      if (!PrivacyPolicyResult) {
-        return { message: "No PrivacyPolicy" };
-      }
-      return PrivacyPolicyResult;
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Get Privacy");
-    }
-  }
   //get one PrivacyPolicy
   async getPrivacyPolicy(PrivacyPolicyInputs: privacyPolicyGetRequest) {
     try {
+      let criteria: any = { isDeleted: false };
+      
+      if (PrivacyPolicyInputs._id) {
+        criteria._id = new Types.ObjectId(PrivacyPolicyInputs._id);
+      }
+      if (PrivacyPolicyInputs.description) {
+        criteria.description = PrivacyPolicyInputs.description;
+      }
+      if (PrivacyPolicyInputs.title) {
+        criteria.title = PrivacyPolicyInputs.title;
+      }
+      if (PrivacyPolicyInputs.images && PrivacyPolicyInputs.images.length > 0) {
+        criteria.images = { $in: PrivacyPolicyInputs.images.map(image => new Types.ObjectId(image)) };
+      }
+
       const PrivacyPolicyResult = await PrivacyPolicyModel.aggregate([
         {
-          $match: { ...PrivacyPolicyInputs, isDeleted: false },
+          $match: criteria,
         },
         {
           $lookup: {
@@ -67,19 +59,25 @@ class PrivacyPolicyRepository {
             as: "images",
           },
         },
+        {
+          $unwind: "$images",
+        }
       ]);
-      if (!PrivacyPolicyResult) {
-        return { message: "No PrivacyPolicy" };
-      }
 
+      if (!PrivacyPolicyResult || PrivacyPolicyResult.length === 0) {
+        return { message: "No Privacy Policy" };
+      }
+  
       await Promise.all(
-        PrivacyPolicyResult.map(async (about: any) => {
-          await Promise.all(
-            about.images.map(async (element: any) => {
-              const newPath = await generatePresignedUrl(element.imageName);
-              element.path = newPath;
-            })
-          );
+        PrivacyPolicyResult.map(async (privacy) => {
+          if(privacy.images.length > 0) {
+            await Promise.all(
+              privacy.images.map(async (element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                element.path = newPath;
+              })
+            );
+          } 
         })
       );
 

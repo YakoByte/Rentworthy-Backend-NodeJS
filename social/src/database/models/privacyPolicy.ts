@@ -16,6 +16,10 @@ const privacyPolicySchema: Schema = new Schema<privacyPolicy>(
         ],
         description: {
             type: String,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }

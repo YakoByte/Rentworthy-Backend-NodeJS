@@ -12,10 +12,7 @@ export default (app: Express) => {
   const service = new NotificationService();
 
   // API = create new Notification
-  app.post(
-    "/create-notification",
-    UserAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+  app.post("/create-notification", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await service.CreateNotification(
           req.body as notificationRequest
@@ -28,10 +25,7 @@ export default (app: Express) => {
   );
 
   // API = get Notification by id
-  app.get(
-    "/get-notification",
-    UserAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+  app.get("/get-notification", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await service.getNotification(req.query);
         res.status(200).json(result);
@@ -42,10 +36,7 @@ export default (app: Express) => {
   );
 
   // API = update Notification by id
-  app.put(
-    "/update-notification-by-id",
-    UserAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+  app.put("/update-notification-by-id", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await service.updateById({ ...req.body, ...req.query });
         res.status(200).json(result);
@@ -56,10 +47,7 @@ export default (app: Express) => {
   );
 
   // API = delete Notification by id
-  app.delete(
-    "/delete-notification-by-id",
-    UserAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
+  app.delete("/delete-notification-by-id", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await service.deleteNotification({
           ...req.body,

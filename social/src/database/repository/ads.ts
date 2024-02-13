@@ -21,6 +21,7 @@ class AdsRepository {
       if (!product) {
         return { message: "Product not found" };
       }
+
       adsResult = await adsModel.create(adsInputs);
       if (adsResult) {
         return adsResult;
@@ -155,17 +156,22 @@ class AdsRepository {
 
       if (adsResult) {
         await Promise.all(
-          adsResult.map(async (about: any) => {
-            await Promise.all(
-              about.images.map(async (element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                element.path = newPath;
-              })
-            );
+          adsResult.map(async (ads) => {
+            if(ads.images.length > 0) {
+              await Promise.all(
+                ads.images.map(async (element: any) => {
+                  const newPath = await generatePresignedUrl(element.imageName);
+                  element.path = newPath;
+                })
+              );
+            } 
           })
         );
+
         return adsResult;
       }
+
+      return "No ads";
     } catch (err: any) {
       console.log("error", err);
       throw new Error("Unable to Get Ads");

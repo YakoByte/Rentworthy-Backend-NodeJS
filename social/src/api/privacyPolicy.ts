@@ -81,14 +81,6 @@ export default (app: Express) => {
   // API = get privacyPolicy by id and search and all privacyPolicy
   app.get("/get-privacyPolicy", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
-        let authUser = req.user as {
-          _id: string;
-          roleName: string;
-          email: string;
-        };
-        // req.query.user = authUser;
-        console.log("req.query", req.query);
-        console.log("authUser", authUser);
         const data = await service.getPrivacyPolicy(req.query);
         return res.json(data);
       } catch (err) {
