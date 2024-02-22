@@ -32,8 +32,7 @@ let fileFilter = async (req: any, file: any, cb: any) => {
     }
 }
 // Initialize Multer
-let upload = multer({ storage: storage, fileFilter: fileFilter });
-
+let upload = multer({ storage: storage });
 
 export default upload;
 

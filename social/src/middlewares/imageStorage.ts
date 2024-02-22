@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 });
 
 // export default { upload };
-let fileFilter = async (req: any, file: any, cb: any) => {
+let  = async (req: any, file: any, cb: any) => {
     // Allowed ext
     const filetypes = /jpeg|jpg|png|gif/;
     // Check ext
@@ -32,7 +32,7 @@ let fileFilter = async (req: any, file: any, cb: any) => {
     }
 }
 // Initialize Multer
-let upload = multer({ storage: storage, fileFilter: fileFilter });
+let upload = multer({ storage: storage, :  });
 
 
 

@@ -15,13 +15,6 @@ class imageService {
   // create image
   async CreateImage(imageInputs: imageRequest) {
     try {
-      if (
-        imageInputs.imageDetail.mimetype !== "image/jpeg" &&
-        imageInputs.imageDetail.mimetype !== "image/png"
-      ) {
-        return FormateError({ error: "Invalid Image Type" });
-      }
-
       const imagePath = imageInputs.imageDetail.path;
       const imageMimetype = imageInputs.imageDetail.mimetype;
       const imageSize = imageInputs.imageDetail.size;
@@ -59,13 +52,6 @@ class imageService {
     try {
       let imagePayload: any = [];
       for (let i = 0; i < imageInputs.imageDetails.length; i++) {
-        if (
-          imageInputs.imageDetails[i].mimetype !== "image/jpeg" &&
-          imageInputs.imageDetails[i].mimetype !== "image/png"
-        ) {
-          return FormateError({ error: "Invalid Image Type" });
-        }
-
         const imagePath = imageInputs.imageDetails[i].path;
         const imageMimetype = imageInputs.imageDetails[i].mimetype;
         const imageSize = imageInputs.imageDetails[i].size;
