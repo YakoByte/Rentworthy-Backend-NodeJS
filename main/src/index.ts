@@ -17,7 +17,7 @@ import {
   social,
   subscription,
   chatApi,
-} from "./localhostgateway";
+} from "./gateway";
 
 import { setupSocketServer } from "./chat/chat";
 import { connectDB } from "./database";
