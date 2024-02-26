@@ -92,13 +92,10 @@ class CancellationPlanRepository {
   async getCountOfCancellationPerDay() {
     try {
       // Set the startDate to the beginning of the day one year ago
-      let startDate = moment()
-        .subtract(1, "years")
-        .startOf("day")
-        .toISOString();
+      let startDate = moment().subtract(1, "year").startOf("day").toDate();
 
       // Set the endDate to the end of the current day
-      let endDate = moment().endOf("day").toISOString();
+      let endDate = moment().endOf("day").toDate();
 
       let result = await cancellationPlanModel.aggregate([
         {

@@ -231,6 +231,9 @@ class CancelBookingRepository {
             total: { $sum: 1 },
           },
         },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+        }
       ]);
 
       let finalData = result.map((item) => ({
@@ -276,6 +279,9 @@ class CancelBookingRepository {
             total: { $sum: 1 },
           },
         },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 }
+        }
       ]);
 
       let finalData = result.map((item) => ({
@@ -321,6 +327,9 @@ class CancelBookingRepository {
             total: { $sum: 1 },
           },
         },
+        {
+          $sort: { "_id.year": 1, "_id.week": 1 }
+        }
       ]);
 
       let finalData = result.map((item) => ({
