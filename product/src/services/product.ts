@@ -25,6 +25,7 @@ class productService {
 
       return FormateData(existingProduct);
     } catch (err: any) {
+      console.log(err)
       return FormateError({ error: "Data not Created" });
     }
   }
