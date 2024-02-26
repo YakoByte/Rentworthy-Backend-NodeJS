@@ -89,7 +89,7 @@ export default (app: Express) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             // req.query.user = authUser;
-            console.log("req.query", req.query)
+
             const data = await service.getBooking({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {

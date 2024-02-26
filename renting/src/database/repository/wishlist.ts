@@ -7,6 +7,7 @@ import {
   wishlistUpdateRequest,
   wishlistGetRequest,
 } from "../../interface/wishlist";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class WishlistRepository {
   //create wishlist
@@ -17,10 +18,10 @@ class WishlistRepository {
         userId: wishlistInputs.userId,
         isDeleted: false,
       });
-      console.log("findWishlist", findWishlist);
+
       if (findWishlist) {
         // update and add productIds
-        console.log("wishlistInputs", wishlistInputs);
+
         wishlistResult = await wishlistModel.findOneAndUpdate(
           {
             userId: wishlistInputs.userId,
@@ -78,16 +79,38 @@ class WishlistRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
             as: "userId",
           },
         },
-        { $unwind: "$userId" },
+        {
+          $unwind: "$productIds"
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "productIds.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productIds.images",
+          },
+        },
       ]);
-      console.log("findWishlist", findWishlist);
-      if (findWishlist) {
-        return findWishlist;
+
+      if(findWishlist.length === 0) {
+        return { message: "Wishlist not found" };
       }
-      return { message: "Wishlist not found" };
+
+      for (const wishlist of findWishlist) {
+        for (const image of wishlist.productIds.images) {
+          if (image) {
+            let newPath = await generatePresignedUrl(image.imageName);
+            image.path = newPath;
+          }
+        }
+      }
+
+      return findWishlist;
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get Wishlist");
@@ -95,12 +118,12 @@ class WishlistRepository {
   }
 
   //get wishlist by userId
-  async getWishlistByUserId(wishlistInputs: { userId: string }) {
+  async getWishlistByUserId(input: { userId: string }) {
     try {
       const findWishlist = await wishlistModel.aggregate([
         {
           $match: {
-            userId: new ObjectId(wishlistInputs.userId),
+            userId: new ObjectId(input.userId),
             isDeleted: false,
           },
         },
@@ -117,18 +140,40 @@ class WishlistRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
             as: "userId",
           },
         },
-        { $unwind: "$userId" },
+        {
+          $unwind: "$productIds"
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "productIds.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productIds.images",
+          },
+        },
       ]);
-      console.log("findWishlist", findWishlist);
-      if (findWishlist) {
-        return findWishlist;
+  
+      if(findWishlist.length === 0) {
+        return { message: "Wishlist not found" };
       }
-      return { message: "Wishlist not found" };
+
+      for (const wishlist of findWishlist) {
+        for (const image of wishlist.productIds.images) {
+          if (image) {
+            let newPath = await generatePresignedUrl(image.imageName);
+            image.path = newPath;
+          }
+        }
+      }
+
+      return findWishlist;
     } catch (err) {
-      console.log("error", err);
+      console.log("Error:", err);
       throw new Error("Unable to Get Wishlist");
     }
   }
@@ -136,16 +181,59 @@ class WishlistRepository {
   //get all wishlist
   async getAllWishlist({ skip, limit }: { skip: number; limit: number }) {
     try {
-      const findWishlist = await wishlistModel
-        .find({ isDeleted: false })
-        .populate("userId")
+      const findWishlist = await wishlistModel.aggregate([
+        {
+          $match: {
+            isDeleted: false,
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "productIds",
+            foreignField: "_id",
+            as: "productIds",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
+            as: "userId",
+          },
+        },
+        {
+          $unwind: "$productIds"
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "productIds.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productIds.images",
+          },
+        },
+      ])
         .skip(skip)
         .limit(limit);
-      console.log("findWishlist", findWishlist);
-      if (findWishlist) {
+
+        if(findWishlist.length === 0) {
+          return { message: "Wishlist not found" };
+        }
+  
+        for (const wishlist of findWishlist) {
+          for (const image of wishlist.productIds.images) {
+            if (image) {
+              let newPath = await generatePresignedUrl(image.imageName);
+              image.path = newPath;
+            }
+          }
+        }
+  
         return findWishlist;
-      }
-      return { message: "Wishlist not found" };
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get Wishlist");
@@ -185,7 +273,7 @@ class WishlistRepository {
         _id: wishlistInputs._id,
         isDeleted: false,
       });
-      console.log("findWishlist", findWishlist);
+
       if (findWishlist) {
         // soft delete wishlist
         await wishlistModel.updateOne(

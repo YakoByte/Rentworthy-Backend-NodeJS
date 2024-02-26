@@ -36,16 +36,21 @@ class BookingRepository {
         { $inc: { interactionCount: 1 } },
         { new: true }
       );
-      console.log("product", product);
 
       // call updateLevel api
-      let updateProfile = await axios.put(
+      await axios.put(
         "https://backend.rentworthy.us/app/api/v1/user/update-level",
         {
           userId: product.userId,
+        },
+        {
+          headers: {
+            Authorization: req.headers.authorization,
+            IDENTIFIER: 'A2hG9tE4rB6kY1sN',
+            "Content-Type": "application/json",
+          },
         }
       );
-      console.log("updateProfile", updateProfile);
 
       if (!product) {
         return { message: "Product not available in this Date" };
@@ -95,6 +100,7 @@ class BookingRepository {
           {
             headers: {
               Authorization: req.headers.authorization,
+              IDENTIFIER: 'A2hG9tE4rB6kY1sN',
               "Content-Type": "application/json",
             },
           }
@@ -153,6 +159,7 @@ class BookingRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
             as: "userDetail",
           },
         },
@@ -169,6 +176,7 @@ class BookingRepository {
             from: "images",
             localField: "images",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -186,6 +194,7 @@ class BookingRepository {
             from: "images",
             localField: "preRentalScreening.images",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "preRentalScreening.images",
           },
         },
@@ -290,7 +299,7 @@ class BookingRepository {
           { endDate: { $lte: bookingInputs.endDate } },
         ];
       }
-      console.log("criteria", criteria);
+
       //add user detail and product detail in booking
       const findBooking = await bookingModel
         .aggregate([
@@ -302,6 +311,7 @@ class BookingRepository {
               from: "users",
               localField: "userId",
               foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
               as: "userDetail",
             },
           },
@@ -318,6 +328,7 @@ class BookingRepository {
               from: "images",
               localField: "images",
               foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
               as: "images",
             },
           },
@@ -335,6 +346,7 @@ class BookingRepository {
               from: "images",
               localField: "preRentalScreening.images",
               foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
               as: "preRentalScreening.images",
             },
           },
@@ -493,6 +505,7 @@ class BookingRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
             as: "userDetail",
           },
         },
@@ -510,14 +523,15 @@ class BookingRepository {
         {
           $unwind: "$productDetail",
         },
-        // {
-        //     $unwind: "$images"
-        // },
+        {
+            $unwind: "$images"
+        },
         {
           $lookup: {
             from: "images",
             localField: "images",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
         },
@@ -529,6 +543,7 @@ class BookingRepository {
             from: "images",
             localField: "preRentalScreening.images",
             foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "preRentalScreening.images",
           },
         },

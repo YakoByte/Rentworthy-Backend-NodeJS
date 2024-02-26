@@ -28,7 +28,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.query.userId = authUser._id;
-            console.log("req.query", req.query)
+
             const data = await service.getWishlist(req.query);
             return res.json(data);
         } catch (err) {
