@@ -22,6 +22,7 @@ class categoryService {
             return FormateError({ error: "Data not Created" });
         }
     }
+
     // get category by id , search or all category
     async getCategory(categoryInputs: categoryGetRequest) {
         let page = categoryInputs.page ? Number(categoryInputs.page) * Number(categoryInputs.limit) - Number(categoryInputs.limit) : 0;
@@ -49,6 +50,7 @@ class categoryService {
             return FormateData({ message: "Data Not found" });
         }
     }
+    
     // update category
     async updateCategory(categoryInputs: categoryUpdateRequest) {
         try {

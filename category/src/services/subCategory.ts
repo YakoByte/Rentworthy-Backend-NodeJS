@@ -22,11 +22,12 @@ class subCategoryService {
             return FormateError({ error: "Data not Created" });
         }
     }
+    
     // get subCategory by id , name or all subCategory
     async getSubCategory(subCategoryInputs: subCategoryGetRequest) {
         try {
-            subCategoryInputs.page = subCategoryInputs.page ? (Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit)).toString() : '0';
-            subCategoryInputs.limit = subCategoryInputs.limit ? Number(subCategoryInputs.limit).toString() : '10';
+            subCategoryInputs.page = subCategoryInputs.page ? (Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit)) : 0;
+            subCategoryInputs.limit = subCategoryInputs.limit ? Number(subCategoryInputs.limit) : 10;
             let existingSubCategory: any
             if (subCategoryInputs._id) {
                 existingSubCategory = await this.repository.getSubCategoryById(
@@ -51,6 +52,7 @@ class subCategoryService {
             return FormateError({ error: "Data not found" });
         }
     }
+
     // update subCategory
     async updateSubCategory(subCategoryInputs: subCategoryUpdateRequest) {
         try {

@@ -41,8 +41,8 @@ export interface subCategoryUpdateRequest {
 export interface subCategoryGetRequest {
     _id?: string
     search?: string;
-    page?: string;
-    limit?: string;
+    page?: number;
+    limit?: number;
     categoryId?: string;
 }
 

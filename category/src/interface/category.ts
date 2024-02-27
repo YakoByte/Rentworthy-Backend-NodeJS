@@ -40,8 +40,8 @@ export interface categoryUpdateRequest {
 export interface categoryGetRequest {
     _id?: string
     search?: string;
-    page?: string;
-    limit?: string;
+    page?: number;
+    limit?: number;
 }
 
 // for delete category
