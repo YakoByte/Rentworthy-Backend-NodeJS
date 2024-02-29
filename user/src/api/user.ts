@@ -4,6 +4,7 @@ import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest, userLoginRequest, socialUserLoginRequest, getCountAuthenticatedRequest } from '../interface/user';
 import OTPService from '../services/otp';
 import { validateEmail, validateNumber, validatePassword } from '../middlewares/vaildateInput';
+import { loggerFunction } from '../utils/logger';
 
 export default (app: Express) => {
 
@@ -49,7 +50,7 @@ export default (app: Express) => {
   });
 
   // API = login user
-  app.post('/login', async (req: any, res: Response, next: NextFunction) => {
+  app.post('/login', loggerFunction, async (req: any, res: Response, next: NextFunction) => {
     try {
       req.body.os = req.clientPlatform;
       const userDetail: userLoginRequest = req.body;
@@ -156,12 +157,12 @@ export default (app: Express) => {
   //API = count visitor by every minutes   
   app.get('/get-visitor/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
-        let authUser: any = req.user
-        let criteria = req.query.criteria
-        const data = await adminService.getCountOfPayment(criteria);
-        return res.json(data);
+      let authUser: any = req.user
+      let criteria = req.query.criteria
+      const data = await adminService.getCountOfPayment(criteria);
+      return res.json(data);
     } catch (err) {
-        next(err);
+      next(err);
     }
-});
+  });
 };
