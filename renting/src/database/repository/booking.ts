@@ -117,7 +117,6 @@ class BookingRepository {
             as: "userId",
           },
         },
-        { $unwind: "$userId" },
       ]);
 
       if (findUser[0].userId.email) {
@@ -179,15 +178,6 @@ class BookingRepository {
             pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
-        },
-        {
-          $unwind: "$userDetail",
-        },
-        {
-          $unwind: "$productDetail",
-        },
-        {
-          $unwind: "$preRentalScreening",
         },
         {
           $lookup: {
@@ -333,15 +323,6 @@ class BookingRepository {
             },
           },
           {
-            $unwind: "$userDetail",
-          },
-          {
-            $unwind: "$productDetail",
-          },
-          {
-            $unwind: "$preRentalScreening",
-          },
-          {
             $lookup: {
               from: "images",
               localField: "preRentalScreening.images",
@@ -462,7 +443,7 @@ class BookingRepository {
         if (bookingInputs.status == "activeRental") {
           criteria = {
             $and: [
-              // { status: "accepted" },
+              { status: "accepted" },
               { startDate: { $lte: new Date() } },
               { endDate: { $gte: new Date() } },
               { isDeleted: false },
@@ -494,7 +475,10 @@ class BookingRepository {
             ],
           };
         }
-      }
+      } 
+
+      console.log(criteria);
+      
 
       const findBooking = await bookingModel.aggregate([
         {
@@ -518,15 +502,6 @@ class BookingRepository {
           },
         },
         {
-          $unwind: "$userDetail",
-        },
-        {
-          $unwind: "$productDetail",
-        },
-        {
-            $unwind: "$images"
-        },
-        {
           $lookup: {
             from: "images",
             localField: "images",
@@ -534,9 +509,6 @@ class BookingRepository {
             pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "images",
           },
-        },
-        {
-          $unwind: "$preRentalScreening",
         },
         {
           $lookup: {
