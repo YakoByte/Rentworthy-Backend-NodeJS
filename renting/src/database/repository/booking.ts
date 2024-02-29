@@ -16,10 +16,7 @@ import { generatePresignedUrl } from "../../utils/aws";
 
 class BookingRepository {
   //create booking
-  async CreateBooking(
-    bookingInputs: bookingRequest,
-    req: postAuthenticatedRequest
-  ) {
+  async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
     let bookingResult;
     try {
       //check product's date already booked or product is exist in booking
@@ -38,11 +35,7 @@ class BookingRepository {
       );
 
       // call updateLevel api
-      await axios.put(
-        "https://backend.rentworthy.us/app/api/v1/user/update-level",
-        {
-          userId: product.userId,
-        },
+      await axios.put("https://backend.rentworthy.us/app/api/v1/user/update-level",{userId: product.userId},
         {
           headers: {
             Authorization: req.headers.authorization,
@@ -117,6 +110,7 @@ class BookingRepository {
             as: "userId",
           },
         },
+        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
@@ -402,9 +396,9 @@ class BookingRepository {
 
         if (findBooking) {
           await Promise.all(
-            findBooking.map(async (complaint: any) => {
+            findBooking.map(async (booking: any) => {
               await Promise.all(
-                complaint.images.map(async (element: any) => {
+                booking.images.map(async (element: any) => {
                   const newPath = await generatePresignedUrl(element.imageName);
                   element.path = newPath;
                 })
@@ -476,9 +470,6 @@ class BookingRepository {
           };
         }
       } 
-
-      console.log(criteria);
-      
 
       const findBooking = await bookingModel.aggregate([
         {
@@ -586,17 +577,17 @@ class BookingRepository {
 
       if (findBooking) {
         await Promise.all(
-          findBooking.map(async (complaint: any) => {
+          findBooking.map(async (booking: any) => {
             await Promise.all(
-              complaint.images.map(async (element: any) => {
+              booking.images.map(async (element: any) => {
                 const newPath = await generatePresignedUrl(element.imageName);
                 element.path = newPath;
               })
             );
           })
         );
-        return findBooking;
-      } 
+      return findBooking;
+    }
       return { message: "Booking not found" };
     } catch (err) {
       console.log("error", err);
@@ -714,6 +705,7 @@ class BookingRepository {
               as: "userId",
             },
           },
+          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {
@@ -735,10 +727,7 @@ class BookingRepository {
   }
 
   // reject booking by product owner
-  async rejectBooking(
-    bookingInputs: bookingUpdateRequest,
-    req: approveAuthenticatedRequest
-  ) {
+  async rejectBooking(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
     try {
       //check booking is exist or not
       let booking = await bookingModel.findOne({
@@ -774,6 +763,8 @@ class BookingRepository {
           {
             headers: {
               Authorization: req.headers.token,
+              IDENTIFIER: 'A2hG9tE4rB6kY1sN',
+              "Content-Type": "application/json",
             },
           }
         );
@@ -790,6 +781,7 @@ class BookingRepository {
               as: "userId",
             },
           },
+          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {
