@@ -24,7 +24,7 @@ class categoryService {
     }
 
     // get category by id , search or all category
-    async getCategory(categoryInputs: categoryGetRequest) {
+    async getCategory(categoryInputs: categoryGetRequest) {        
         let page = categoryInputs.page ? Number(categoryInputs.page) * Number(categoryInputs.limit) - Number(categoryInputs.limit) : 0;
         let limit = categoryInputs.limit ? Number(categoryInputs.limit) : 10;
         try {

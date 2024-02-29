@@ -70,9 +70,13 @@ class CategoryRepository {
       ]);
 
       if (findCategory) {
-        if(findCategory[0].image){
-          const newPath = await generatePresignedUrl(findCategory[0].image.imageName);
-          findCategory[0].image.path = newPath;
+        for (const category of findCategory) {
+          if(category.image){
+            category.image.forEach(async(element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                category.image.path = newPath;
+              });
+          }
         }
         return findCategory;
       }
@@ -86,7 +90,7 @@ class CategoryRepository {
 
   //get all category
   async getAllCategory({ skip, limit }: { skip: number; limit: number }) {
-    try {
+    try {      
       const findCategory = await categoryModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
         {
@@ -105,8 +109,10 @@ class CategoryRepository {
       if (findCategory) {
         for (const category of findCategory) {
           if(category.image){
-              const newPath = await generatePresignedUrl(category.image.imageName);
-              category.image.path = newPath;
+            category.image.forEach(async(element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                category.image.path = newPath;
+              });
           }
         }
         return findCategory;
@@ -143,9 +149,13 @@ class CategoryRepository {
       ]);
 
       if (findCategory) {
-        if(findCategory[0].image){
-          const newPath = await generatePresignedUrl(findCategory[0].image.imageName);
-          findCategory[0].image.path = newPath;
+        for (const category of findCategory) {
+          if(category.image){
+            category.image.forEach(async(element: any) => {
+                const newPath = await generatePresignedUrl(element.imageName);
+                category.image.path = newPath;
+              });
+          }
         }
         return findCategory;
       }

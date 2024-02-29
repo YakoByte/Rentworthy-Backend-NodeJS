@@ -28,6 +28,7 @@ class CancelBookingRepository {
             as: "userId",
           },
         },
+        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
@@ -90,6 +91,7 @@ class CancelBookingRepository {
             as: "userId",
           },
         },
+        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
@@ -132,6 +134,7 @@ class CancelBookingRepository {
             as: "userId",
           },
         },
+        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
@@ -175,6 +178,7 @@ class CancelBookingRepository {
             as: "userId",
           },
         },
+        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
