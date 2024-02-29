@@ -7,6 +7,7 @@ export async function loggerFunction(req: Request, res: Response, next: NextFunc
     // Loop through headers and add them to the message
     for (const [key, value] of Object.entries(req.headers)) {
         logMessage += `${key}: ${value}\n`;
+        console.log(`${key}: ${value}\n`)
     }
 
     logMessage += `\nAPI Data:\n`;
@@ -14,9 +15,12 @@ export async function loggerFunction(req: Request, res: Response, next: NextFunc
     try {
         // Stringify request body with indentation
         logMessage += JSON.stringify(req.body, null, 2);
+        console.log(JSON.stringify(req.body, null, 2))
     } catch (error: any) {
         // Log error message if parsing fails
         logMessage += `Error parsing request data: ${error.message}\n`;
+        console.log(`Error parsing request data: ${error.message}\n`);
+
     }
 
     try {
@@ -25,6 +29,8 @@ export async function loggerFunction(req: Request, res: Response, next: NextFunc
     } catch (error: any) {
         // Handle potential file write errors gracefully (e.g., log error, retry)
         console.error('Error writing log to file:', error.message);
+        console.log(`Error writing log to file:  ${error.message}\n`);
+
     }
 
     next();
