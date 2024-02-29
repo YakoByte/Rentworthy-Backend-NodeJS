@@ -74,12 +74,6 @@ class SubCategoryRepository {
           },
         },
         {
-          $unwind: "$category",
-        },
-        {
-          $unwind: "$image",
-        },
-        {
           $project: {
             _id: 1,
             name: 1,
@@ -134,12 +128,6 @@ class SubCategoryRepository {
             as: "image",
           },
         },
-        {
-          $unwind: "$category",
-        },
-        {
-          $unwind: "$image",
-        }
       ]);
 
       if (findSubCategory) {
@@ -178,12 +166,7 @@ class SubCategoryRepository {
             as: "image",
           },
         },
-        {
-          $unwind: "$category",
-        },
-        {
-          $unwind: "$image",
-        },
+
         {
           $project: {
             _id: 1,
@@ -240,12 +223,6 @@ class SubCategoryRepository {
             pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
             as: "image",
           },
-        },
-        {
-          $unwind: "$category",
-        },
-        {
-          $unwind: "$image",
         },
       ]);
 

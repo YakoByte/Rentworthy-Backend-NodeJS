@@ -67,7 +67,6 @@ class CategoryRepository {
             as: "image",
           },
         },
-        { $unwind: "$image" },
       ]);
 
       if (findCategory) {
@@ -99,7 +98,6 @@ class CategoryRepository {
             as: "image",
           },
         },
-        { $unwind: "$image" },
         { $skip: skip },
         { $limit: limit },
       ]);
@@ -142,7 +140,6 @@ class CategoryRepository {
             as: "image",
           },
         },
-        { $unwind: "$image" },
       ]);
 
       if (findCategory) {

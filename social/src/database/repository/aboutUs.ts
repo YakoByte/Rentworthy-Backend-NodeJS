@@ -58,9 +58,6 @@ class AboutUSRepository {
             as: "images",
           },
         },
-        {
-          $unwind: "$images",
-        },
       ]);
   
       if (!aboutUSResult || aboutUSResult.length === 0) {

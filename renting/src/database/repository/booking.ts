@@ -714,7 +714,6 @@ class BookingRepository {
               as: "userId",
             },
           },
-          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {
@@ -791,7 +790,6 @@ class BookingRepository {
               as: "userId",
             },
           },
-          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {

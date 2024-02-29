@@ -59,9 +59,6 @@ class PrivacyPolicyRepository {
             as: "images",
           },
         },
-        {
-          $unwind: "$images",
-        }
       ]);
 
       if (!PrivacyPolicyResult || PrivacyPolicyResult.length === 0) {

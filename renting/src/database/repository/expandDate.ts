@@ -154,12 +154,6 @@ class ExpandDateRepository {
           },
         },
         {
-          $unwind: "$product",
-        },
-        {
-          $unwind: "$user",
-        },
-        {
           $project: {
             _id: 1,
             userId: 1,
