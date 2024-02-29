@@ -18,7 +18,7 @@ class BookingRepository {
   //create booking
   async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
     let bookingResult;
-    try {
+    try {      
       //check product's date already booked or product is exist in booking
       let product: any = await productModel.findOneAndUpdate(
         {
@@ -33,6 +33,10 @@ class BookingRepository {
         { $inc: { interactionCount: 1 } },
         { new: true }
       );
+      
+      if(!product){
+        return { message: "Product not available in this Date" }
+      }
 
       // call updateLevel api
       await axios.put("https://backend.rentworthy.us/app/api/v1/user/update-level",{userId: product.userId},
@@ -43,7 +47,7 @@ class BookingRepository {
             "Content-Type": "application/json",
           },
         }
-      );
+      );      
 
       if (!product) {
         return { message: "Product not available in this Date" };
@@ -71,24 +75,21 @@ class BookingRepository {
         totalQuantity += element.quantity;
       });
 
-      if (
-        totalQuantity + Number(bookingInputs.quantity) >
-        Number(product.quantity)
-      ) {
+      if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {        
         return { message: "All the Products Are Booked" };
       }
 
       let tempObj: bookingRequestWithPayment = { ...bookingInputs };
       const booking = new bookingModel(tempObj);
       bookingResult = await booking.save();
+
       if (bookingResult) {
         let tempBody = {
           productId: bookingInputs.productId,
           startDate: bookingInputs.startDate,
           endDate: bookingInputs.endDate,
         };
-        await axios.post(
-          "https://backend.rentworthy.us/app/api/v1/product/update-productreservation",
+        await axios.post("https://backend.rentworthy.us/app/api/v1/product/update-productreservation",
           tempBody,
           {
             headers: {
