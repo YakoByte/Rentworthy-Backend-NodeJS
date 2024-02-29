@@ -16,7 +16,6 @@ class ComplainRepository {
         productId: ComplainInputs.productId,
         userId: ComplainInputs.userId,
       });
-      console.log("findComplain", findComplain);
 
       if (findComplain) {
         return { id: findComplain._id, name: findComplain.name };
@@ -231,6 +230,7 @@ class ComplainRepository {
           },
         },
       ]);
+
       if (findComplain) {
         await Promise.all(
           findComplain.map(async (complaint: any) => {
@@ -244,6 +244,7 @@ class ComplainRepository {
         );
         return findComplain;
       }
+
       return { message: "No Data Found" };
     } catch (err) {
       console.log("error", err);
@@ -289,6 +290,7 @@ class ComplainRepository {
           },
         },
       ]);
+
       if (findComplain) {
         await Promise.all(
           findComplain[0].images.map(async (element: any) => {
@@ -298,6 +300,7 @@ class ComplainRepository {
         );
         return findComplain;
       }
+
       return { message: "No Data Found" };
     } catch (err) {
       console.log("error", err);
@@ -350,6 +353,7 @@ class ComplainRepository {
         );
         return findComplain;
       }
+      
       return { message: "No Data Found" };
     } catch (err) {
       console.log("error", err);

@@ -59,6 +59,9 @@ class TermConditionRepository {
             as: "images",
           },
         },
+        {
+          $unwind: "$images",
+        }
       ]);
       
       if (!TermConditionResult || TermConditionResult.length === 0) {

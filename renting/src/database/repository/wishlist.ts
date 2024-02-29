@@ -84,6 +84,9 @@ class WishlistRepository {
           },
         },
         {
+          $unwind: "$productIds"
+        },
+        {
           $lookup: {
             from: "images",
             localField: "productIds.images",
@@ -142,6 +145,9 @@ class WishlistRepository {
           },
         },
         {
+          $unwind: "$productIds"
+        },
+        {
           $lookup: {
             from: "images",
             localField: "productIds.images",
@@ -197,6 +203,9 @@ class WishlistRepository {
             pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
             as: "userId",
           },
+        },
+        {
+          $unwind: "$productIds"
         },
         {
           $lookup: {

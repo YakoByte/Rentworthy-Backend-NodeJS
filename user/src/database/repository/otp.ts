@@ -84,7 +84,6 @@ class OTPRepository {
   //verify otp
   async VerifyOTP(otpInputs: otpRequest) {
     try {
-      console.log("otpInputs", otpInputs);
       const existingOTP: any = await otpModel.findOne({
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
         otp: otpInputs.otp,
@@ -111,7 +110,6 @@ class OTPRepository {
           );
         }
 
-        console.log("otpResult", otpResult);
         const token = await GenerateSignature({
           user: otpInputs.email ? existingOTP.email : existingOTP.phoneNo,
           _id: existingOTP._id,
