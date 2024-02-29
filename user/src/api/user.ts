@@ -37,12 +37,10 @@ export default (app: Express) => {
   app.post('/admin/login', async (req: any, res: Response, next: NextFunction) => {
     try {
       console.log(req.clientPlatform);
-
       req.body.os = req.clientPlatform;
       const userDetail = req.body;
       req.body.roleName = "admin";
       const data = await adminService.SignIn(userDetail);
-      console.log("data", data)
       return res.json(data);
     } catch (err) {
       next(err);
@@ -56,7 +54,6 @@ export default (app: Express) => {
       const userDetail: userLoginRequest = req.body;
       req.body.roleName = "user";
       const data = await adminService.SignIn(userDetail);
-      console.log("data", data)
       return res.json(data);
     } catch (err) {
       next(err);
@@ -66,7 +63,6 @@ export default (app: Express) => {
   // create otp
   app.post('/createOtp', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
       const data = await otpService.CreateNewOTP(req.body);
       return res.status(200).json(data);
     } catch (err) {
@@ -77,7 +73,6 @@ export default (app: Express) => {
   // varify otp
   app.post('/verifyotp', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
       const data = await otpService.VerifyOTP(req.body);
       return res.status(200).json(data);
     } catch (err) {
@@ -88,7 +83,6 @@ export default (app: Express) => {
   // API = Check if the token has expired
   app.post('/verifytokenexpiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
       let token: any = req.headers.authorization
       const data = await adminService.expiryToken(token);
       return res.status(200).json(data);
@@ -100,8 +94,6 @@ export default (app: Express) => {
   // API = reset password
   app.put('/resetpassword', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
-      console.log("req.body", req.body)
-      // req.body._id = req.user._id;
       let bodyData: any = {
         _id: req.user._id,
         ...req.body
@@ -130,9 +122,6 @@ export default (app: Express) => {
   app.get('/getallusers', async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
-      console.log("clientPlatform", clientPlatform)
-      // const userDetail: socialUserLoginRequest = req.body;
-      // req.body.roleName = "user";
       const data = await adminService.GetAllUsers();
       console.log("data", data)
       return res.json(data);
@@ -145,7 +134,6 @@ export default (app: Express) => {
   app.get('/getcount', async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
-      console.log("clientPlatform", clientPlatform)
       const data = await adminService.GetCount();
       console.log("data", data)
       return res.json(data);
