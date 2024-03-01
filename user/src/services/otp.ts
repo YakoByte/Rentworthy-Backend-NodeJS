@@ -12,7 +12,6 @@ class OTPService {
     // createing new otp
     async CreateNewOTP(otpInputs: otpRequest) {
         try {
-            console.log("otpInputs", otpInputs)
             // check email or phone is coming from req
             if (!otpInputs.email && !otpInputs.phoneNo) {
                 return FormateData({ message: "Email or PhoneNo is required" });
@@ -35,7 +34,6 @@ class OTPService {
     // verify otp
     async VerifyOTP(otpInputs: otpRequest) {
         try {
-            console.log("otpInputs", otpInputs)
             // check email or phone is coming from req
             if (!otpInputs.email && !otpInputs.phoneNo) {
                 return FormateData({ message: "Email or PhoneNo is required" });
