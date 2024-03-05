@@ -13,6 +13,7 @@ import {
 } from "../../interface/booking";
 import { sendEmail } from "../../template/emailTemplate";
 import { generatePresignedUrl } from "../../utils/aws";
+import fetch from "node-fetch";
 
 class BookingRepository {
   //create booking
@@ -39,19 +40,16 @@ class BookingRepository {
       }
 
       // call updateLevel api
-      await axios.put("https://backend.rentworthy.us/app/api/v1/user/update-level",{userId: product.userId},
-        {
-          headers: {
+      await fetch('https://backend.rentworthy.us/app/api/v1/user/update-level', {
+        method: 'PUT',
+        headers: {
             Authorization: req.headers.authorization,
             IDENTIFIER: 'A2hG9tE4rB6kY1sN',
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("Update level");
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: product.userId })
+      });
       
-
       //already booked
       let findSameBooking = await bookingModel.find({
         $and: [
@@ -88,16 +86,15 @@ class BookingRepository {
           startDate: bookingInputs.startDate,
           endDate: bookingInputs.endDate,
         };
-        await axios.post("https://backend.rentworthy.us/app/api/v1/product/update-productreservation",
-          tempBody,
-          {
-            headers: {
+        await fetch("https://backend.rentworthy.us/app/api/v1/product/update-productreservation", {
+          method: 'POST',
+          headers: {
               Authorization: req.headers.authorization,
               IDENTIFIER: 'A2hG9tE4rB6kY1sN',
               "Content-Type": "application/json",
-            },
-          }
-        );
+          },
+          body: JSON.stringify(tempBody)
+        });
       }
 
       console.log("Update product reservation");
