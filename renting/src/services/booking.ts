@@ -20,6 +20,8 @@ class bookingService {
 
             return FormateData(existingBooking);
         } catch (err: any) {
+            console.log(err);
+            
             return FormateError({ error: "Failed to Create Booking" });
         }
     }
