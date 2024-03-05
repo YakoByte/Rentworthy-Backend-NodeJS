@@ -107,7 +107,7 @@ class BookingRepository {
             as: "userId",
           },
         },
-      ]);
+      ]);      
 
       if (findUser[0].userId.email) {
         const emailOptions = {
