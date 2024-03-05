@@ -6,6 +6,8 @@ import bookingModel from './booking';
 import productModel from './product';
 import expandDatesModel from './expandDates';
 import imageModel from './image';
+import profileModel from './profile';
+import productReservationModel from './productreservation';
 
 // ... repeat for each model
 
@@ -16,5 +18,7 @@ export {
     bookingModel,
     productModel,
     expandDatesModel,
-    imageModel
+    imageModel,
+    profileModel,
+    productReservationModel,
 };
