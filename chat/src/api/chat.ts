@@ -9,7 +9,7 @@ export default (app: Express) => {
     // API = create room Id
   app.post('/create-rooms',  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await service.CreateRoom(req.query);
+      const data = await service.CreateRoom(req.body);
       return res.json(data);
     } catch (err) {
       next(err);
