@@ -36,6 +36,8 @@ export interface approveAuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    headers: any;
+    files?: any;
     body: {
         isAccepted: boolean;
         _id: string,

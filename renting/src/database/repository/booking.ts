@@ -1,5 +1,4 @@
 import { bookingModel, productModel } from "../models";
-import axios from "axios";
 import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 import {
@@ -749,23 +748,25 @@ class BookingRepository {
         { isAccepted: false, acceptedBy: bookingInputs.acceptedBy },
         { new: true }
       );
+
       if (bookingResult) {
-        let tempBody = {
-          productId: bookingResult.productId,
-          startDate: bookingResult.startDate.toISOString().split("T")[0],
-          endDate: bookingResult.endDate.toISOString().split("T")[0],
-        };
-        await axios.post(
-          "https://backend.rentworthy.us/app/api/v1/product/update-relieveproductreservation",
-          tempBody,
-          {
-            headers: {
-              Authorization: req.headers.token,
-              IDENTIFIER: 'A2hG9tE4rB6kY1sN',
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // Prepare data for updating product reservation status
+      let tempBody = {
+        productId: bookingResult.productId,
+        startDate: bookingResult.startDate.toISOString().split("T")[0],
+        endDate: bookingResult.endDate.toISOString().split("T")[0],
+      };
+
+      // Call external API to update product reservation status
+      await fetch("https://backend.rentworthy.us/app/api/v1/product/update-relieveproductreservation", {
+        method: 'POST',
+        headers: {
+          Authorization: req.headers.authorization,
+          IDENTIFIER: 'A2hG9tE4rB6kY1sN',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tempBody)
+      });
 
         const findUser = await bookingModel.aggregate([
           {
