@@ -119,6 +119,34 @@ class AdminRepository {
     }
   }
 
+  async BlockedUser(userId: string) {
+    try {
+      const user = await userModel.findOneAndUpdate(
+        { _id: userId },
+        { isDeleted: true, isActive: false },
+        { new: true }
+      );
+      return user;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Delete User");
+    }
+  }
+
+  async UnBlockedUser(userId: string) {
+    try {
+      const user = await userModel.findOneAndUpdate(
+        { _id: userId },
+        { isDeleted: false, isActive: true },
+        { new: true }
+      );
+      return user;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Delete User");
+    }
+  }
+
   async UpdateUser(userId: string, data: object) {
     try {
       const user = await userModel.findOneAndUpdate(

@@ -81,6 +81,24 @@ class AdminService {
         }
     }
 
+    async BlockedUser(userId: string) {
+        try {
+            const existingAdmin = await this.repository.BlockedUser(userId);
+            return FormateData(existingAdmin);
+        } catch (err: any) {
+            return FormateError({ error: "Profile Not found" });
+        }
+    }
+
+    async UnBlockUser(userId: string) {
+        try {
+            const existingAdmin = await this.repository.UnBlockedUser(userId);
+            return FormateData(existingAdmin);
+        } catch (err: any) {
+            return FormateError({ error: "Profile Not found" });
+        }
+    }
+
     async GetProfile(userId: string) {
         try {
             const existingAdmin = await this.repository.FindUserById(userId);
@@ -123,8 +141,8 @@ class AdminService {
             return FormateError({ error: "Password Reset Failed"});
         }
     }
-    // sending password link
 
+    // sending password link
     async SocialSignUp(userInputs: socialUserSignRequest) {
         try {
             const newUser: any = await this.repository.SocialCreateUser(

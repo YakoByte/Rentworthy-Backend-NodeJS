@@ -5,6 +5,7 @@ import { AuthenticatedRequest, userLoginRequest, socialUserLoginRequest, getCoun
 import OTPService from '../services/otp';
 import { validateEmail, validateNumber, validatePassword } from '../middlewares/vaildateInput';
 import { loggerFunction } from '../utils/logger';
+import { isAdmin } from '../middlewares/checkRole';
 
 export default (app: Express) => {
 
@@ -113,6 +114,25 @@ export default (app: Express) => {
       req.body.os = req.clientPlatform;
       const data = await adminService.SocialSignIn(userDetail);
       console.log("data", data)
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // API = social logIn
+  app.post('/block-user',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await adminService.BlockedUser(req.body.userId);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/unblock-user',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await adminService.UnBlockUser(req.body.userId);
       return res.json(data);
     } catch (err) {
       next(err);
