@@ -47,11 +47,7 @@ class BookingRepository {
             "Content-Type": "application/json",
           },
         }
-      );      
-
-      if (!product) {
-        return { message: "Product not available in this Date" };
-      }
+      );
 
       //already booked
       let findSameBooking = await bookingModel.find({
@@ -111,7 +107,6 @@ class BookingRepository {
             as: "userId",
           },
         },
-        { $unwind: "userId" }
       ]);
 
       if (findUser[0].userId.email) {
@@ -706,7 +701,6 @@ class BookingRepository {
               as: "userId",
             },
           },
-          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {
@@ -782,7 +776,6 @@ class BookingRepository {
               as: "userId",
             },
           },
-          { $unwind: "$userId" },
         ]);
 
         if (findUser[0].userId.email) {

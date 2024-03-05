@@ -100,7 +100,6 @@ class ProductReservationRepository {
               customerRes: oneObj.reserved,
             },
             $pull: {
-              // availableDates: oneObj.reserved
               availableDates: {
                 $in: oneObj.reserved,
               },
