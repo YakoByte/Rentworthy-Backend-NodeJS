@@ -243,4 +243,13 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+    app.get('/dummy-booking', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.dummyAPI();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 };

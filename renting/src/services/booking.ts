@@ -139,6 +139,16 @@ class bookingService {
             return FormateError({ error: "Failed to Delete Booking" });
         }
     }
+
+    async dummyAPI() {
+        try {
+            const existingBooking: any = await this.repository.dummyAPI();
+
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
 }
 
 export = bookingService;

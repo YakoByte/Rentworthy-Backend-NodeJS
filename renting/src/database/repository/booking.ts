@@ -817,6 +817,23 @@ class BookingRepository {
       throw new Error("Unable to delete Booking");
     }
   }
+
+  async dummyAPI() {
+    try {
+      const response = await fetch("https://backend.rentworthy.us/app/api/v1/product/guest-product", {
+        method: 'GET',
+        headers: {
+          IDENTIFIER: 'A2hG9tE4rB6kY1sN',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to delete Booking");
+    }
+  }
 }
 
 export default BookingRepository;
