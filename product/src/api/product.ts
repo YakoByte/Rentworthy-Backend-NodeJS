@@ -1,6 +1,7 @@
 import { Express, Request, Response, NextFunction } from 'express';
 import ProductService from '../services/product';
 import UserAuth from '../middlewares/auth';
+import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest } from '../interface/product';
 import upload from '../middlewares/imageStorage';
 import imageService from '../services/imageUpload';

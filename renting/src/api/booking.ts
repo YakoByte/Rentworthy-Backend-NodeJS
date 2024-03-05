@@ -61,9 +61,6 @@ export default (app: Express) => {
                   }
         
                   req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
-                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
-            } else {
-                return res.status(400).json({ error: "No file provided" });
             }
             const data = await service.CreateBooking(req.body, req);
             return res.json(data);
@@ -110,9 +107,6 @@ export default (app: Express) => {
                   }
         
                   req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
-                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
-            } else {
-                return res.status(400).json({ error: "No file provided" });
             }
 
             const data = await service.addImagesToBooking(req.body);

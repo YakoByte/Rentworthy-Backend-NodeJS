@@ -6,6 +6,7 @@ export interface postAuthenticatedRequest extends Request {
     user?: {
         _id: string;
     };
+    files?: any;
     body: {
         productId: string;
         startDate: Date;

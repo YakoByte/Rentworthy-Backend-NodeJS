@@ -2,6 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest } from '../interface/productlike';
 import ProductLikeService from '../services/productlike';
+import { isAdmin } from '../middlewares/checkRole';
 
 
 export default (app: Express) => {
@@ -43,6 +44,15 @@ export default (app: Express) => {
         try {
             const { productId } = req.query as { productId: string };
             const data = await service.getProductLikeCount({ productId });
+            return res.json(data);
+        } catch (err: any) {
+            return res.status(err.STATUS_CODE).json(err);
+        }
+    });
+
+    app.get('/get-user-productlikes', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.getProductlike({ ...req.query });
             return res.json(data);
         } catch (err: any) {
             return res.status(err.STATUS_CODE).json(err);

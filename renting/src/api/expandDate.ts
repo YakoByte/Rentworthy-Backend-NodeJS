@@ -4,18 +4,28 @@ import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
 import { AuthenticatedRequest, expandDateRequest, postAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/expandDate';
 import upload from '../middlewares/imageStorage';
+import imageService from '../services/imageUpload';
 // import multer from 'multer';
 // import path from 'path';
 // import { validateCreateAdmin } from './adminValidation';
 
 export default (app: Express) => {
     const service = new ExpandDateService();
+    const image = new imageService();
 
     // API = create new expandDate
     app.post('/create-expand-date', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
+            if (req.files.length > 0) {    
+                const imageData = {
+                    userId: authUser._id,
+                    imageDetails: req.files,
+                  }
+        
+                  req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
+            }
             const data = await service.CreateExpandDate(req.body);
             return res.json(data);
         } catch (err) {
@@ -36,6 +46,15 @@ export default (app: Express) => {
     // API = add images to expandDate
     app.post('/add-images-to-expand-date', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            let authUser: any = req.user
+            if (req.files.length > 0) {    
+                const imageData = {
+                    userId: authUser._id,
+                    imageDetails: req.files,
+                  }
+        
+                  req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
+            }
             const data = await service.addImagesToExpandDate(req.body);
             return res.json(data);
         } catch (err) {
