@@ -93,7 +93,7 @@ class ProductRepository {
       let productBooking = await Bookings.find({
         productId: productInputs._id,
         endDate: {
-          $gte: today, // Greater than or equal to the beginning of today
+          $gte: today,
         },
       }).select({
         _id: 1,
@@ -195,7 +195,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -226,7 +226,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -305,7 +305,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking: any = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -336,7 +336,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -415,7 +415,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking: any = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -446,7 +446,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -529,7 +529,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -560,7 +560,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -635,7 +635,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -666,7 +666,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -755,7 +755,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -786,7 +786,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
@@ -865,7 +865,7 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.findOne({
+            let productBooking = await Bookings.find({
               productId: element._id,
               endDate: {
                 $gte: today,
@@ -896,7 +896,7 @@ class ProductRepository {
             return {
               product: element,
               wishlistData: null,
-              productBooking: null,
+              productBooking: [],
             };
           }
         })
