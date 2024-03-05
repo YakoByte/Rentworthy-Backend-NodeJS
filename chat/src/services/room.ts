@@ -17,6 +17,7 @@ class roomService {
     constructor() {
         this.repository = new roomRepository();
     }
+
     // create room
     async CreateRoom(roomInputs: roomRequest) {
         try {
@@ -26,6 +27,7 @@ class roomService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // get room
     async GetRoom(roomInputs: getRoomRequest) {
         try {
@@ -35,6 +37,7 @@ class roomService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // get rooms
     async GetRooms(roomInputs: roomRequest) {
         try {
@@ -44,6 +47,7 @@ class roomService {
             throw new APIError("Data Not found", err);
         }
     }
+
     // delete room
     async DeleteRoom(roomInputs: deleteRoomRequest) {
         try {

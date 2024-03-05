@@ -1,16 +1,9 @@
 import { roomModel, messageModel } from "../models";
 import {
-  roomData,
   roomRequest,
   getRoomRequest,
   deleteRoomRequest,
 } from "../../interface/room";
-import {
-  messageData,
-  messageRequest,
-  getMessageRequest,
-  deleteMessageRequest,
-} from "../../interface/messages";
 
 class RoomRepository {
   //create room
@@ -32,6 +25,7 @@ class RoomRepository {
       throw new Error("Unable to Create Room");
     }
   }
+
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
     try {
@@ -116,6 +110,7 @@ class RoomRepository {
       throw new Error("Unable to Get Room");
     }
   }
+
   // get rooms
   async GetRooms(roomInputs: roomRequest) {
     try {
@@ -149,6 +144,7 @@ class RoomRepository {
       throw new Error("Unable to Get Room");
     }
   }
+
   //delete room
   async DeleteRoom(roomInputs: deleteRoomRequest) {
     try {
