@@ -49,6 +49,9 @@ class BookingRepository {
         }
       );
 
+      console.log("Update level");
+      
+
       //already booked
       let findSameBooking = await bookingModel.find({
         $and: [
@@ -96,6 +99,9 @@ class BookingRepository {
           }
         );
       }
+
+      console.log("Update product reservation");
+
 
       const findUser = await bookingModel.aggregate([
         { $match: { _id: new ObjectId(bookingResult._id), isDeleted: false } },
