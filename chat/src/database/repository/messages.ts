@@ -1,4 +1,4 @@
-import { messageModel, historyModel, roomModel } from "../models";
+import { messageModel, roomModel } from "../models";
 import {
   messageRequest,
   getMessageRequest,
@@ -20,16 +20,18 @@ class MessageRepository {
             vendorId: messageInputs.senderId,
           },
         ],
-        roomId: messageInputs.roomId,
+        _id: messageInputs.roomId,
         isDeleted: false,
       });
+
       if (room) {
         let messageResult = await messageModel.create(messageInputs);
         return messageResult;
+      } else {
+        throw new Error("Room not found");
       }
-      return { message: "Room not found" };
     } catch (error) {
-      console.log("error", error);
+      console.log("Error:", error);
       throw new Error("Unable to Create Message");
     }
   }
@@ -76,15 +78,21 @@ class MessageRepository {
       throw new Error("Unable to Get Message");
     }
   }
+
   // get messages
   async GetMessages(messageInputs: messageRequest) {
     try {
       let criteria: messageRequest = { isDeleted: false };
-      if (messageInputs.userId) {
+      if (messageInputs.senderId) {
         criteria = {
           ...criteria,
-          senderId: messageInputs.userId,
-          receiverId: messageInputs.userId,
+          senderId: messageInputs.senderId,
+        };
+      }
+      if (messageInputs.receiverId) {
+        criteria = {
+          ...criteria,
+          senderId: messageInputs.receiverId,
         };
       }
       if (messageInputs.roomId) {
@@ -100,6 +108,7 @@ class MessageRepository {
       throw new Error("Unable to Get Message");
     }
   }
+
   // delete message
   async DeleteMessage(messageInputs: deleteMessageRequest) {
     try {
