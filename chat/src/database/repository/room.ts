@@ -28,7 +28,7 @@ class RoomRepository {
 
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
-    try {
+    try {      
       let criteria: any = { isDeleted: false };
       let room: any;
       if (roomInputs.productId) {
