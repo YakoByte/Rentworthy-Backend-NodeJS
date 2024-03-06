@@ -50,9 +50,9 @@ class SubscribedUserRepository {
         {
           $lookup: {
             from: "payments",
-            localField: "Payment",
+            localField: "paymentId",
             foreignField: "_id",
-            as: "paymentDetails",
+            as: "paymentId",
           },
         },
       ]);
@@ -94,7 +94,7 @@ class SubscribedUserRepository {
             from: "payments",
             localField: "paymentId",
             foreignField: "_id",
-            as: "paymentDetails",
+            as: "paymentId",
           },
         },
       ]);
@@ -138,7 +138,7 @@ class SubscribedUserRepository {
             from: "payments",
             localField: "paymentId",
             foreignField: "_id",
-            as: "paymentDetails",
+            as: "paymentId",
           },
         },
       ]);
@@ -182,7 +182,7 @@ class SubscribedUserRepository {
             from: "payments",
             localField: "paymentId",
             foreignField: "_id",
-            as: "paymentDetails",
+            as: "paymentId",
           },
         },
       ]);
