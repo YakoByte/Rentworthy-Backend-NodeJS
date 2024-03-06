@@ -1,4 +1,4 @@
-import { userModel, roleModel, historyModel } from "../models";
+import { userModel, roleModel, historyModel, profileModel } from "../models";
 import moment from "moment";
 import {
   GeneratePassword,
@@ -123,9 +123,16 @@ class AdminRepository {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
-        { isDeleted: true, isActive: false },
+        { isActive: false },
         { new: true }
       );
+
+      const profile = await profileModel.findOneAndUpdate(
+        { userId: userId },
+        { isActive: false, isBlocked: true },
+        { new: true }
+      );
+
       return user;
     } catch (error) {
       console.log("err", error);
@@ -137,9 +144,16 @@ class AdminRepository {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
-        { isDeleted: false, isActive: true },
+        { isActive: true },
         { new: true }
       );
+
+      const profile = await profileModel.findOneAndUpdate(
+        { userId: userId },
+        { isActive: true, isBlocked: false },
+        { new: true }
+      );
+
       return user;
     } catch (error) {
       console.log("err", error);
