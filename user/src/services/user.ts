@@ -110,10 +110,8 @@ class AdminService {
     
     async ResetPassword(userInputs: userSetPasswordRequest) {
         try {
-            console.log("userInputs", userInputs)
             let existingAdmin: any = await this.repository.FindUserById(userInputs._id);
             existingAdmin = existingAdmin.profileData;
-            console.log("existingAdmin", existingAdmin)
 
             if (existingAdmin) {
                 const salt = await GenerateSalt();

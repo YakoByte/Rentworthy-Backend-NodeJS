@@ -26,8 +26,6 @@ export default (app: Express) => {
           }
 
           req.body.images = await image.CreateImages(imageData);
-        } else {
-          throw new Error("No file provided");
         }
 
         const data = await service.CreateAboutUS(req.body);

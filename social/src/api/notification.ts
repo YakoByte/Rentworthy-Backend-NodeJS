@@ -1,12 +1,7 @@
 import { Express, Request, Response, NextFunction } from "express";
 import NotificationService from "../services/notification";
 import UserAuth from "../middlewares/auth";
-import { isAdmin } from "../middlewares/checkRole";
-import {
-  AuthenticatedRequest,
-  notificationRequest,
-  deleteAuthenticatedRequest,
-} from "../interface/notification";
+import { notificationRequest } from "../interface/notification";
 
 export default (app: Express) => {
   const service = new NotificationService();

@@ -27,8 +27,6 @@ export default (app: Express) => {
   
             req.body.images = await image.CreateImages(imageData);
           
-        } else {
-          return res.status(400).json({ error: "No file provided" });
         }
 
         const data = await service.CreateTermCondition(req.body);

@@ -1,7 +1,6 @@
 import { Express, Request, Response, NextFunction } from "express";
 import PrivacyPolicyService from "../services/privacyPolicy";
 import UserAuth from "../middlewares/auth";
-import { isAdmin } from "../middlewares/checkRole";
 import {
   AuthenticatedRequest,
   deleteAuthenticatedRequest,
@@ -58,15 +57,13 @@ export default (app: Express) => {
         req.body.userId = authUser._id;
 
         // Check if req.file is defined before accessing its properties
-        if (req.files) {
+        if (req.file) {
           const imageData = {
             userId: authUser._id,
             imageDetails: req.files,
           }
 
           req.body.images = await image.CreateImages(imageData);
-        } else {
-          return res.status(400).json({ error: "No file provided" });
         }
 
         const data = await service.CreatePrivacyPolicy(req.body);
@@ -95,7 +92,7 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.files) {
+        if (req.file) {
           const imageData = {
             userId: authUser._id,
             imageDetails: req.files,
@@ -118,7 +115,7 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.files) {
+        if (req.file) {
           const imageData = {
             userId: authUser._id,
             imageDetails: req.files,

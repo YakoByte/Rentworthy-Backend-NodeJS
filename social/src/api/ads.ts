@@ -64,12 +64,14 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
         
-        const imageData = {
-          userId: authUser._id,
-          imageDetails: req.files,
-        }
+        if (req.file) {
+          const imageData = {
+            userId: authUser._id,
+            imageDetails: req.files,
+          }
 
-        req.body.images = await image.CreateImages(imageData);
+          req.body.images = await image.CreateImages(imageData);
+        }
 
         // req.body.image = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any }) => obj.path), req.headers.authorization);
         const data = await service.CreateAds(req.body);
@@ -104,10 +106,10 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.files) { 
+        if (req.file) {
           const imageData = {
-              userId: req.body.userId,
-              imageDetails: req.files,
+            userId: authUser._id,
+            imageDetails: req.files,
           }
 
           req.body.images = await image.CreateImages(imageData);
@@ -121,8 +123,20 @@ export default (app: Express) => {
   });
 
   // API = update ads by id
-  app.put("/update-ads-by-id", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.put("/update-ads-by-id", UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
+        let authUser: any = req.user;
+        req.body.userId = authUser._id;
+        
+        if (req.file) {
+          const imageData = {
+            userId: authUser._id,
+            imageDetails: req.files,
+          }
+
+          req.body.images = await image.CreateImages(imageData);
+        }
+
         const data = await service.updateAdsById({...req.body, _id: req.query._id as string});
         return res.json(data);
       } catch (err) {
