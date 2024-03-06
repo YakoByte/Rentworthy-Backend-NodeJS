@@ -16,7 +16,7 @@ const subCategorySchema: Schema = new Schema<SubCategory>(
         },
         isActive: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,

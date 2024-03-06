@@ -298,9 +298,9 @@ class SubCategoryRepository {
         // soft delete subCategory
         const subCategoryResult = await subCategoryModel.updateOne(
           { _id: subCategoryInputs._id },
-          { isDeleted: true }
+          { isDeleted: true, isActive: false }
         );
-        // console.log("subCategoryResult", subCategoryResult)
+
         //create history
         const history = new historyModel({
           subCategoryId: subCategoryInputs._id,

@@ -210,17 +210,17 @@ class CategoryRepository {
         _id: categoryInputs._id,
         isDeleted: false,
       });
-      console.log("findCategory", findCategory);
+
       if (findCategory) {
         // soft delete category
         const categoryResult = await categoryModel.updateOne(
           { _id: categoryInputs._id },
-          { isDeleted: true }
+          { isDeleted: true, isActive: false }
         );
         // soft delete subcategory
         const subcategoryResult = await subCategoryModel.updateMany(
           { categoryId: categoryInputs._id },
-          { isDeleted: true }
+          { isDeleted: true, isActive: false }
         );
         // console.log("subcategoryResult", subcategoryResult)
         //create history
