@@ -174,4 +174,17 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+    // API = get userData
+    app.get('/get-user-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+
+            const data = await service.getProduct({ userId: authUser._id });
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went in',err)
+            return res.status(500).json(err);
+        }
+    });
 };

@@ -133,6 +133,20 @@ class productService {
       return FormateError({ error: "Data not Deleted" });
     }
   }
+
+  // get product by userId
+  async getUserProduct(productInputs: productGetRequest) {
+    try {
+      let existingProduct = await this.repository.getProductByUserId({
+          userId: productInputs.userId || '',
+        });
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log("err", err.message);
+      return FormateError({ error: "Data not Found" });
+    }
+  }
 }
 
 export = productService;
