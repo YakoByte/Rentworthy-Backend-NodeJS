@@ -754,8 +754,8 @@ class ProductRepository {
     try {
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
-        // { $skip: productInputs.skip },
-        // { $limit: productInputs.limit },
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -925,7 +925,7 @@ class ProductRepository {
                 as: "profileImage",
               },
             },
-          ]);
+          ]);                    
           
           if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
             element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
