@@ -189,14 +189,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -309,14 +307,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }  
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -429,14 +425,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }  
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -553,14 +547,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }   
           
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -669,14 +661,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }  
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -799,14 +789,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }  
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
 
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
@@ -919,14 +907,12 @@ class ProductRepository {
             element.userId[0].userName = profileData[0].userName
           }
 
-          element.forEach(async(item: any) => {
-            let productLike = await productLikeModel.countDocuments({
-              productId: item._id,
-              isFav: true,
-              isDeleted: false,
-            });
-            element.productLike = productLike
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
           });
+          element.productLike = productLike;
           
           element.images.forEach(async(element: any) => {
             let newPath = await generatePresignedUrl(element.imageName);
