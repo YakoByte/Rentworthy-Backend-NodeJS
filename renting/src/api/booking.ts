@@ -53,7 +53,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            req.body.status = 'Processing'
+            req.body.status = 'Requested'
             if (req.files.length > 0) {    
                 const imageData = {
                     userId: authUser._id,
@@ -130,7 +130,7 @@ export default (app: Express) => {
     app.put('/update-booking-by-id', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if(req.body.isAccepted === true){
-                req.body.status = 'Approved'
+                req.body.status = 'Confirmed'
             } else {
                 req.body.status = 'Rejected';
             }
@@ -222,7 +222,7 @@ export default (app: Express) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             if(req.body.isAccepted === true){
-                req.body.status = 'Approved'
+                req.body.status = 'Confirmed'
             } else {
                 req.body.status = 'Rejected';
             }
@@ -238,6 +238,36 @@ export default (app: Express) => {
         try {
             req.query.status = 'Canceled'
             const data = await service.deleteBooking({ ...req.query });
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    //API = count Booking
+    app.get('/count-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.CountProductBooking({productId: req.query.productId || ''});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/count-user-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser = req.query._id || req.user?._id 
+            const data = await service.CountUserBooking({userId: authUser || ''});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/count-user-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser = req.query._id || req.user?._id 
+            const data = await service.CountUsersProductBooking({userId: authUser || ''});
             return res.json(data);
         } catch (err) {
             next(err);

@@ -140,6 +140,43 @@ class bookingService {
         }
     }
 
+    //count booking
+    async CountProductBooking(bookingInputs: { productId: string }) {
+        try {
+            const Booking: any = await this.repository.CountProductBooking(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
+    async CountUserBooking(bookingInputs: { userId: string }) {
+        try {
+            const Booking: any = await this.repository.CountUserBooking(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
+    async CountUsersProductBooking(bookingInputs: { userId: string }) {
+        try {
+            const Booking: any = await this.repository.CountUsersProductBooking(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
     async dummyAPI() {
         try {
             const existingBooking: any = await this.repository.dummyAPI();

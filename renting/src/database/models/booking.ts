@@ -81,8 +81,8 @@ const bookingSchema: Schema = new Schema<Booking>(
         }],
         status: {
             type: String,
-            default: "Processing",
-            enum: ["Processing", "Pending", "Delivered", "Canceled", "Approved", "Rejected", "Returned"]
+            default: "Requested",
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Canceled"]
         },
         acceptedBy: {
             type: mongoose.Schema.Types.ObjectId,
