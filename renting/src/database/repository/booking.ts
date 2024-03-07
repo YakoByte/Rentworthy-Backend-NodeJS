@@ -1163,48 +1163,46 @@ class BookingRepository {
 
   async CountUsersProductBooking(bookingInputs: { userId: string }) {
     try {
-      const Booking = await bookingModel.aggregate([
-        {
-          $match: { isDeleted: false },
-        },
-        {
-          $lookup: {
-            from: "products",
-            localField: "productId",
-            foreignField: "_id",
-            as: "product",
-          },
-        },
-        { $unwind: "$product" },
-      ]);
-  
-      let ActiveRenting = 0;
-      let Requests = 0;
-      let Rented = 0;
-      const Requested = await bookingModel.countDocuments({ userId: bookingInputs.userId, status: { $in: ["Requested", "Delivered", "Confirmed", "Shipped", "Canceled", "Returned"] } });
-  
-      if (Booking) {
-        Booking.forEach(element => {
-          if (element.product.userId === bookingInputs.userId) {
-            if(element.status === "Delivered" || element.status === "Confirmed" || element.status === "Shipped"){
-              ActiveRenting++;
-            }
-            if(element.status === "Requested"){
-              Requests++;
-            }
-            if(element.status === "Returned"){
-              Rented++;
+        const Booking = await bookingModel.aggregate([
+            {
+                $match: { isDeleted: false }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productId",
+                    foreignField: "_id",
+                    as: "product",
+                },
+            },
+            { $unwind: "$product" },
+        ]);
+
+        let ActiveRenting = 0;
+        let Requests = 0;
+        let Rented = 0;
+
+        Booking.forEach(element => {          
+            if(element.product.userId ===  new Types.ObjectId(bookingInputs.userId)){
+              if (element.status === "Delivered" || element.status === "Confirmed" || element.status === "Shipped") {
+                ActiveRenting++;
+            } else if (element.status === "Requested") {
+                Requests++;
+            } else if (element.status === "Returned") {
+                Rented++;
             }
           }
         });
-      }
-  
-      return {ActiveRenting, Requests, Rented, Requested};
+
+        // Count the total number of requested bookings
+        const Requested = await bookingModel.countDocuments({ userId: bookingInputs.userId, status: { $in: ["Requested", "Delivered", "Confirmed", "Shipped", "Canceled", "Returned"] } });
+
+        return { ActiveRenting, Requests, Rented, Requested };
     } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to Count Booking");
+        console.log("error", err);
+        throw new Error("Unable to Count Booking");
     }
-  }
+}
 
   async dummyAPI() {
     try {
