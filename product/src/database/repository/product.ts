@@ -200,9 +200,6 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
             }).select({
               _id: 1,
               startDate: 1,
@@ -211,13 +208,47 @@ class ProductRepository {
               status: 1,
             });
 
-            let wishlistData = null;
+            let wishlistData = await Wishlists.aggregate([
+              {
+                $match: { productIds: { "$in": element._id } }
+              },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "userId",
+                  foreignField: "_id",
+                  pipeline: [
+                    { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+                  ],
+                  as: "userId",
+                },
+              },
+            ]);
 
-            if (productInputs.userId) {
-              wishlistData = await Wishlists.findOne({
-                productIds: element._id,
-              });
+            wishlistData.forEach(async(element) => {
+            let wishlistProfileData = await ProfileModel.aggregate([
+              {
+                $match: {
+                  userId: element.userId[0]._id
+                },
+              },
+              {
+                $lookup: {
+                  from: "images",
+                  localField: "profileImage",
+                  foreignField: "_id",
+                  pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                  ],
+                  as: "profileImage",
+                },
+              },
+            ]);
+            if(wishlistProfileData.length > 0 && wishlistProfileData[0].profileImage.length > 0 && wishlistProfileData[0].profileImage[0].imageName) {
+              element.userId[0].profile = await generatePresignedUrl(wishlistProfileData[0].profileImage[0].imageName);
+              element.userId[0].userName = wishlistProfileData[0].userName
             }
+          });
 
             return { product: element, wishlistData, productBooking };
           } catch (error) {
