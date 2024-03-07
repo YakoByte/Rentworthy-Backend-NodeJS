@@ -119,11 +119,13 @@ export interface productGetRequest {
 }
 
 export interface productSorting {
-    // sort?: string;
+    sort?: string;
     price?: string;
     quantity?: string;
     createdAt?: string;
     userId?: string;
+    skip: number;
+    limit: number;
 }
 
 // for delete Product

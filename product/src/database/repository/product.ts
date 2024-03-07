@@ -752,9 +752,10 @@ class ProductRepository {
   // get product sorting wise
   async getProductPriceSortingWise(productInputs: productSorting) {
     try {
-      // console.log("skip", productInputs.page, "limit", productInputs.limit)
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
+        // { $skip: productInputs.skip },
+        // { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",

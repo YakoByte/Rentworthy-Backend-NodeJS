@@ -63,6 +63,10 @@ class productService {
       } else if (productInputs.price) {
         existingProduct = await this.repository.getProductPriceSortingWise({
           price: productInputs.price,
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
         });
       } else {
         existingProduct = await this.repository.getAllProduct({
