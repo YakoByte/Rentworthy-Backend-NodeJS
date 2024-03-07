@@ -135,7 +135,7 @@ class productService {
   }
 
   // get product by userId
-  async getUserProduct(productInputs: productGetRequest) {
+  async getProductByUserId(productInputs: productGetRequest) {
     try {
       let existingProduct = await this.repository.getProductByUserId({
           userId: productInputs.userId || '',

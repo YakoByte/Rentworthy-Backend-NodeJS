@@ -159,7 +159,7 @@ class ProductRepository {
         return { message: "Product not found" };
       }
 
-      const wishlistPromises = await Promise.all(
+      const wishlistPromises: any = await Promise.all(
         findProduct.map(async (element) => {          
           let profileData = await ProfileModel.aggregate([
             {

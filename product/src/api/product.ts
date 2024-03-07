@@ -180,7 +180,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
 
-            const data = await service.getProduct({ userId: authUser._id });
+            const data = await service.getProductByUserId({ userId: authUser._id });
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went in',err)
