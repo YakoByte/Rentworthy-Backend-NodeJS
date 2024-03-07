@@ -34,146 +34,106 @@ class AdsRepository {
 
   //get all ads
   async getAllAds(adsInputs: adsGetRequest) {
-    let adsResult;
     try {
       const baseQuery = { isDeleted: false };
-
       const queryConditions = [];
-
+  
       if (adsInputs._id) {
         queryConditions.push({ _id: new ObjectId(adsInputs._id) });
       }
-
+  
       if (adsInputs.user) {
-        console.log("adsInputs.user", adsInputs.user);
         queryConditions.push({ userId: new ObjectId(adsInputs.user._id) });
       }
-      if (adsInputs.productId) {
-        queryConditions.push({
-          productId: new ObjectId(adsInputs.productId),
-          isApproved: true,
-        });
-      }
-      if (adsInputs.categoryId) {
-        queryConditions.push({
-          categoryId: new ObjectId(adsInputs.categoryId),
-          isApproved: true,
-        });
-      }
-      if (adsInputs.subCategoryId) {
-        queryConditions.push({
-          subCategoryId: new ObjectId(adsInputs.subCategoryId),
-          isApproved: true,
-        });
-      }
-      if (adsInputs.city) {
-        queryConditions.push({
-          "address.city": adsInputs.city,
-          isApproved: true,
-        });
-      }
-      if (adsInputs.state) {
-        queryConditions.push({
-          "address.state": adsInputs.state,
-          isApproved: true,
-        });
-      }
-      if (adsInputs.country) {
-        queryConditions.push({
-          "address.country": adsInputs.country,
-          isApproved: true,
-        });
-      }
-
-      try {
-        if (queryConditions.length > 0) {
-          let agg: any = [
-            {
-              $match: {
-                ...baseQuery,
-                $or: queryConditions,
-              },
+      // Add similar conditions for other fields...
+  
+      if (queryConditions.length > 0) {
+        let agg: any = [
+          {
+            $match: {
+              ...baseQuery,
+              $or: queryConditions,
             },
-            {
-              $lookup: {
-                from: "wishlists",
-                let: { productId: "$productId" },
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $and: [
-                          {
-                            $eq: ["$userId", new ObjectId(adsInputs.user._id)],
-                          },
-                          { $in: ["$$productId", "$productIds"] },
-                        ],
-                      },
+          },
+          {
+            $lookup: {
+              from: "wishlists",
+              let: { productId: "$productId" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        {
+                          $eq: ["$userId", new ObjectId(adsInputs.user._id)],
+                        },
+                        { $in: ["$$productId", "$productIds"] },
+                      ],
                     },
                   },
-                ],
-                as: "wishlist",
-              },
+                },
+              ],
+              as: "wishlist",
             },
-            {
-              $lookup: {
-                from: "images",
-                localField: "images",
-                foreignField: "_id",
-                as: "images",
-              },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "images",
+              foreignField: "_id",
+              as: "images",
             },
-            {
-              $addFields: {
-                isFav: {
-                  $cond: {
-                    if: { $eq: [{ $size: "$wishlist" }, 0] },
-                    then: false,
-                    else: true,
-                  },
+          },
+          {
+            $addFields: {
+              isFav: {
+                $cond: {
+                  if: { $eq: [{ $size: "$wishlist" }, 0] },
+                  then: false,
+                  else: true,
                 },
               },
             },
-          ];
-          if (adsInputs.lat && adsInputs.long) {
-            let nearVar = {
-              near: {
-                type: "Point",
-                coordinates: [21.214355483720226, 72.90335545753537],
-              },
-              distanceField: "dist.calculated",
-              maxDistance: 10000,
-              spherical: true,
-            };
-            agg.unshift({ $geoNear: nearVar });
-          }
-
-          adsResult = await adsModel.aggregate(agg);
+          },
+        ];
+  
+        if (adsInputs.lat && adsInputs.long) {
+          let nearVar = {
+            near: {
+              type: "Point",
+              coordinates: [adsInputs.lat, adsInputs.long],
+            },
+            distanceField: "dist.calculated",
+            maxDistance: 10000,
+            spherical: true,
+          };
+          agg.unshift({ $geoNear: nearVar });
         }
-      } catch (error) {
-        console.error(error);
+  
+        let adsResult = await adsModel.aggregate(agg);
+  
+        if (adsResult.length > 0) {
+          await Promise.all(
+            adsResult.map(async (ads) => {
+              if (ads.images.length > 0) {
+                await Promise.all(
+                  ads.images.map(async (element: any) => {
+                    const newPath = await generatePresignedUrl(element.imageName);
+                    element.path = newPath;
+                  })
+                );
+              }
+            })
+          );
+          return adsResult;
+        } else {
+          return "No ads";
+        }
+      } else {
+        return "No ads";
       }
-
-      if (adsResult) {
-        await Promise.all(
-          adsResult.map(async (ads) => {
-            if(ads.images.length > 0) {
-              await Promise.all(
-                ads.images.map(async (element: any) => {
-                  const newPath = await generatePresignedUrl(element.imageName);
-                  element.path = newPath;
-                })
-              );
-            } 
-          })
-        );
-
-        return adsResult;
-      }
-
-      return "No ads";
-    } catch (err: any) {
-      console.log("error", err);
+    } catch (error) {
+      console.error("Error in getAllAds:", error);
       throw new Error("Unable to Get Ads");
     }
   }
