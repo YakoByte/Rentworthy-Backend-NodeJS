@@ -654,7 +654,7 @@ class BookingRepository {
             from: "products",
             localField: "productId",
             foreignField: "_id",
-            as: "productDetail",
+            as: "productId",
           },
         },
         {
@@ -739,6 +739,33 @@ class BookingRepository {
           },
         },
       ]);
+
+      findBooking.map(async (element) => {
+        let profileData = await profileModel.aggregate([
+          {
+            $match: {
+              userId: element.productId[0].userId
+            },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "profileImage",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+              ],
+              as: "profileImage",
+            },
+          },
+        ]);
+        
+        if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+          element.productId[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          element.productId[0].userName = profileData[0].userName
+        }
+      });
+
 
       if (findBooking) {
         await Promise.all(

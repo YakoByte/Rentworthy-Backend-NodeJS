@@ -925,7 +925,7 @@ class ProductRepository {
                 as: "profileImage",
               },
             },
-          ]);                    
+          ]);
           
           if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
             element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
