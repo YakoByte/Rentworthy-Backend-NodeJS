@@ -1,6 +1,6 @@
 import { adsModel, productModel } from "../models";
 import { ObjectId } from "mongodb";
-
+import { Types } from "mongoose";
 import {
   adsRequest,
   adsGetRequest,
@@ -34,26 +34,22 @@ class AdsRepository {
 
   //get all ads
   async getAllAds(adsInputs: adsGetRequest) {
-    try {
-      const baseQuery = { isDeleted: false };
-      const queryConditions = [];
-  
+    try {        
+      let criteria: any = { isDeleted: false };
+      
       if (adsInputs._id) {
-        queryConditions.push({ _id: new ObjectId(adsInputs._id) });
+        criteria._id = new Types.ObjectId(adsInputs._id);
       }
-  
-      if (adsInputs.user) {
-        queryConditions.push({ userId: new ObjectId(adsInputs.user._id) });
+      if(adsInputs.productId) {
+        criteria.productId = new Types.ObjectId(adsInputs.productId);
       }
-      // Add similar conditions for other fields...
-  
-      if (queryConditions.length > 0) {
+      if(adsInputs.userId) {
+        criteria.userId = new Types.ObjectId(adsInputs.userId);
+      }
+
         let agg: any = [
           {
-            $match: {
-              ...baseQuery,
-              $or: queryConditions,
-            },
+            $match: criteria,
           },
           {
             $lookup: {
@@ -112,7 +108,6 @@ class AdsRepository {
   
         let adsResult = await adsModel.aggregate(agg);
   
-        if (adsResult.length > 0) {
           await Promise.all(
             adsResult.map(async (ads) => {
               if (ads.images.length > 0) {
@@ -125,13 +120,8 @@ class AdsRepository {
               }
             })
           );
-          return adsResult;
-        } else {
-          return "No ads";
-        }
-      } else {
-        return "No ads";
-      }
+          
+      return adsResult;
     } catch (error) {
       console.error("Error in getAllAds:", error);
       throw new Error("Unable to Get Ads");

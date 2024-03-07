@@ -164,7 +164,6 @@ class AdminService {
 
             // check role
             const checkRole: any = await this.repository.checkRole(userInputs.roleName, existingAdmin.roleId);
-            console.log("checkRole", checkRole)
             if (checkRole === false) {
                 return FormateError({ error: "Invalid Role" });
             }

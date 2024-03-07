@@ -106,14 +106,24 @@ export default (app: Express) => {
     }
   });
 
+  // API = social signUp
+  app.post('/social-signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      req.body.roleName = "user";
+      const data = await adminService.SocialSignUp(req.body);
+      return res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // API = social logIn
-  app.post('/sociallogin', async (req: any, res: Response, next: NextFunction) => {
+  app.post('/social-login', async (req: any, res: Response, next: NextFunction) => {
     try {
       const userDetail: socialUserLoginRequest = req.body;
       req.body.roleName = "user";
       req.body.os = req.clientPlatform;
       const data = await adminService.SocialSignIn(userDetail);
-      console.log("data", data)
       return res.json(data);
     } catch (err) {
       next(err);

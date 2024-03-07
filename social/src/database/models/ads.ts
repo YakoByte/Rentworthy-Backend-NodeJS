@@ -56,7 +56,7 @@ const adsSchema: Schema = new Schema<Ads>(
         images: [
             {
               type: Schema.Types.ObjectId,
-              ref: "image",
+              ref: "Image",
             },
         ],
         location: {
