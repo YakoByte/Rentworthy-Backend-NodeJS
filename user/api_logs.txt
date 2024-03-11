@@ -1,0 +1,35 @@
+
+API Headers:
+identifier: A2hG9tE4rB6kY1sN
+content-type: application/json
+user-agent: PostmanRuntime/7.36.3
+accept: */*
+cache-control: no-cache
+postman-token: 80cfe5e2-7bc1-4624-a2f1-6b47f85269b8
+host: localhost:5001
+accept-encoding: gzip, deflate, br
+connection: keep-alive
+content-length: 69
+
+API Data:
+{
+  "email": "test@gmail.com",
+  "password": "user@123"
+}
+API Headers:
+identifier: A2hG9tE4rB6kY1sN
+content-type: application/json
+user-agent: PostmanRuntime/7.36.3
+accept: */*
+cache-control: no-cache
+postman-token: d6a07c1b-4def-458b-9660-52195dfc442b
+host: localhost:5001
+accept-encoding: gzip, deflate, br
+connection: keep-alive
+content-length: 69
+
+API Data:
+{
+  "email": "test@gmail.com",
+  "password": "user@123"
+}
