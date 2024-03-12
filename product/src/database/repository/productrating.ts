@@ -1,11 +1,10 @@
-import { productRatingModel, historyModel } from "../models";
+import { productRatingModel, historyModel, Bookings } from "../models";
 import {
   productRatingRequest,
   getProductRatingRequest,
   AuthenticatedRequest,
   getAllProductRating,
 } from "../../interface/productrating";
-import axios from "axios";
 
 class ProductRatingRepository {
   async CreateProductRating(productInputs: any) {
@@ -16,21 +15,17 @@ class ProductRatingRepository {
           userId: productInputs.userId,
         })
         .lean();
-      let tempBody: any = {
-        productId: productInputs.productId,
-        userId: productInputs.userId,
-      };
-      let bookings = await axios.get(
-        "https://backend.rentworthy.us/app/api/v1/renting/get-booking",
-        {
-          params: tempBody,
-          headers: {
-            Authorization: productInputs.token,
-          },
-        }
-      );
 
-      if (bookings.data.data.length) {
+      let bookings = await Bookings.aggregate([
+        {
+          $match: {
+            productId: productInputs.productId,
+            userId: productInputs.userId,
+          },
+        },
+      ]);
+
+      if (bookings.length > 0) {
         if (findProduct) {
           const updateRes = await productRatingModel
             .findOneAndUpdate(
