@@ -599,42 +599,66 @@ class BookingRepository {
         ];
       }
       if (bookingInputs.status) {
-        if (bookingInputs.status == "activeRental") {
+        if (bookingInputs.status == "Confirmed") {
           criteria = {
             $and: [
-              { status: "accepted" },
+              { status: "Confirmed" },
               { startDate: { $lte: new Date() } },
               { endDate: { $gte: new Date() } },
               { isDeleted: false },
             ],
           };
-        } else if (bookingInputs.status == "requests") {
+        } else if (bookingInputs.status == "Requested") {
           criteria = {
             $and: [
-              { status: "pending" },
+              { status: "Requested" },
               { isDeleted: false },
               { startDate: { $gte: new Date() } },
             ],
           };
-        } else if (bookingInputs.status == "rented") {
+        } else if (bookingInputs.status == "Returned") {
           criteria = {
             $and: [
-              { status: "completed" },
+              { status: "Returned" },
               { startDate: { $lte: new Date() } },
               { endDate: { $lte: new Date() } },
               { isDeleted: false },
             ],
           };
-        } else if (bookingInputs.status == "requested") {
+        } else if (bookingInputs.status == "Rejected") {
           criteria = {
             $and: [
-              { status: "accepted" },
+              { status: "Rejected" },
+              { startDate: { $gte: new Date() } },
+              { isDeleted: false },
+            ],
+          };
+        } else if (bookingInputs.status == "Shipped") {
+          criteria = {
+            $and: [
+              { status: "Shipped" },
+              { startDate: { $gte: new Date() } },
+              { isDeleted: false },
+            ],
+          };
+        } else if (bookingInputs.status == "Delivered") {
+          criteria = {
+            $and: [
+              { status: "Delivered" },
+              { startDate: { $gte: new Date() } },
+              { isDeleted: false },
+            ],
+          };
+        } else if (bookingInputs.status == "Canceled") {
+          criteria = {
+            $and: [
+              { status: "Canceled" },
               { startDate: { $gte: new Date() } },
               { isDeleted: false },
             ],
           };
         }
-      } 
+      }      
 
       const findBooking = await bookingModel.aggregate([
         {

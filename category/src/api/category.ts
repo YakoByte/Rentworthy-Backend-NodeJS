@@ -92,7 +92,6 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.query)
             const data = await service.deleteCategory(req.query);
             return res.json(data);
         } catch (err) {
