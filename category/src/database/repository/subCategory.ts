@@ -85,14 +85,15 @@ class SubCategoryRepository {
       ]);
 
       if (findSubCategory) {
-        for (const category of findSubCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findSubCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
+        return findSubCategory;
       }
       
       return { message: "Data not found" };
@@ -133,14 +134,15 @@ class SubCategoryRepository {
       ]);
 
       if (findSubCategory) {
-        for (const category of findSubCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findSubCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
+        return findSubCategory;
       }
 
       return { message: "Data not found" };
@@ -187,15 +189,17 @@ class SubCategoryRepository {
       ]);
 
       if (findSubCategory) {
-        for (const category of findSubCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findSubCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
+        return findSubCategory;
       }
+
       return { message: "Data not found" };
     } catch (error) {
       console.log("error", error);
@@ -234,15 +238,17 @@ class SubCategoryRepository {
       ]);
 
       if (findSubCategory) {
-        for (const category of findSubCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findSubCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
+        return findSubCategory;
       }
+      
       return { message: "Data not found" };
     } catch (error) {
       console.log("error", error);

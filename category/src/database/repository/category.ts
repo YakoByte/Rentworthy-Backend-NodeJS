@@ -70,14 +70,14 @@ class CategoryRepository {
       ]);
 
       if (findCategory) {
-        for (const category of findCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
         return findCategory;
       }
 
@@ -107,14 +107,14 @@ class CategoryRepository {
       ]);
 
       if (findCategory) {
-        for (const category of findCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
         return findCategory;
       }
 
@@ -149,16 +149,17 @@ class CategoryRepository {
       ]);
 
       if (findCategory) {
-        for (const category of findCategory) {
-          if(category.image){
-            category.image.forEach(async(element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                category.image.path = newPath;
-              });
+        await Promise.all(findCategory.map(async (category: any) => {
+          if (category.image) {
+            await Promise.all(category.image.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
           }
-        }
+        }));
         return findCategory;
       }
+      
       return { message: "Data not found" };
     } catch (error) {
       console.log("error", error);
