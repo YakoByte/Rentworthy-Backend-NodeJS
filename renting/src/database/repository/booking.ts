@@ -1143,7 +1143,7 @@ class BookingRepository {
     try {
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
-        { isDeleted: true },
+        { isDeleted: true, status:  "Cancelled" },
         { new: true }
       );
       if (bookingResult) {
