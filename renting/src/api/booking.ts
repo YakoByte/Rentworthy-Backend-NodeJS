@@ -236,7 +236,7 @@ export default (app: Express) => {
     //API = delete booking
     app.delete('/delete-booking', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            req.query.status = 'Canceled'
+            req.query.status = 'Cancelled'
             const data = await service.deleteBooking({ ...req.query });
             return res.json(data);
         } catch (err) {

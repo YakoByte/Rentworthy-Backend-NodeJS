@@ -93,7 +93,7 @@ export default (app: Express) => {
   })
 
   // API = reset password
-  app.put('/resetpassword', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+  app.put('/reset-password', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
       let bodyData: any = {
         _id: req.user._id,

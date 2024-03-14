@@ -128,7 +128,7 @@ class AdminService {
                 if (userInputs.oldPassword === userInputs.newPassword) {
                     return FormateError({ error: "Old password and new password should not be same" });
                 }
-                const updatedAdmin = await this.repository.UpdateUser(existingAdmin._id, {
+                await this.repository.UpdateUser(existingAdmin._id, {
                     password
                 });
                 return FormateData({ message: "Password updated successfully" });
