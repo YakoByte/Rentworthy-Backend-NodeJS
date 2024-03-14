@@ -82,7 +82,7 @@ export default (app: Express) => {
   })
 
   // API = Check if the token has expired
-  app.post('/verifytokenexpiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/verify-token-expiry', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       let token: any = req.headers.authorization
       const data = await adminService.expiryToken(token);
@@ -149,7 +149,7 @@ export default (app: Express) => {
     }
   });
 
-  app.get('/getallusers', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/get-all-users', UserAuth, isAdmin, async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
       const data = await adminService.GetAllUsers();
@@ -161,7 +161,7 @@ export default (app: Express) => {
   });
 
   // api = get Windows, Android, iOS, Linux, Other counts
-  app.get('/getcount', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/get-count', UserAuth, isAdmin, async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
       const data = await adminService.GetCount();

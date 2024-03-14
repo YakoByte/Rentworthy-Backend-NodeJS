@@ -60,9 +60,10 @@ export interface PaymentDetails {
 export interface PaymentConfirmDetails {
   paymentId: string;
   amount: number;
-  productId: string;
+  productId?: string;
+  bookingId: string;
   userId: string;
-  quantity: number;
+  quantity?: number;
   currency: string;
   status: string;
 }
@@ -78,7 +79,7 @@ export interface PaymentMethodDetails {
 }
 
 export interface PaymentUpdateMethodDetails {
-  account_Id: string;
+  customer_id: string;
   card_Id: string;
   exp_month: string;
   exp_year: string;
@@ -86,7 +87,7 @@ export interface PaymentUpdateMethodDetails {
 }
 
 export interface PaymentDeleteMethodDetails {
-  account_Id: string;
+  customer_id: string;
   card_Id: string;
 }
 
@@ -96,12 +97,13 @@ export interface PaymentChargeDetails {
   amount: number;
   currency?: string;
   userId: string;
-  productId: string;
-  quantity: number;
+  bookingId: string;
+  productId?: string;
+  quantity?: number;
 }
 
 export interface PaymentCancel {
-  paymentId: string;
+  bookingId: string;
   userId: string;
 }
 
@@ -117,20 +119,21 @@ export interface SubscriptionPayment {
   customerId: string;
   stripePriceId: string;
   productId: string;
+  bookingId: string;
 }
 
 export interface PaymentIntendDetail {
-  OwnerId: string;
   stripeId?: string;
   name?: string;
   email?: string;
-  productId: string;
   userId: string;
-  quantity: number;
+  bookingId: string;
+  productId?: string;
+  quantity?: number;
   card: {
     number: string;
-    exp_month: number;
-    exp_year: number;
+    exp_month: string;
+    exp_year: string;
     cvc: string;
   };
   amount: number;

@@ -1,8 +1,19 @@
-import { UserModel, paymentModel } from "../models";
+import { UserModel, bookingModel, paymentModel } from "../models";
 import moment from "moment";
 import { PaymentConfirmDetails, PaymentCount, UpdatePayment } from "../../interface/payment";
 
 class PaymentRepository {
+  async getBooking(bookingId: string) {
+    try {
+      const booking = await bookingModel.findById(bookingId);
+      if (!booking) throw new Error("No such booking found");
+      return booking;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Booking");
+    }
+  }
+
   async CreatePayment(PaymentInputs: PaymentConfirmDetails) {
     try {
       let response = await paymentModel.create(PaymentInputs);
@@ -244,9 +255,9 @@ class PaymentRepository {
     }
   }
 
-  async GetOwnerData(userID: string) {
+  async GetOwnerData(_id: string) {
     try {
-      let response = await UserModel.findById(userID);
+      let response = await UserModel.findById(_id);
       return response;
     } catch (err) {
       console.log("error", err);
@@ -254,9 +265,9 @@ class PaymentRepository {
     }
   }
 
-  async GetPaymentData(userId: string, paymentId: string) {
+  async GetPaymentData(userId: string, bookingId: string) {
     try {
-      let response = await UserModel.findOne({userId, paymentId});
+      let response = await paymentModel.findOne({userId, bookingId, isDeleted: false});
       return response;
     } catch (err) {
       console.log("error", err);

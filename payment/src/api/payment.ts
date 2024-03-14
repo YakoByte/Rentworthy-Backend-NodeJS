@@ -31,18 +31,6 @@ export default (app: Express) => {
         }
     });
 
-    // API = retirve payment status
-    app.get('/retrive-payment-status', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
-            let userId:any = req.user?._id
-            let stripeId: any = req.query.stripeId;
-            const data = await service.retrivePaymentStatus(stripeId, userId);
-            return res.json(data);
-        } catch (err) {
-            next(err);
-        }
-    });
-
     // API = create account
     app.post('/create-account', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -107,13 +95,10 @@ export default (app: Express) => {
     });
 
     // API = get all card
-    app.get('/get-all-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/get-all-card', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            const customer_Id = req.query.customer_Id as string || '';
-            if (customer_Id === '') {
-                res.status(401).json({ error: 'Missing parameter' })
-            }
-            const data = await service.listPaymentCard({customer_Id});
+            let userId:any = req.user?._id
+            const data = await service.listPaymentCard(userId);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -142,7 +127,18 @@ export default (app: Express) => {
         try {
             let authUser:any = req.user?._id;
             req.body.userId = authUser;
-            const data = await service.paymentIntentPayment(req.body);
+            const data = await service.createPayment(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/retrive-payment-status', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId:any = req.user?._id
+            let paymentId: any = req.query.paymentId;
+            const data = await service.retrivePaymentStatus(paymentId, userId);
             return res.json(data);
         } catch (err) {
             next(err);
