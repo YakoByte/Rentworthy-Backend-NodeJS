@@ -31,7 +31,7 @@ export interface Profile extends Document {
 }
 
 export interface profileRequest {
-    // _id?: string;
+    _id?: string;
     userId: string;
     userName?: string;
     userDesc?: string;
@@ -65,8 +65,12 @@ export interface updateProfile {
 //get profiles
 
 export interface getProfileRequest {
+    _id?: string;
     userId?: string;
     isDeleted?: boolean;
     isActive?: boolean;
     isBlocked?: boolean;
+    limit?: number;
+    page?: number;
+    criteria?: string;
 }

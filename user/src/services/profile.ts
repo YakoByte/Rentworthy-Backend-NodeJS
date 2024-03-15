@@ -29,13 +29,21 @@ class ProfileService {
 
     // get all profile
     async getAllProfile(profileInputs: getProfileRequest) {
-        try {
-            const existingProfile: any = await this.repository.getAllProfile(
-                profileInputs
-            );
+        try {            
+            let existingProfile: any[];
 
-            if(!existingProfile) {
-                throw Error('No data Found');
+            if(profileInputs._id) {
+                existingProfile = await this.repository.getProfileById(profileInputs);
+            }
+            else if(profileInputs.userId) {
+                existingProfile = await this.repository.getProfileByUserId(profileInputs);
+            }
+            else {
+                existingProfile = await this.repository.getAllProfile({
+                    skip:
+                    Number(profileInputs.page) * Number(profileInputs.limit) -
+                      Number(profileInputs.limit) || 0,
+                  limit: Number(profileInputs.limit) || 10});
             }
 
             return FormateData(existingProfile);
@@ -45,9 +53,9 @@ class ProfileService {
     }
 
     //get profile by id
-    async getProfileById(profileInputs: profileRequest) {
+    async getProfileByUserId(profileInputs: profileRequest) {
         try {
-            const existingProfile: any = await this.repository.getProfileById(
+            const existingProfile: any = await this.repository.getProfileByUserId(
                 profileInputs
             );
 

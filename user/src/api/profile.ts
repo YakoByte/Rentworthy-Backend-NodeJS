@@ -4,6 +4,7 @@ import imageService from '../services/imageUpload';
 import UserAuth from '../middlewares/auth';
 import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest, getProfileRequest } from '../interface/profile';
+import { isAdmin } from '../middlewares/checkRole';
 // import axios from 'axios';
 // import fs from 'fs';
 // import FormData from 'form-data';
@@ -62,7 +63,6 @@ export default (app: Express) => {
     app.get('/get-profile', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let body: getProfileRequest = req.query
         let authUser: any = req.user
-        req.body.userId = authUser._id
 
         try {
             let data
@@ -70,8 +70,23 @@ export default (app: Express) => {
                 data = await service.getAllProfile(body);
             }
             else {
-                data = await service.getProfileById(req.body);
+                req.body.userId = authUser._id
+                data = await service.getProfileByUserId(req.body);
             }
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = get profile by id
+    app.get('/get-profile-admin', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        let authUser: any = req.user
+        req.body.userId = authUser._id
+
+        try {
+            let data = await service.getProfileByUserId(req.body);
+            
             return res.json(data);
         } catch (err) {
             next(err);
