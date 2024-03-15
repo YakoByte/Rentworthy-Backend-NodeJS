@@ -2,47 +2,10 @@ import { Express, Request, Response, NextFunction } from 'express';
 import BookingService from '../services/booking';
 import UserAuth from '../middlewares/auth';
 import { isAdmin } from '../middlewares/checkRole';
-import { AuthenticatedRequest, bookingRequest, postAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/booking';
+import { AuthenticatedRequest, postAuthenticatedRequest, approveAuthenticatedRequest, deleteAuthenticatedRequest } from '../interface/booking';
 import upload from '../middlewares/imageStorage';
-// import axios from 'axios';
-// import fs from 'fs';
-// import FormData from 'form-data';
 import { FormateData } from '../utils';
 import imageService from '../services/imageUpload';
-
-// async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
-//     const formData = new FormData();
-
-//     for (const imagePath of imagePaths) {
-//         formData.append('image', fs.createReadStream(imagePath));
-//     }
-
-//     try {
-//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-//             headers: {
-//                 ...formData.getHeaders(),
-//                 Authorization: token,
-//             },
-//         });
-    
-//         const paths: string[] = response.data.map((element: any) => element._id);
-
-//         imagePaths.forEach(async (element: any) => {
-//             if (fs.existsSync(element)) {
-//               fs.unlinkSync(element);
-//             }
-//         });
-
-//         return paths;
-//     } catch (error: any) {
-//         imagePaths.forEach(async (element: any) => {
-//             if (fs.existsSync(element)) {
-//               fs.unlinkSync(element);
-//             }
-//         });
-//         return [error.message]; // Return an array to match the Promise<string[]> type
-//     }
-// }
 
 export default (app: Express) => {
     const service = new BookingService();
@@ -73,8 +36,7 @@ export default (app: Express) => {
     app.get('/get-recent-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            req.query.user = authUser;
-            const data = await service.getRecentBooking(req.query);
+            const data = await service.getRecentBooking({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {
             next(err);

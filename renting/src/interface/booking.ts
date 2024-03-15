@@ -162,21 +162,6 @@ export interface bookingGetRequest {
     status?: string;      // activeBooking, requests, rented, requested
 }
 
-export interface recentBookingGetRequest {
-    _id?: string
-    user?: {
-        _id: string;
-        roleName: string;
-        email: string;
-    };
-    page?: string;
-    limit?: string;
-    productId?: string;
-    startDate?: string;
-    endDate?: string;
-    status?: string;      // pending, accepted, rejected, completed
-}
-
 // for delete booking
 export interface bookingDeleteRequest {
     _id: string

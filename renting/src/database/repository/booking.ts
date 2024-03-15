@@ -6,7 +6,6 @@ import {
   bookingGetRequest,
   bookingUpdateRequest,
   postAuthenticatedRequest,
-  recentBookingGetRequest,
   approveAuthenticatedRequest,
   bookingRequestWithPayment,
 } from "../../interface/booking";
@@ -295,17 +294,10 @@ class BookingRepository {
     }
   }
 
-  // get active booking, panding, completed, requested
+  // get booking, Requested, Confirmed, Rejected, Shipped, Delivered, Returned, Cancelled
   async getBooking(bookingInputs: bookingGetRequest) {
     try {
-      let criteria: any = { isDeleted: false };
-      if (bookingInputs.status == "active") {
-        criteria.status = "pending";
-      } else if (bookingInputs.status == "completed") {
-        criteria.status = bookingInputs.status;
-      } else if (bookingInputs.status == "requested") {
-        criteria.status = "accepted";
-      }
+      let criteria: any = { isDeleted: false, status: bookingInputs.status };
 
       // const findBooking = await bookingModel.find(criteria);
       const findBooking = await bookingModel.aggregate([
@@ -317,8 +309,10 @@ class BookingRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
-            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
-            as: "userDetail",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "rentalUserDetail",
           },
         },
         {
@@ -326,7 +320,27 @@ class BookingRepository {
             from: "products",
             localField: "productId",
             foreignField: "_id",
-            as: "productDetail",
+            as: "productId",
+          },
+        },
+        { $unwind: "$productId" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "productId.userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "OwnerUserDetail",
+          },
+        },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "addressId",
+            foreignField: "_id",
+            as: "addressId",
           },
         },
         {
@@ -338,6 +352,10 @@ class BookingRepository {
             as: "images",
           },
         },
+        { $unwind: {
+          path: "$preRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},     
         {
           $lookup: {
             from: "images",
@@ -351,81 +369,95 @@ class BookingRepository {
           $group: {
             _id: "$_id",
             productId: { $first: "$productId" },
-            userId: { $first: "$userId" },
-            quantity: { $first: "$quantity" },
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
+            userId: { $first: "$userId" },
+            paymentId: { $first: "$paymentId" },
+            quantity: { $first: "$quantity" },
+            isDeleted: { $first: "$isDeleted" },
+            expandId: { $first: "$expandId" },
+            isAccepted: { $first: "$isAccepted" },
             images: { $first: "$images" },
-            preRentalScreening: { $push: "$preRentalScreening" },
             addressId: { $first: "$addressId" },
             price: { $first: "$price" },
             totalAmount: { $first: "$totalAmount" },
-            expandId: { $first: "$expandId" },
-            isAccepted: { $first: "$isAccepted" },
             status: { $first: "$status" },
             acceptedBy: { $first: "$acceptedBy" },
+            preRentalScreening: { $push: "$preRentalScreening" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
-            isDeleted: { $first: "$isDeleted" },
-            userDetail: { $first: "$userDetail" },
-            productDetail: { $first: "$productDetail" },
+            rentalUserDetail: { $first: "$rentalUserDetail" },
+            OwnerUserDetail: { $first: "$OwnerUserDetail" },
           },
         },
         {
           $project: {
+            _id: 1,
             productId: 1,
-            userId: 1,
-            quantity: 1,
             startDate: 1,
             endDate: 1,
-            preRentalScreening: 1,
+            userId: 1,
+            paymentId: 1,
+            quantity: 1,
+            isDeleted: 1,
+            expandId: 1,
+            isAccepted: 1,
             images: 1,
             addressId: 1,
             price: 1,
             totalAmount: 1,
-            expandId: 1,
-            isAccepted: 1,
             status: 1,
             acceptedBy: 1,
+            preRentalScreening: 1,
             createdAt: 1,
             updatedAt: 1,
-            isDeleted: 1,
-            userDetail: {
-              firstName: 1,
-              lastName: 1,
-              email: 1,
-              phone: 1,
-              address: 1,
-              profilePic: 1,
-            },
-            productDetail: {
-              title: 1,
-              description: 1,
-              images: 1,
-              address: 1,
-              location: 1,
-              quantity: 1,
-              price: 1,
-              name: 1,
-            },
+            rentalUserDetail: 1,
+            OwnerUserDetail: 1
           },
         },
-      ]);
+      ]);      
+  
+      await Promise.all(findBooking.map(async (element) => {
+        let profileData = await profileModel.aggregate([
+          {
+            $match: {
+              userId: element.productId.userId
+            },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "profileImage",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+              ],
+              as: "profileImage",
+            },
+          },
+        ]);        
+  
+        if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {          
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          element.OwnerUserDetail[0].userName = profileData[0].userName;
+        }
+      }));
+  
+      await Promise.all(findBooking.map(async (booking) => {
+        await Promise.all(booking.images.map(async (element: { imageName: string; path: string; }) => {
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
 
-      if (findBooking) {
-        await Promise.all(
-          findBooking.map(async (complaint: any) => {
-            await Promise.all(
-              complaint.images.map(async (element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                element.path = newPath;
-              })
-            );
-          })
-        );
-        return findBooking;
-      }
-      return { message: "Booking not found" };
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening.images.map(async (element: { imageName: string; path: string; }) => {          
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
+      }));
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get Booking");
@@ -433,154 +465,7 @@ class BookingRepository {
   }
 
   // get recent booking
-  async getRecentBooking(bookingInputs: recentBookingGetRequest) {
-    try {
-      let criteria: any = { isDeleted: false };
-      if (bookingInputs._id) {
-        criteria._id = new Types.ObjectId(bookingInputs._id);
-      }
-      if (bookingInputs.productId) {
-        criteria.productId = new Types.ObjectId(bookingInputs.productId);
-      }
-      if (bookingInputs.startDate && bookingInputs.endDate) {
-        criteria.$and = [
-          { startDate: { $gte: bookingInputs.startDate } },
-          { endDate: { $lte: bookingInputs.endDate } },
-        ];
-      }
-
-      //add user detail and product detail in booking
-      const findBooking = await bookingModel
-        .aggregate([
-          {
-            $match: criteria,
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
-              as: "userDetail",
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "productId",
-              foreignField: "_id",
-              as: "productDetail",
-            },
-          },
-          {
-            $lookup: {
-              from: "images",
-              localField: "images",
-              foreignField: "_id",
-              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
-              as: "images",
-            },
-          },
-          {
-            $lookup: {
-              from: "images",
-              localField: "preRentalScreening.images",
-              foreignField: "_id",
-              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
-              as: "preRentalScreening.images",
-            },
-          },
-          {
-            $group: {
-              _id: "$_id",
-              productId: { $first: "$productId" },
-              userId: { $first: "$userId" },
-              quantity: { $first: "$quantity" },
-              startDate: { $first: "$startDate" },
-              endDate: { $first: "$endDate" },
-              images: { $first: "$images" },
-              preRentalScreening: { $push: "$preRentalScreening" },
-              addressId: { $first: "$addressId" },
-              price: { $first: "$price" },
-              totalAmount: { $first: "$totalAmount" },
-              expandId: { $first: "$expandId" },
-              isAccepted: { $first: "$isAccepted" },
-              status: { $first: "$status" },
-              acceptedBy: { $first: "$acceptedBy" },
-              createdAt: { $first: "$createdAt" },
-              updatedAt: { $first: "$updatedAt" },
-              isDeleted: { $first: "$isDeleted" },
-              userDetail: { $first: "$userDetail" },
-              productDetail: { $first: "$productDetail" },
-            },
-          },
-          {
-            $project: {
-              productId: 1,
-              userId: 1,
-              quantity: 1,
-              startDate: 1,
-              endDate: 1,
-              preRentalScreening: 1,
-              images: {
-                _id: 1,
-                image: 1,
-              },
-              addressId: 1,
-              price: 1,
-              totalAmount: 1,
-              expandId: 1,
-              isAccepted: 1,
-              status: 1,
-              acceptedBy: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              isDeleted: 1,
-              userDetail: {
-                firstName: 1,
-                lastName: 1,
-                email: 1,
-                phone: 1,
-                address: 1,
-                profilePic: 1,
-              },
-              productDetail: {
-                title: 1,
-                description: 1,
-                images: 1,
-                address: 1,
-                location: 1,
-                quantity: 1,
-                price: 1,
-                name: 1,
-              },
-            },
-          },
-        ])
-        .sort({ createdAt: -1 });
-
-        if (findBooking) {
-          await Promise.all(
-            findBooking.map(async (booking: any) => {
-              await Promise.all(
-                booking.images.map(async (element: any) => {
-                  const newPath = await generatePresignedUrl(element.imageName);
-                  element.path = newPath;
-                })
-              );
-            })
-          );
-        return findBooking;
-      }
-      return { message: "Booking not found" };
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to Get recent Booking");
-    }
-  }
-
-  //get all booking
-  async getAllBooking(bookingInputs: bookingGetRequest) {
+  async getRecentBooking(bookingInputs: bookingGetRequest) {
     try {
       let criteria: any = { isDeleted: false };
       if (bookingInputs._id) {
@@ -599,67 +484,68 @@ class BookingRepository {
         ];
       }
       if (bookingInputs.status) {
-        if (bookingInputs.status == "Confirmed") {
-          criteria = {
-            $and: [
-              { status: "Confirmed" },
-              { startDate: { $lte: new Date() } },
-              { endDate: { $gte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        } else if (bookingInputs.status == "Requested") {
-          criteria = {
-            $and: [
-              { status: "Requested" },
-              { isDeleted: false },
-              { startDate: { $gte: new Date() } },
-            ],
-          };
-        } else if (bookingInputs.status == "Returned") {
-          criteria = {
-            $and: [
-              { status: "Returned" },
-              { startDate: { $lte: new Date() } },
-              { endDate: { $lte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        } else if (bookingInputs.status == "Rejected") {
-          criteria = {
-            $and: [
-              { status: "Rejected" },
-              { startDate: { $gte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        } else if (bookingInputs.status == "Shipped") {
-          criteria = {
-            $and: [
-              { status: "Shipped" },
-              { startDate: { $gte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        } else if (bookingInputs.status == "Delivered") {
-          criteria = {
-            $and: [
-              { status: "Delivered" },
-              { startDate: { $gte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        } else if (bookingInputs.status == "Canceled") {
-          criteria = {
-            $and: [
-              { status: "Canceled" },
-              { startDate: { $gte: new Date() } },
-              { isDeleted: false },
-            ],
-          };
-        }
-      }      
+          if (bookingInputs.status == "Confirmed") {
+            criteria = {
+              $and: [
+                { status: "Confirmed" },
+                { startDate: { $lte: new Date() } },
+                { endDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Requested") {
+            criteria = {
+              $and: [
+                { status: "Requested" },
+                { isDeleted: false },
+                { startDate: { $gte: new Date() } },
+              ],
+            };
+          } else if (bookingInputs.status == "Returned") {
+            criteria = {
+              $and: [
+                { status: "Returned" },
+                { startDate: { $lte: new Date() } },
+                { endDate: { $lte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Rejected") {
+            criteria = {
+              $and: [
+                { status: "Rejected" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Shipped") {
+            criteria = {
+              $and: [
+                { status: "Shipped" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Delivered") {
+            criteria = {
+              $and: [
+                { status: "Delivered" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Canceled") {
+            criteria = {
+              $and: [
+                { status: "Canceled" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          }
+      }
 
+      //add user detail and product detail in booking
       const findBooking = await bookingModel.aggregate([
         {
           $match: criteria,
@@ -669,8 +555,10 @@ class BookingRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
-            pipeline: [{ $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }],
-            as: "userDetail",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "rentalUserDetail",
           },
         },
         {
@@ -679,6 +567,26 @@ class BookingRepository {
             localField: "productId",
             foreignField: "_id",
             as: "productId",
+          },
+        },
+        { $unwind: "$productId" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "productId.userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "OwnerUserDetail",
+          },
+        },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "addressId",
+            foreignField: "_id",
+            as: "addressId",
           },
         },
         {
@@ -690,6 +598,10 @@ class BookingRepository {
             as: "images",
           },
         },
+        { $unwind: {
+          path: "$preRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},      
         {
           $lookup: {
             from: "images",
@@ -703,72 +615,59 @@ class BookingRepository {
           $group: {
             _id: "$_id",
             productId: { $first: "$productId" },
-            userId: { $first: "$userId" },
-            quantity: { $first: "$quantity" },
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
+            userId: { $first: "$userId" },
+            paymentId: { $first: "$paymentId" },
+            quantity: { $first: "$quantity" },
+            isDeleted: { $first: "$isDeleted" },
+            expandId: { $first: "$expandId" },
+            isAccepted: { $first: "$isAccepted" },
             images: { $first: "$images" },
-            preRentalScreening: { $push: "$preRentalScreening" },
             addressId: { $first: "$addressId" },
             price: { $first: "$price" },
             totalAmount: { $first: "$totalAmount" },
-            expandId: { $first: "$expandId" },
-            isAccepted: { $first: "$isAccepted" },
             status: { $first: "$status" },
             acceptedBy: { $first: "$acceptedBy" },
+            preRentalScreening: { $push: "$preRentalScreening" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
-            isDeleted: { $first: "$isDeleted" },
-            userDetail: { $first: "$userDetail" },
-            productDetail: { $first: "$productDetail" },
+            rentalUserDetail: { $first: "$rentalUserDetail" },
+            OwnerUserDetail: { $first: "$OwnerUserDetail" },
           },
         },
         {
           $project: {
+            _id: 1,
             productId: 1,
-            userId: 1,
-            quantity: 1,
             startDate: 1,
             endDate: 1,
-            preRentalScreening: 1,
+            userId: 1,
+            paymentId: 1,
+            quantity: 1,
+            isDeleted: 1,
+            expandId: 1,
+            isAccepted: 1,
             images: 1,
             addressId: 1,
             price: 1,
             totalAmount: 1,
-            expandId: 1,
-            isAccepted: 1,
             status: 1,
             acceptedBy: 1,
+            preRentalScreening: 1,
             createdAt: 1,
             updatedAt: 1,
-            isDeleted: 1,
-            userDetail: {
-              userName: 1,
-              lastName: 1,
-              email: 1,
-              phone: 1,
-              bussinessType: 1,
-              profilePic: 1,
-            },
-            productDetail: {
-              title: 1,
-              description: 1,
-              images: 1,
-              address: 1,
-              location: 1,
-              quantity: 1,
-              price: 1,
-              name: 1,
-            },
+            rentalUserDetail: 1,
+            OwnerUserDetail: 1
           },
         },
-      ]);
+      ]).sort({ createdAt: -1 });
 
-      findBooking.map(async (element) => {
+      await Promise.all(findBooking.map(async (element) => {
         let profileData = await profileModel.aggregate([
           {
             $match: {
-              userId: element.productId[0].userId
+              userId: element.productId.userId
             },
           },
           {
@@ -782,29 +681,278 @@ class BookingRepository {
               as: "profileImage",
             },
           },
-        ]);
-        
-        if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
-          element.productId[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
-          element.productId[0].userName = profileData[0].userName
+        ]);        
+  
+        if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {          
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          element.OwnerUserDetail[0].userName = profileData[0].userName;
         }
-      });
+      }));
+  
+      await Promise.all(findBooking.map(async (booking) => {
+        await Promise.all(booking.images.map(async (element: { imageName: string; path: string; }) => {
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
 
-
-      if (findBooking) {
-        await Promise.all(
-          findBooking.map(async (booking: any) => {
-            await Promise.all(
-              booking.images.map(async (element: any) => {
-                const newPath = await generatePresignedUrl(element.imageName);
-                element.path = newPath;
-              })
-            );
-          })
-        );
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening.images.map(async (element: { imageName: string; path: string; }) => {          
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
+      }));
+  
       return findBooking;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get recent Booking");
     }
-      return { message: "Booking not found" };
+  }
+
+  //get all booking
+  async getAllBooking(bookingInputs: bookingGetRequest) {
+    try {      
+      let criteria: any = { isDeleted: false };
+      if (bookingInputs._id) {
+        criteria._id = new Types.ObjectId(bookingInputs._id);
+      }
+      if (bookingInputs.user.roleName === "user") {
+        criteria.userId = new Types.ObjectId(bookingInputs.user._id);
+      }
+      if (bookingInputs.productId) {
+        criteria.productId = new Types.ObjectId(bookingInputs.productId);
+      }
+      if (bookingInputs.startDate && bookingInputs.endDate) {
+        criteria.$and = [
+          { startDate: { $gte: bookingInputs.startDate } },
+          { endDate: { $lte: bookingInputs.endDate } },
+        ];
+      }
+      if (bookingInputs.status) {
+          if (bookingInputs.status == "Confirmed") {
+            criteria = {
+              $and: [
+                { status: "Confirmed" },
+                { startDate: { $lte: new Date() } },
+                { endDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Requested") {
+            criteria = {
+              $and: [
+                { status: "Requested" },
+                { isDeleted: false },
+                { startDate: { $gte: new Date() } },
+              ],
+            };
+          } else if (bookingInputs.status == "Returned") {
+            criteria = {
+              $and: [
+                { status: "Returned" },
+                { startDate: { $lte: new Date() } },
+                { endDate: { $lte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Rejected") {
+            criteria = {
+              $and: [
+                { status: "Rejected" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Shipped") {
+            criteria = {
+              $and: [
+                { status: "Shipped" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Delivered") {
+            criteria = {
+              $and: [
+                { status: "Delivered" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          } else if (bookingInputs.status == "Canceled") {
+            criteria = {
+              $and: [
+                { status: "Canceled" },
+                { startDate: { $gte: new Date() } },
+                { isDeleted: false },
+              ],
+            };
+          }
+      }
+
+      const findBooking = await bookingModel.aggregate([
+        {
+          $match: criteria,
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "rentalUserDetail",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "productId",
+            foreignField: "_id",
+            as: "productId",
+          },
+        },
+        { $unwind: "$productId" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "productId.userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+            ],
+            as: "OwnerUserDetail",
+          },
+        },
+        {
+          $lookup: {
+            from: "addresses",
+            localField: "addressId",
+            foreignField: "_id",
+            as: "addressId",
+          },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        { $unwind: {
+          path: "$preRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},      
+        {
+          $lookup: {
+            from: "images",
+            localField: "preRentalScreening.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "preRentalScreening.images",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            productId: { $first: "$productId" },
+            startDate: { $first: "$startDate" },
+            endDate: { $first: "$endDate" },
+            userId: { $first: "$userId" },
+            paymentId: { $first: "$paymentId" },
+            quantity: { $first: "$quantity" },
+            isDeleted: { $first: "$isDeleted" },
+            expandId: { $first: "$expandId" },
+            isAccepted: { $first: "$isAccepted" },
+            images: { $first: "$images" },
+            addressId: { $first: "$addressId" },
+            price: { $first: "$price" },
+            totalAmount: { $first: "$totalAmount" },
+            status: { $first: "$status" },
+            acceptedBy: { $first: "$acceptedBy" },
+            preRentalScreening: { $push: "$preRentalScreening" },
+            createdAt: { $first: "$createdAt" },
+            updatedAt: { $first: "$updatedAt" },
+            rentalUserDetail: { $first: "$rentalUserDetail" },
+            OwnerUserDetail: { $first: "$OwnerUserDetail" },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            productId: 1,
+            startDate: 1,
+            endDate: 1,
+            userId: 1,
+            paymentId: 1,
+            quantity: 1,
+            isDeleted: 1,
+            expandId: 1,
+            isAccepted: 1,
+            images: 1,
+            addressId: 1,
+            price: 1,
+            totalAmount: 1,
+            status: 1,
+            acceptedBy: 1,
+            preRentalScreening: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            rentalUserDetail: 1,
+            OwnerUserDetail: 1
+          },
+        },
+      ]);         
+  
+      await Promise.all(findBooking.map(async (element) => {
+        let profileData = await profileModel.aggregate([
+          {
+            $match: {
+              userId: element.productId.userId
+            },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "profileImage",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+              ],
+              as: "profileImage",
+            },
+          },
+        ]);        
+  
+        if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {          
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          element.OwnerUserDetail[0].userName = profileData[0].userName;
+        }
+      }));
+  
+      await Promise.all(findBooking.map(async (booking) => {
+        await Promise.all(booking.images.map(async (element: { imageName: string; path: string; }) => {
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
+
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening.images.map(async (element: { imageName: string; path: string; }) => {          
+          const newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        }));
+      }));
+      }));
+  
+      return findBooking;
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get all Booking");

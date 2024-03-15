@@ -1,7 +1,7 @@
 import bookingRepository from '../database/repository/booking';
 import { FormateData, FormateError } from '../utils';
 
-import { bookingRequest, bookingUpdateRequest, bookingGetRequest, recentBookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
+import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
 
 // All Business logic will be here
 class bookingService {
@@ -27,7 +27,7 @@ class bookingService {
     }
     
     // get recent booking 
-    async getRecentBooking(bookingInputs: recentBookingGetRequest) {
+    async getRecentBooking(bookingInputs: bookingGetRequest) {
         try {
             let existingBooking: any
             existingBooking = await this.repository.getRecentBooking(
