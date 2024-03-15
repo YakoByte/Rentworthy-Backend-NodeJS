@@ -36,6 +36,16 @@ export default (app: Express) => {
         }
     });
 
+    // API = get wishlist by id and search and all wishlist
+    app.get('/get-admin-user-wishlist', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.getWishlist(req.query);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     // API = add product to wishlist
     app.post('/add-product-to-wishlist', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
