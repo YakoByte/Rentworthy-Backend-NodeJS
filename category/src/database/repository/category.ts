@@ -18,7 +18,7 @@ class CategoryRepository {
       });
 
       if (findCategory) {
-        return { id: findCategory._id, name: findCategory.name };
+        return findCategory;
       }
 
       const category = new categoryModel(categoryInputs);

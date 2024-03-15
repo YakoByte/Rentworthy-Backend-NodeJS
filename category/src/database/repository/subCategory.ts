@@ -17,7 +17,7 @@ class SubCategoryRepository {
       });
 
       if (findSubCategory) {
-        return { id: findSubCategory._id, name: findSubCategory.name };
+        return findSubCategory;
       }
 
       const subCategory = new subCategoryModel(subCategoryInputs);
