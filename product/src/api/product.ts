@@ -149,13 +149,11 @@ export default (app: Express) => {
     });
 
     // // API = admin approve product
-    app.put('/approve-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.put('/approve-product', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.query)
             const data = await service.approveProduct({ _id: req.query._id as string, isVerified: req.query.isVerified as string, approvedBy: authUser._id, });
-            console.log("data", data)
             return res.json(data);
         } catch (err) {
             next(err);

@@ -1123,12 +1123,12 @@ class ProductRepository {
 
   //update product name, description, isActive, isShow, image
   async updateProduct(productInputs: productUpdateRequest) {
-    try {
+    try {      
       const productResult = await productModel.findOneAndUpdate(
         { _id: productInputs._id, isDeleted: false },
         productInputs,
-        { new: true } // Return the modified document
-      );
+        { new: true }
+      );      
 
       if (productResult) {
         const history = new historyModel({
