@@ -1,4 +1,4 @@
-import { categoryModel, subCategoryModel, historyModel } from "../models";
+import { categoryModel, subCategoryModel, historyModel, ProductModel } from "../models";
 import { Types } from "mongoose";
 
 import {
@@ -206,6 +206,11 @@ class CategoryRepository {
   //delete category also delete his subcategory
   async deleteCategory(categoryInputs: categoryDeleteRequest) {
     try {
+      const product = await ProductModel.find({categoryId: categoryInputs._id, isDeleted: false, isActive: true}) 
+      if(product.length > 0) {
+        return { message: "You can not Delete this category as it is used in many product" };
+      }
+
       const findCategory = await categoryModel.findOne({
         _id: categoryInputs._id,
         isDeleted: false,

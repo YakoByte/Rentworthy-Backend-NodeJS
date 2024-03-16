@@ -111,6 +111,7 @@ export interface productGetRequest {
     categoryId?: string;
     subCategoryId?: string;
     userId?: string;
+    roleName?: string;
     lat?: string;
     long?: string;
     sort?: string;
