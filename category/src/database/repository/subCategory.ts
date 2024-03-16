@@ -3,7 +3,6 @@ import { Types } from "mongoose";
 import {
   subCategoryDeleteRequest,
   subCategoryRequest,
-  subCategoryGetRequest,
   subCategoryUpdateRequest,
 } from "../../interface/subCategory";
 import { generatePresignedUrl } from "../../utils/aws";
@@ -104,7 +103,7 @@ class SubCategoryRepository {
   }
 
   // get subCategory by categoryId
-  async getSubCategoryByCategoryId(subCategoryInputs: subCategoryGetRequest) {
+  async getSubCategoryByCategoryId(subCategoryInputs: { categoryId: string }) {
     try {
       const findSubCategory = await subCategoryModel.aggregate([
         {
@@ -153,7 +152,7 @@ class SubCategoryRepository {
   }
 
   //get all subCategory
-  async getAllSubCategory(subCategoryInputs: subCategoryGetRequest) {
+  async getAllSubCategory({ skip, limit }: { skip: number; limit: number }) {
     try {
       const findSubCategory = await subCategoryModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
@@ -184,8 +183,8 @@ class SubCategoryRepository {
             image: "$image.path",
           },
         },
-        { $skip: Number(subCategoryInputs.page) },
-        { $limit: Number(subCategoryInputs.limit) },
+        { $skip: skip },
+        { $limit: limit },
       ]);
 
       if (findSubCategory) {
@@ -299,10 +298,9 @@ class SubCategoryRepository {
       const findSubCategory = await subCategoryModel.findOne({
         _id: subCategoryInputs._id,
       });
-      console.log("findSubCategory", findSubCategory);
       if (findSubCategory) {
         // soft delete subCategory
-        const subCategoryResult = await subCategoryModel.updateOne(
+        await subCategoryModel.updateOne(
           { _id: subCategoryInputs._id },
           { isDeleted: true, isActive: false }
         );

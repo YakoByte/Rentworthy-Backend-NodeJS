@@ -26,8 +26,8 @@ class subCategoryService {
     // get subCategory by id , name or all subCategory
     async getSubCategory(subCategoryInputs: subCategoryGetRequest) {
         try {
-            subCategoryInputs.page = subCategoryInputs.page ? (Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit)) : 0;
-            subCategoryInputs.limit = subCategoryInputs.limit ? Number(subCategoryInputs.limit) : 10;
+            let page = subCategoryInputs.page ? Number(subCategoryInputs.page) * Number(subCategoryInputs.limit) - Number(subCategoryInputs.limit) : 0;
+            let limit = subCategoryInputs.limit ? Number(subCategoryInputs.limit) : 10;
             let existingSubCategory: any
             if (subCategoryInputs._id) {
                 existingSubCategory = await this.repository.getSubCategoryById(
@@ -39,12 +39,10 @@ class subCategoryService {
                 );
             } else if (subCategoryInputs.categoryId) {
                 existingSubCategory = await this.repository.getSubCategoryByCategoryId(
-                    subCategoryInputs
+                    {categoryId: subCategoryInputs.categoryId}
                 );
             } else {
-                existingSubCategory = await this.repository.getAllSubCategory(
-                    subCategoryInputs
-                );
+                existingSubCategory = await this.repository.getAllSubCategory({skip: page, limit: limit});
             }
 
             return FormateData(existingSubCategory);

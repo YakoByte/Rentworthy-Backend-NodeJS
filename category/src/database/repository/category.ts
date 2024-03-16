@@ -5,7 +5,6 @@ import {
   categoryRequest,
   categoryDeleteRequest,
   categoryUpdateRequest,
-  categoryGetRequest,
 } from "../../interface/category";
 import { generatePresignedUrl } from "../../utils/aws";
 
@@ -214,16 +213,16 @@ class CategoryRepository {
 
       if (findCategory) {
         // soft delete category
-        const categoryResult = await categoryModel.updateOne(
+        await categoryModel.updateOne(
           { _id: categoryInputs._id },
           { isDeleted: true, isActive: false }
         );
         // soft delete subcategory
-        const subcategoryResult = await subCategoryModel.updateMany(
+        await subCategoryModel.updateMany(
           { categoryId: categoryInputs._id },
           { isDeleted: true, isActive: false }
         );
-        // console.log("subcategoryResult", subcategoryResult)
+
         //create history
         const history = new historyModel({
           categoryId: categoryInputs._id,
