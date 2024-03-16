@@ -48,12 +48,14 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
 
-            const imageData = {
-                userId: authUser._id,
-                imageDetail: req.file
+            if(req.file) {
+                const imageData = {
+                    userId: authUser._id,
+                    imageDetail: req.file
+                }
+    
+                req.body.image = await image.CreateImage(imageData);
             }
-
-            req.body.image = await image.CreateImage(imageData);
          
             const data = await service.CreateCategory(req.body);
             return res.json(data);
@@ -79,7 +81,6 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body._id = req.query._id;
-            console.log("req.body", req.body)
             const data = await service.updateCategory(req.body);
             return res.json(data);
         } catch (err) {

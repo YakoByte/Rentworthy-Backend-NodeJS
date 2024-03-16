@@ -13,7 +13,12 @@ class SubscriptionRepository {
     try {
       const existingSubscription = await  SubscriptionModel.findOne({ title: SubscriptionInputs.title })
       if(existingSubscription){
-        throw new Error("This subscription already exists");
+        const SubscriptionResult = await SubscriptionModel.findOneAndUpdate(
+          { _id: existingSubscription._id },
+          { ...SubscriptionInputs },
+          { new: true }
+        );
+        return SubscriptionResult;
       }
       
       const SubscriptionResult = await SubscriptionModel.create(

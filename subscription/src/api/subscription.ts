@@ -13,16 +13,12 @@ export default (app: Express) => {
   const image = new imageService();
 
   // API = create new subscription
-  app.post(
-    "/create-subscription",
-    UserAuth,
-    upload.array("images", 10),
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post("/create-subscription", UserAuth, upload.array("images", 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.files) {
+        if (req.files.length > 0) {
           const imageData = {
             userId: req.body.userId,
             imageDetails: req.files,
@@ -41,13 +37,8 @@ export default (app: Express) => {
   );
 
   // API = get subscription by id and search and all subscription
-  app.get(
-    "/get-subscription",
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get("/get-subscription", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
-        // let authUser = req.user as { _id: string; roleName: string; email: string; };
-        // req.query.user = authUser;
-
         const data = await service.getSubscription(req.query);
         return res.json(data);
       } catch (err) {
@@ -57,16 +48,12 @@ export default (app: Express) => {
   );
 
   // API = update subscription by id
-  app.put(
-    "/update-subscription",
-    UserAuth,
-    upload.array("images", 10),
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.put("/update-subscription", UserAuth, upload.array("images", 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.files) {
+        if (req.files.length > 0) {
           const imageData = {
             userId: req.body.userId,
             imageDetails: req.files,
@@ -87,14 +74,7 @@ export default (app: Express) => {
   );
 
   //API = delete subscription
-  app.delete(
-    "/delete-subscription",
-    UserAuth,
-    async (
-      req: deleteAuthenticatedRequest,
-      res: Response,
-      next: NextFunction
-    ) => {
+  app.delete("/delete-subscription", UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
