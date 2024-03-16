@@ -1162,7 +1162,7 @@ class ProductRepository {
 
         await history.save();
 
-        return { message: "Product Updated" };
+        return productResult;
       } else {
         return { message: "Product not found or already deleted" };
       }
