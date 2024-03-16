@@ -259,17 +259,17 @@ class SubCategoryRepository {
   async updateSubCategory(subCategoryInputs: subCategoryUpdateRequest) {
     try {
       const findSubCategory = await subCategoryModel.findOne({
-        _id: subCategoryInputs._id,
+        _id: new Types.ObjectId(subCategoryInputs._id),
         isDeleted: false,
         isActive: true,
       });
-      console.log("findSubCategory", findSubCategory);
+
       if (findSubCategory) {
         const subCategoryResult = await subCategoryModel.updateOne(
-          { _id: subCategoryInputs._id },
+          { _id: new Types.ObjectId(subCategoryInputs._id) },
           subCategoryInputs
         );
-        console.log("subCategoryResult", subCategoryResult);
+
         const history = new historyModel({
           subCategoryId: subCategoryInputs._id,
           log: [
@@ -283,7 +283,7 @@ class SubCategoryRepository {
           ],
         });
         await history.save();
-        return { message: "SubCategory Updated" };
+        return subCategoryResult;
       }
       return { message: "Data not found" };
     } catch (error) {
@@ -295,18 +295,18 @@ class SubCategoryRepository {
   //delete subCategory also delete his subCategory
   async deleteSubCategory(subCategoryInputs: subCategoryDeleteRequest) {
     try {
-      const product = await ProductModel.find({subCategoryId: subCategoryInputs._id, isDeleted: false, isActive: true}) 
+      const product = await ProductModel.find({subCategoryId: new Types.ObjectId(subCategoryInputs._id), isDeleted: false, isActive: true}) 
       if(product.length > 0) {
         return { message: "You can not Delete this sub-category as it is used in many product" };
       }
 
       const findSubCategory = await subCategoryModel.findOne({
-        _id: subCategoryInputs._id,
+        _id: new Types.ObjectId(subCategoryInputs._id),
       });
       if (findSubCategory) {
         // soft delete subCategory
         await subCategoryModel.updateOne(
-          { _id: subCategoryInputs._id },
+          { _id: new Types.ObjectId(subCategoryInputs._id) },
           { isDeleted: true, isActive: false }
         );
 

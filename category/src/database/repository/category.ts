@@ -170,16 +170,16 @@ class CategoryRepository {
   async updateCategory(categoryInputs: categoryUpdateRequest) {
     try {
       const findCategory = await categoryModel.findOne({
-        _id: categoryInputs._id,
+        _id: new Types.ObjectId(categoryInputs._id),
         isDeleted: false,
       });
-      console.log("findCategory", findCategory);
+
       if (findCategory) {
         const categoryResult = await categoryModel.updateOne(
-          { _id: categoryInputs._id },
+          { _id: new Types.ObjectId(categoryInputs._id) },
           categoryInputs
         );
-        console.log("categoryResult", categoryResult);
+
         const history = new historyModel({
           categoryId: categoryInputs._id,
           log: [
@@ -193,7 +193,7 @@ class CategoryRepository {
           ],
         });
         await history.save();
-        return { message: "Category Updated" };
+        return categoryResult;
       }
 
       return { message: "Category Not found" };
@@ -206,25 +206,25 @@ class CategoryRepository {
   //delete category also delete his subcategory
   async deleteCategory(categoryInputs: categoryDeleteRequest) {
     try {
-      const product = await ProductModel.find({categoryId: categoryInputs._id, isDeleted: false, isActive: true}) 
+      const product = await ProductModel.find({categoryId: new Types.ObjectId(categoryInputs._id), isDeleted: false, isActive: true}) 
       if(product.length > 0) {
         return { message: "You can not Delete this category as it is used in many product" };
       }
 
       const findCategory = await categoryModel.findOne({
-        _id: categoryInputs._id,
+        _id: new Types.ObjectId(categoryInputs._id),
         isDeleted: false,
       });
 
       if (findCategory) {
         // soft delete category
         await categoryModel.updateOne(
-          { _id: categoryInputs._id },
+          { _id: new Types.ObjectId(categoryInputs._id) },
           { isDeleted: true, isActive: false }
         );
         // soft delete subcategory
         await subCategoryModel.updateMany(
-          { categoryId: categoryInputs._id },
+          { categoryId: new Types.ObjectId(categoryInputs._id) },
           { isDeleted: true, isActive: false }
         );
 
