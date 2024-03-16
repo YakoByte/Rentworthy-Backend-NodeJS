@@ -68,7 +68,7 @@ class MessageRepository {
       if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
       }
-      let message = await messageModel.findOne(criteria);
+      let message = await messageModel.find(criteria);
       if (!message) {
         return { message: "Message not found" };
       }
@@ -84,16 +84,10 @@ class MessageRepository {
     try {
       let criteria: messageRequest = { isDeleted: false };
       if (messageInputs.senderId) {
-        criteria = {
-          ...criteria,
-          senderId: messageInputs.senderId,
-        };
+        criteria = { ...criteria, senderId: messageInputs.senderId };
       }
       if (messageInputs.receiverId) {
-        criteria = {
-          ...criteria,
-          senderId: messageInputs.receiverId,
-        };
+        criteria = { ...criteria, senderId: messageInputs.receiverId };
       }
       if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };

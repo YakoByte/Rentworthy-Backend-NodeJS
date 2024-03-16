@@ -28,7 +28,7 @@ class RoomRepository {
 
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
-    try {      
+    try {            
       let criteria: any = { isDeleted: false };
       let room: any;
       if (roomInputs.productId) {
@@ -46,15 +46,15 @@ class RoomRepository {
           isActive: true,
           isDeleted: false,
         };
-        room = await roomModel.findOne(criteria);
+        room = await roomModel.find(criteria);
       }
       if (roomInputs.vendorId) {
         criteria = { ...criteria, vendorId: roomInputs.vendorId };
-        room = await roomModel.findOne(criteria);
+        room = await roomModel.find(criteria);
       }
       if (roomInputs.rentingId) {
         criteria = { ...criteria, userId: roomInputs.rentingId };
-        room = await roomModel.findOne(criteria);
+        room = await roomModel.find(criteria);
       }
       if (roomInputs.unRead) {
         // show only unread messages rooms
@@ -63,7 +63,7 @@ class RoomRepository {
         room = [];
         for (let i = 0; i < tempRooms.length; i++) {
           const element: any = tempRooms[i];
-          let message: any = await messageModel.findOne({
+          let message: any = await messageModel.find({
             roomId: element._id,
             isSeen: false,
           });
@@ -85,7 +85,7 @@ class RoomRepository {
         for (let i = 0; i < tempRooms.length; i++) {
           const element: any = tempRooms[i];
           let message: any = await messageModel
-            .findOne({ roomId: element._id })
+            .find({ roomId: element._id })
             .sort({ createdAt: -1 })
             .lean();
           if (message) {
@@ -131,7 +131,7 @@ class RoomRepository {
       for (let i = 0; i < rooms.length; i++) {
         const element: any = rooms[i];
         let lastMessage: any = await messageModel
-          .findOne({ roomId: element._id })
+          .find({ roomId: element._id })
           .sort({ createdAt: -1 });
         if (lastMessage) {
           element.lastMessage = lastMessage.message;

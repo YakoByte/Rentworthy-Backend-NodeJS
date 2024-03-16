@@ -1,4 +1,6 @@
 import { businessModel, userModel } from "../models";
+import { Types } from "mongoose";
+import { ObjectId } from "mongodb";
 import {
   BusinessRequest,
   BusinessAppRequest,
@@ -39,10 +41,7 @@ class AdminRepository {
   async ApproveRejectBusiness(businessInputs: BusinessAppRequest) {
     try {
       let findRec: any = await businessModel
-        .findOne({
-          _id: businessInputs.id,
-        })
-        .lean();
+        .findOne({_id: businessInputs.id}).lean();
       if (!findRec) {
         return false
       }
@@ -82,20 +81,21 @@ class AdminRepository {
   async GetBusiness(businessInputs: BusinessGetRequest) {
     try {
       let returnVal;
-      let query: any = {};
+      let criteria: any = { isDeleted: false };
+
       if (businessInputs.id) {
-        query["_id"] = businessInputs.id;
+        criteria._id = new Types.ObjectId(businessInputs.id);
       }
       if (businessInputs.name) {
-        query["businessName"] = new RegExp(businessInputs.name, "i");
+        criteria.businessName = new RegExp(businessInputs.name, "i");
       }
       if (businessInputs.userId) {
-        query["userId"] = businessInputs.userId;
+        criteria.userId = new Types.ObjectId(businessInputs.userId);
       }
       if (businessInputs.status) {
-        query["isApproved"] = businessInputs.status;
+        criteria.isApproved = businessInputs.status;
       }
-      returnVal = await businessModel.find(query).lean();
+      returnVal = await businessModel.find(criteria).lean();
       return returnVal;
     } catch (err) {
       console.log("error", err);
