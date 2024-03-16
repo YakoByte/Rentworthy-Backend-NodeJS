@@ -47,6 +47,7 @@ export interface messageRequest {
 
 export interface getMessageRequest {
     _id?: string;
+    userId?: string;
     senderId?: string;
     message?: string;
     receiverId?: string;

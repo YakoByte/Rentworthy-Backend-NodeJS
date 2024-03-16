@@ -43,7 +43,7 @@ export default (app: Express) => {
   // API = get room Id
   app.get('/get-message', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
-      req.query.senderId = req.user._id;
+      req.query.userId = req.user._id;
       const data = await messageService.GetMessage(req.query);
       return res.json(data);
     } catch (err) {

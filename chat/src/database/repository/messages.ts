@@ -57,16 +57,22 @@ class MessageRepository {
 
   //get message
   async GetMessage(messageInputs: getMessageRequest) {
-    try {
-      let criteria: getMessageRequest = { isDeleted: false };
+    try {      
+      let criteria: any = { isDeleted: false };
       if (messageInputs.senderId) {
         criteria = { ...criteria, senderId: messageInputs.senderId };
       }
-      if (messageInputs.receiverId) {
+      else if (messageInputs.receiverId) {
         criteria = { ...criteria, receiverId: messageInputs.receiverId };
       }
-      if (messageInputs.roomId) {
+      else if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
+      } 
+      else {
+        criteria = {
+        ...criteria,
+        $or: [{ receiverId: messageInputs.userId }, { senderId: messageInputs.userId }],
+        }
       }
       let message = await messageModel.find(criteria);
       if (!message) {
