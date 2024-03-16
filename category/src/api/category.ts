@@ -92,7 +92,7 @@ export default (app: Express) => {
     app.delete('/delete-category', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
-            req.body.userId = authUser._id;
+            req.query.userId = authUser._id;
             const data = await service.deleteCategory(req.query);
             return res.json(data);
         } catch (err) {

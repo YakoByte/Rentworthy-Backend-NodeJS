@@ -60,7 +60,7 @@ export default (app: Express) => {
     app.delete('/delete-subcategory', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
-            req.body.userId = authUser._id;
+            req.query.userId = authUser._id;
             const data = await service.deleteSubCategory(req.query);
             return res.json(data);
         } catch (err) {

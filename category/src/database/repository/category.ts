@@ -205,7 +205,7 @@ class CategoryRepository {
 
   //delete category also delete his subcategory
   async deleteCategory(categoryInputs: categoryDeleteRequest) {
-    try {
+    try {      
       const product = await ProductModel.find({categoryId: new Types.ObjectId(categoryInputs._id), isDeleted: false, isActive: true}) 
       if(product.length > 0) {
         return { message: "You can not Delete this category as it is used in many product" };
