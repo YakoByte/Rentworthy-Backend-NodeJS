@@ -183,11 +183,11 @@ class AdminService {
                 const password = await GeneratePassword(userInputs.password, salt);
 
                 const validPassword = await ValidatePassword(
-                    userInputs.password,
+                    password,
                     existingAdmin.password
                 );
                 if (!validPassword) {
-                    return FormateError({ error: "Old password is not correct" });
+                    return FormateError({ error: "Old password is same as new password" });
                 }
 
                 await this.repository.UpdateUser(existingAdmin._id, {
