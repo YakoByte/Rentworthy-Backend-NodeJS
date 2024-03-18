@@ -133,7 +133,7 @@ class AdminRepository {
         { new: true }
       );
 
-      return user;
+      return {user, profile};
     } catch (error) {
       console.log("err", error);
       throw new Error("Error on Delete User");
@@ -154,7 +154,7 @@ class AdminRepository {
         { new: true }
       );
 
-      return user;
+      return {user, profile};
     } catch (error) {
       console.log("err", error);
       throw new Error("Error on Delete User");

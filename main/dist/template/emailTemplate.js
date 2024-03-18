@@ -41,8 +41,9 @@ function sendEmail(options) {
     });
     // Define the email content with template variables
     const mailOptions = {
-        from: config_1.GOOGLE_EMAIL || '',
         to: options.toUser,
+        // from: SENDER_EMAIL || "",
+        from: config_1.GOOGLE_EMAIL || '',
         subject: options.subject,
         html: `<!DOCTYPE html>
         <html>

@@ -30,7 +30,7 @@ class AdminService {
             
             // check role
             const checkRole: any = await this.repository.checkRole(userInputs.roleName, existingAdmin.roleId);
-            console.log("checkRole", checkRole)
+
             if (checkRole === false) {
                 return FormateError({ error: "Invalid Role" });
             }
@@ -51,6 +51,7 @@ class AdminService {
                         _id: existingAdmin._id,
                         userName: existingAdmin.userName,
                         roleName: existingAdmin.roleId.name,
+                        isActive: existingAdmin.isActive
                     });
 
                     return FormateData({ id: existingAdmin._id, token, existingAdmin });
@@ -244,6 +245,7 @@ class AdminService {
                     _id: existingAdmin._id,
                     userName: existingAdmin.userName,
                     roleName: existingAdmin.roleId.name,
+                    isActive: existingAdmin.isActive
                 });
 
                 return FormateData({ id: existingAdmin._id, token, existingAdmin });

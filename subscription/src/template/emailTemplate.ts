@@ -2,7 +2,7 @@
 
 import * as nodemailer from "nodemailer";
 import sgMail from "@sendgrid/mail";
-import { GOOGLE_EMAIL, GOOGLE_PASS, SENDGRID_API_KEY } from "../config";
+import { GOOGLE_EMAIL, GOOGLE_PASS, SENDGRID_API_KEY, SENDER_EMAIL } from "../config";
 
 interface EmailOptions {
   toUser: string;
@@ -20,8 +20,9 @@ export function sendEmail(options: EmailOptions): void {
   });
 
   const mailOptions = {
-    from: GOOGLE_EMAIL || '',
     to: options.toUser,
+    // from: SENDER_EMAIL || "",
+    from: GOOGLE_EMAIL || '',
     subject: options.subject,
     html: `<!DOCTYPE html>
         <html>

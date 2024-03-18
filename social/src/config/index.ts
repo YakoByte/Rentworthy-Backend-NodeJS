@@ -15,4 +15,10 @@ export const AWS_BUCKET_NAME: string | undefined = process.env.AWS_BUCKET_NAME |
 
 export const SENDGRID_API_KEY: string | undefined = process.env.SENDGRID_API_KEY || '';
 
+export const SENDER_EMAIL: string | undefined = process.env.SENDER_EMAIL;
+export const SENDER_PHONE: string | undefined = process.env.SENDER_PHONE;
+
+export const TWILIO_ACCOUNT_SID: string | undefined = process.env.TWILIO_ACCOUNT_SID;
+export const TWILIO_AUTH_TOKEN: string | undefined = process.env.TWILIO_AUTH_TOKEN;
+
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';

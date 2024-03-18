@@ -27,8 +27,10 @@ const ValidateSignature = async (req) => {
         if (!splitToken)
             return false;
         const payload = await jsonwebtoken_1.default.verify(splitToken, secret_key);
+        if (payload.isActive === false) {
+            return false;
+        }
         req.user = payload;
-        console.log("payload", payload);
         return true;
     }
     catch (error) {
