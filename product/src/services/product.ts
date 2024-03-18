@@ -39,6 +39,10 @@ class productService {
           _id: productInputs._id,
           userId: productInputs.userId || "",
         });
+      } else if (productInputs.ownerId) {
+        existingProduct = await this.repository.getProductByUserId({
+          userId: productInputs.ownerId || '',
+        });
       } else if (productInputs.search) {
         existingProduct = await this.repository.getProductByName({
           name: productInputs.search,
