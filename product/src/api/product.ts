@@ -55,12 +55,15 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body = { ...req.body }
-            let coordinate = JSON.parse(req.body['location.coordinates'])
-            delete req.body['location.coordinates']
-            req.body.location = {
-                type: "Point",
-                coordinates: coordinate
+            if(req.body['location.coordinates']) {
+                let coordinate = JSON.parse(req.body['location.coordinates'])
+                delete req.body['location.coordinates']
+                req.body.location = {
+                    type: "Point",
+                    coordinates: coordinate
+                }
             }
+
             req.body.rentingDate = {
                 startDate: req.body.startDate,
                 endDate: req.body.endDate
@@ -79,9 +82,6 @@ export default (app: Express) => {
             }
 
             req.body.images = await image.CreateImages(imageData);
-
-            // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
-            console.log(req.body.images);
             
             const data = await service.CreateProduct(req.body);
             return res.status(200).json(data);
@@ -125,11 +125,13 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
 
-            let coordinate = JSON.parse(req.body['location.coordinates'])
-            delete req.body['location.coordinates']
-            req.body.location = {
-                type: "Point",
-                coordinates: coordinate
+            if(req.body['location.coordinates']) {
+                let coordinate = JSON.parse(req.body['location.coordinates'])
+                delete req.body['location.coordinates']
+                req.body.location = {
+                    type: "Point",
+                    coordinates: coordinate
+                }
             }
             
             if (req.files.length > 0) { 
@@ -139,7 +141,6 @@ export default (app: Express) => {
                 }
     
                 req.body.images = await image.CreateImages(imageData);
-                // req.body.images = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any; }) => obj.path), req.headers.authorization);
             }
             
             const data = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });
@@ -166,7 +167,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.query)
+
             const data = await service.deleteProduct(req.query);
             return res.json(data);
         } catch (err) {
