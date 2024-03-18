@@ -100,27 +100,35 @@ class productService {
 
   // approve product
   async approveProduct(productInputs: productUpdateRequest) {
-    try {
+    try {      
       // check product is exist or not
       const existingProduct: any = await this.repository.getProductApprovedById(
         { _id: productInputs._id }
       );
+      
       if (!existingProduct) {
         return FormateData({ message: "Product not found" });
       }
       // check product is already approved or not
-      if (existingProduct.isVerified === "approved") {
+      if (existingProduct[0].isVerified === "approved") {
         return FormateData({ message: "Product already approved" });
       }
       // check product is already rejected or not
-      if (existingProduct.isVerified === "rejected") {
+      if (existingProduct[0].isVerified === "rejected") {
         return FormateData({ message: "Product already rejected" });
       }
       const updateProduct: any = await this.repository.updateProduct(
         productInputs
       );
+
+      if(productInputs.isVerified === "rejected") {
+        await this.repository.deleteProduct({ _id: productInputs._id, userId: productInputs.userId });
+      }
+
       return FormateData(updateProduct);
-    } catch (err: any) {
+    } catch (error: any) {
+      console.log(error);
+      
       return FormateError({ error: "Data not approved / rejected" });
     }
   }

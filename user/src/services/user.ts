@@ -172,12 +172,6 @@ class AdminService {
             let existingAdmin = await this.repository.FindMe(userInputs);
 
             if (existingAdmin) {
-                // Check if otp is valid
-                const isOtpValid = await this.otprepository.VerifyOTP(userInputs);
-                if (!isOtpValid) {
-                    throw Error("Invalid otp");
-                }
-
                 // Generate password hash for the new password
                 const salt = await GenerateSalt();
                 const password = await GeneratePassword(userInputs.password, salt);
@@ -188,6 +182,12 @@ class AdminService {
                 );
                 if (!validPassword) {
                     return FormateError({ error: "Old password is same as new password" });
+                }
+
+                // Check if otp is valid
+                const isOtpValid = await this.otprepository.VerifyOTP(userInputs);
+                if (!isOtpValid) {
+                    throw Error("Invalid otp");
                 }
 
                 await this.repository.UpdateUser(existingAdmin._id, {

@@ -76,10 +76,10 @@ class ProductRepository {
             as: "userId",
           },
         },
-      ]);
+      ]);      
 
       if (findProduct.length === 0) {
-        return { message: "Product not found" };
+        return false;
       }
 
       await productModel.updateOne(
@@ -112,10 +112,7 @@ class ProductRepository {
         bookingData.push(...productBooking);
       }
 
-      return {
-        data: productData || [],
-        bookingData: bookingData || [],
-      };
+      return productData;
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get Product");

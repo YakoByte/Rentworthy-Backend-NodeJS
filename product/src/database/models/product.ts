@@ -133,6 +133,9 @@ const categorySchema: Schema = new Schema<Product>(
     cancellationTimeLimit: {
       type: Number,
       default: 0,
+    },
+    rejectionReason: {
+      type: String,
     }
   },
   { timestamps: true }

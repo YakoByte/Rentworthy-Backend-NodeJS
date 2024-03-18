@@ -155,7 +155,16 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            const data = await service.approveProduct({ _id: req.query._id as string, isVerified: req.query.isVerified as string, approvedBy: authUser._id, });
+
+            if (req.body.isVerified === "approved" && req.body.rejectionReason) {
+                delete req.body.rejectionReason;
+            }
+
+            if (req.body.isVerified === "rejected" && !req.body.rejectionReason) {
+                return res.json({ message: "Rejection Reason Required" });
+            }
+            
+            const data = await service.approveProduct({ _id: req.body._id as string, isVerified: req.body.isVerified as string, approvedBy: authUser._id, rejectionReason: req.body.rejectionReason as string });
             return res.json(data);
         } catch (err) {
             next(err);
