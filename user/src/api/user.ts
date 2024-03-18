@@ -106,6 +106,26 @@ export default (app: Express) => {
     }
   });
 
+  // API = forgot password
+  app.put('/forgot-password-send-otp', async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const data = await adminService.forgotPasswordSendOtp(req.body);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // API = forgot password
+  app.put('/forgot-password', async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const data = await adminService.forgotPassword(req.body);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // API = social signUp
   app.post('/social-signup', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {

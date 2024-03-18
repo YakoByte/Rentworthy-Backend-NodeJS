@@ -1,9 +1,6 @@
 import { otpModel, historyModel, userModel } from "../models";
 import {
-  GeneratePassword,
-  GenerateSalt,
   GenerateSignature,
-  ValidatePassword,
 } from "../../utils";
 
 import { otpRequest } from "../../interface/otp";
@@ -11,9 +8,7 @@ import { sendEmail } from "../../template/emailTemplate";
 class OTPRepository {
   //create otp
   async CreateOTP(otpInputs: otpRequest) {
-    try {
-      console.log(otpInputs);
-      
+    try {      
       // Check 5 times to get OTP from the same IP and (email or phoneNo)
       const findOTP = await otpModel.find({
         $and: [
@@ -23,23 +18,20 @@ class OTPRepository {
         ],
         isUsed: false,
       });
-  
-      console.log("findOTP", findOTP);
-  
+    
       if (findOTP.length >= 5) {
         return { message: "You have reached the maximum limit of OTPs. Try again after 24 hours." };
       }
   
       // If 24 hours have passed since OTP creation and not used, then delete OTP
-      const findOTP24 = await otpModel.deleteMany({
+      await otpModel.deleteMany({
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }, { ipAddress: otpInputs.ipAddress }],
         createdAt: { $lt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
       });
   
       // Generate a random OTP with 6 digits
       let newOtp: number = Math.floor(100000 + Math.random() * 900000);
-  
-  
+
       // Create OTP
       const otp = new otpModel({ ...otpInputs, otp: newOtp });
   

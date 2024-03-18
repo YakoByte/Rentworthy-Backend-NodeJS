@@ -80,6 +80,14 @@ export interface findMe {
     phoneNo?: string;
 }
 
+export interface forgotPassword {
+    otp: number;
+    email: any;
+    phoneNo: any;
+    password: string;
+    ipAddress?: string;
+}
+
 export interface socialUserSignRequest {
     name?: string;
     phoneNo?: number;

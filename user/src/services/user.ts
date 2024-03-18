@@ -1,4 +1,5 @@
 import AdminRepository from '../database/repository/user';
+import OTPRepository from '../database/repository/otp';
 import jwt from 'jsonwebtoken';
 import {
     FormateData,
@@ -8,21 +9,24 @@ import {
     GenerateSignature,
     ValidatePassword,
 } from '../utils';
-import { userSignRequest, userLoginRequest, userSetPasswordRequest, socialUserSignRequest, socialUserLoginRequest } from '../interface/user';
+import { userSignRequest, userLoginRequest, userSetPasswordRequest, socialUserSignRequest, socialUserLoginRequest, forgotPassword } from '../interface/user';
 
 // All Business logic will be here
 class AdminService {
     // private admin repository: AdminRepository;
     private repository: AdminRepository;
+    private otprepository: OTPRepository;
+
 
     constructor() {
         this.repository = new AdminRepository();
+        this.otprepository = new OTPRepository();
     }
 
     async SignIn(userInputs: userLoginRequest) {
         try {
             const existingAdmin = await this.repository.FindMe(userInputs);
-            const updateUser = await this.repository.UpdateUser(existingAdmin._id, { os: userInputs.os as string });
+            await this.repository.UpdateUser(existingAdmin._id, { os: userInputs.os as string });
             
             // check role
             const checkRole: any = await this.repository.checkRole(userInputs.roleName, existingAdmin.roleId);
@@ -111,7 +115,6 @@ class AdminService {
     async ResetPassword(userInputs: userSetPasswordRequest) {
         try {
             let existingAdmin: any = await this.repository.FindUserById(userInputs._id);
-            existingAdmin = existingAdmin.profileData;
 
             if (existingAdmin) {
                 const salt = await GenerateSalt();
@@ -136,6 +139,68 @@ class AdminService {
 
             return FormateError({ error: "Invalid Credentials" });
         } catch (err: any) {
+            return FormateError({ error: "Password Reset Failed"});
+        }
+    }
+
+    async forgotPasswordSendOtp(userInputs: forgotPassword) {
+        try {            
+            let existingAdmin = await this.repository.FindMe(userInputs);
+
+            if (existingAdmin) {
+                const existingOTP: any = await this.otprepository.CreateOTP(
+                    userInputs
+                );
+    
+                if(!existingOTP){
+                    throw Error('Something went wrong while creating OTP');
+                }
+
+                return FormateData({ message: "Email Send successfully" });
+            }
+
+            return FormateError({ error: "Invalid Credentials" });
+        } catch (err: any) {
+            console.log(err);
+            
+            return FormateError({ error: "Password Reset Failed"});
+        }
+    }
+
+    async forgotPassword(userInputs: forgotPassword) {
+        try {
+            let existingAdmin = await this.repository.FindMe(userInputs);
+
+            if (existingAdmin) {
+                // Check if otp is valid
+                const isOtpValid = await this.otprepository.VerifyOTP(userInputs);
+                if (!isOtpValid) {
+                    throw Error("Invalid otp");
+                }
+
+                // Generate password hash for the new password
+                const salt = await GenerateSalt();
+                const password = await GeneratePassword(userInputs.password, salt);
+
+                const validPassword = await ValidatePassword(
+                    userInputs.password,
+                    existingAdmin.password
+                );
+                if (!validPassword) {
+                    return FormateError({ error: "Old password is not correct" });
+                }
+
+                await this.repository.UpdateUser(existingAdmin._id, {
+                    password
+                });
+
+                return FormateData({ message: "Password updated successfully" });
+            }
+
+            return FormateError({ error: "Invalid Credentials" });
+        } catch (err: any) {
+            console.log(err);
+            
             return FormateError({ error: "Password Reset Failed"});
         }
     }
