@@ -1174,16 +1174,15 @@ class ProductRepository {
       const findProduct = await productModel.findOne({
         _id: productInputs._id,
         isDeleted: false,
+        isActive: true
       });
       if (findProduct) {
         // soft delete product
-        const productResult = await productModel.updateOne(
+        await productModel.updateOne(
           { _id: productInputs._id },
-          { isDeleted: true }
+          { isDeleted: true, isActive: false }
         );
-        // soft delete subproduct
-        // const subproductResult = await subProductModel.updateMany({ productId: productInputs._id }, { isDeleted: true });
-        // console.log("subproductResult", subproductResult)
+     
         //create history
         const history = new historyModel({
           productId: productInputs._id,
