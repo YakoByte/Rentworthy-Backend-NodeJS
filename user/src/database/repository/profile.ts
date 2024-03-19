@@ -266,7 +266,7 @@ class profileRepository {
             isDeleted: false,
             isBlocked: false,
           },
-          { $inc: { points: profileInputs.points } },
+          { points: profileInputs.points  + findProfile.points},
           { new: true }
         );
 
