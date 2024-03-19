@@ -58,17 +58,15 @@ const userSchema: Schema = new Schema<Profile>(
     },
     language: {
       type: String,
-      default: "english"  // english, hindi
+      default: "english"
     },
     level: {
       type: Number,
       default: 1,
-      max: 3
     },
     points: {
       type: Number,
       default: 0,
-      max: 6000
     },
   },
   { timestamps: true }

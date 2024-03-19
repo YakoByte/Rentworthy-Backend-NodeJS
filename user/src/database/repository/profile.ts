@@ -257,6 +257,14 @@ class profileRepository {
         return false;
       }
 
+      if(profileInputs.level && findProfile.level === 5 && profileInputs.level + findProfile.level > 5) {
+        return findProfile
+      }
+
+      if(profileInputs.points && findProfile.points > 10000 && profileInputs.points + findProfile.points > 10000) {
+        return findProfile
+      }
+
       let profile;
 
       if(profileInputs.points){
@@ -274,12 +282,20 @@ class profileRepository {
           return false;
         }
   
-        if (profile.points >= 3000 && profile.level < 2) {
+        if (profile.points >= 2500 && profile.level < 2) {
           profile.level = 2;
         }
-  
-        if (profile.points >= 6000 && profile.level < 3) {
+
+        if (profile.points >= 5000 && profile.level < 3) {
           profile.level = 3;
+        }
+  
+        if (profile.points >= 7500 && profile.level < 4) {
+          profile.level = 4;
+        }
+
+        if (profile.points >= 10000 && profile.level < 5) {
+          profile.level = 5;
         }
   
         await profile.save();
