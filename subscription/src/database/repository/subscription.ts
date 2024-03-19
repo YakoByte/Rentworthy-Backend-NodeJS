@@ -292,9 +292,9 @@ class SubscriptionRepository {
   
   //update Subscription by id
   async updateSubscriptionById(SubscriptionInputs: subscriptionUpdateRequest) {
-    try {
+    try {      
       const SubscriptionResult = await SubscriptionModel.findOneAndUpdate(
-        { _id: SubscriptionInputs._id },
+        { _id: new Types.ObjectId(SubscriptionInputs._id) },
         { ...SubscriptionInputs },
         { new: true }
       );

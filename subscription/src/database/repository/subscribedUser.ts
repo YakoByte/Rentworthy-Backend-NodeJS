@@ -210,7 +210,7 @@ class SubscribedUserRepository {
   async updateSubscribedUserById(SubscribedUserInputs: SubscribedUserUpdateRequest) {
     try {
       const SubscribedUserResult = await SubscribedUserModel.findOneAndUpdate(
-        { _id: SubscribedUserInputs._id },
+        { _id: new Types.ObjectId(SubscribedUserInputs._id) },
         { ...SubscribedUserInputs },
         { new: true }
       );
@@ -250,7 +250,7 @@ class SubscribedUserRepository {
       }
     
       const SubscribedUserResult = await SubscribedUserModel.findOneAndUpdate(
-        { _id: SubscribedUserInputs._id },
+        { _id: new Types.ObjectId(SubscribedUserInputs._id) },
         { isDeleted: true },
         { new: true }
       );

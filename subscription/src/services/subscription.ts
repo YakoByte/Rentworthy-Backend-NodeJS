@@ -55,7 +55,7 @@ class SubscriptionService {
     }
 
     // update Subscription by id
-    async updateById(SubscriptionInputs: subscriptionUpdateRequest) {
+    async updateSubscriptionById(SubscriptionInputs: subscriptionUpdateRequest) {
         try {
             const existingSubscription: any = await this.repository.updateSubscriptionById(
                 SubscriptionInputs

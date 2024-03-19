@@ -62,7 +62,7 @@ export default (app: Express) => {
           req.body.images = await image.CreateImages(imageData);
         }
 
-        const data = await service.updateById({
+        const data = await service.updateSubscriptionById({
           ...req.body,
           _id: req.query._id as string,
         });
