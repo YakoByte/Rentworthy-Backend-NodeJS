@@ -257,27 +257,47 @@ class profileRepository {
         return false;
       }
 
-      console.log("findProfile", findProfile);
+      let profile;
 
-      const profile: any = await profileModel.findOneAndUpdate(
-        {
-          userId: profileInputs.userId,
-          isDeleted: false,
-          isBlocked: false,
-        },
-        { $inc: { points: 1 } },
-        { new: true }
-      );
+      if(profileInputs.points){
+        profile = await profileModel.findOneAndUpdate(
+          {
+            userId: profileInputs.userId,
+            isDeleted: false,
+            isBlocked: false,
+          },
+          { $inc: { points: 1 } },
+          { new: true }
+        );
 
-      if (profile.points >= 3000 && profile.level < 2) {
-        profile.level = 2;
+        if (!profile) {
+          return false;
+        }
+  
+        if (profile.points >= 3000 && profile.level < 2) {
+          profile.level = 2;
+        }
+  
+        if (profile.points >= 6000 && profile.level < 3) {
+          profile.level = 3;
+        }
+  
+        await profile.save();
+      } else if (profileInputs.level) {
+        profile = await profileModel.findOneAndUpdate(
+          {
+            userId: profileInputs.userId,
+            isDeleted: false,
+            isBlocked: false,
+          },
+          { level: profileInputs.level },
+          { new: true }
+        );
       }
 
-      if (profile.points >= 6000 && profile.level < 3) {
-        profile.level = 3;
+      if(!profile) {
+        return false
       }
-
-      await profile.save();
 
       return profile;
     } catch (error) {

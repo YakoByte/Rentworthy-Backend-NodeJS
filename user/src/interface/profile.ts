@@ -44,6 +44,8 @@ export interface profileRequest {
     isDeleted?: boolean;
     profileImage: string;
     locationId?: Types.ObjectId;
+    points?: number;
+    level?: number;
 }
 
 export interface updateProfile {
