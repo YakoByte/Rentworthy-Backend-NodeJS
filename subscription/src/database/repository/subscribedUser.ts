@@ -69,10 +69,18 @@ class SubscribedUserRepository {
   }  
 
   //get all SubscribedUser
-  async getAllSubscribedUser() {
+  async getAllSubscribedUser({
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+  }) {
     try {
       const SubscribedUserResult = await SubscribedUserModel.aggregate([
         {$match: { isDeleted: false, isActive: true }},
+        { $skip: skip },
+        { $limit: limit },
         {
           $lookup: {
             from: "users",

@@ -40,7 +40,12 @@ class SubscriptionService {
                 existingSubscriptions = await this.repository.getSubscriptionByTimeLimit(SubscriptionInputs)
             }
             else {
-                existingSubscriptions = await this.repository.getAllSubscription()
+                existingSubscriptions = await this.repository.getAllSubscription({
+                    skip:
+                      Number(SubscriptionInputs.page) * Number(SubscriptionInputs.limit) -
+                        Number(SubscriptionInputs.limit) || 0,
+                    limit: Number(SubscriptionInputs.limit) || 10,
+                  })
             }
 
             return FormateData(existingSubscriptions);

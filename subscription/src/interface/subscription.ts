@@ -65,6 +65,8 @@ export interface subscriptionGetRequest {
   description?: string;
   timelimit?: string;
   title?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface subscriptionDeleteRequest {

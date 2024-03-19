@@ -64,4 +64,6 @@ export interface SubscribedUserGetRequest {
     DateofSubscription?: string,
     isActive?: boolean,
     isDeleted?: boolean,
+    page?: number,
+    limit?: number,
 }

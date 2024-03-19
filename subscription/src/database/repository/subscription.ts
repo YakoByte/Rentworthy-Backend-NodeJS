@@ -76,12 +76,18 @@ class SubscriptionRepository {
   }
 
   //get all Subscription
-  async getAllSubscription() {
+  async getAllSubscription({
+    skip,
+    limit,
+  }: {
+    skip: number;
+    limit: number;
+  }) {
     try {
       const SubscriptionResult = await SubscriptionModel.aggregate([
-        {
-          $match: { isActive: true, isDeleted: false },
-        },
+        { $match: { isActive: true, isDeleted: false } },
+        { $skip: skip },
+        { $limit: limit },
         {
           $lookup: {
             from: "images",
