@@ -63,10 +63,12 @@ const userSchema: Schema = new Schema<Profile>(
     level: {
       type: Number,
       default: 1,
+      max: 3
     },
     points: {
       type: Number,
       default: 0,
+      max: 6000
     },
   },
   { timestamps: true }
