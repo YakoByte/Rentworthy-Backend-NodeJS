@@ -11,7 +11,7 @@ export default (app: Express) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            console.log("req.body", req.body)
+
             const data = await service.CreateCancelBooking(req.body);
             return res.json(data);
         } catch (err) {

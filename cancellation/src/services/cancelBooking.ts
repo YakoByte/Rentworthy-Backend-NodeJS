@@ -14,7 +14,6 @@ class cancelBookingService {
     // create cancelBooking
     async CreateCancelBooking(cancelBookingInputs: cancelBookingRequest) {
         try {
-            console.log("cancelBookingInputs", cancelBookingInputs)
             const existingCancelBooking: any = await this.repository.CreateCancelBooking(
                 cancelBookingInputs
             );
@@ -43,7 +42,6 @@ class cancelBookingService {
 
     // update cancelBooking by id
     async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
-        console.log("cancelBookingInputs", cancelBookingInputs)
         try {
             const existingCancelBooking: any = await this.repository.updateCancelBookingById(
                 cancelBookingInputs
