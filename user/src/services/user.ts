@@ -178,8 +178,8 @@ class AdminService {
                 const password = await GeneratePassword(userInputs.password, salt);
 
                 const validPassword = await ValidatePassword(
-                    password,
-                    existingAdmin.password
+                    userInputs.password,
+                    existingAdmin?.password
                 );
                 if (validPassword) {
                     return FormateError({ error: "Old password is same as new password" });
