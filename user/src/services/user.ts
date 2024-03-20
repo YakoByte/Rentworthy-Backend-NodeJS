@@ -40,11 +40,12 @@ class AdminService {
                 return FormateError({ error: "Invalid Bussiness Type" });
             }
 
-            if (existingAdmin) {
+            if (existingAdmin && existingAdmin.password) {
                 const validPassword = await ValidatePassword(
                     userInputs.password,
                     existingAdmin?.password
                 );
+            
                 if (validPassword) {
                     const token = await GenerateSignature({
                         email: existingAdmin.email,
@@ -120,14 +121,18 @@ class AdminService {
             if (existingAdmin) {
                 const salt = await GenerateSalt();
                 const password = await GeneratePassword(userInputs.newPassword, salt);
+                
                 //compare old password
-                const validPassword = await ValidatePassword(
-                    userInputs.oldPassword,
-                    existingAdmin.password
-                );
-                if (validPassword) {
-                    return FormateError({ error: "Old password is not correct" });
+                if(existingAdmin.password) {
+                    const validPassword = await ValidatePassword(
+                        userInputs.oldPassword,
+                        existingAdmin.password
+                    );
+                    if (validPassword) {
+                        return FormateError({ error: "Old password is not correct" });
+                    }
                 }
+                
                 //old password and new password should not be same
                 if (userInputs.oldPassword === userInputs.newPassword) {
                     return FormateError({ error: "Old password and new password should not be same" });
