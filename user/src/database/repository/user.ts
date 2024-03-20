@@ -203,6 +203,11 @@ class AdminRepository {
 
       // create user
       const user = new userModel({ ...userInputs, roleId: roleId });
+      if(userInputs.email) {
+        user.isEmailVerified = true;
+      } else if(userInputs.phoneNo) {
+        user.isPhoneNoVerified = true;
+      }
       const userResult = await user.save();
 
       // create history

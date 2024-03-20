@@ -169,7 +169,7 @@ class AdminService {
     }
 
     async forgotPassword(userInputs: forgotPassword) {
-        try {
+        try {            
             let existingAdmin = await this.repository.FindMe(userInputs);
 
             if (existingAdmin) {
@@ -177,12 +177,14 @@ class AdminService {
                 const salt = await GenerateSalt();
                 const password = await GeneratePassword(userInputs.password, salt);
 
-                const validPassword = await ValidatePassword(
-                    userInputs.password,
-                    existingAdmin?.password
-                );
-                if (validPassword) {
-                    return FormateError({ error: "Old password is same as new password" });
+                if(existingAdmin.password) {
+                    const validPassword = await ValidatePassword(
+                        userInputs.password,
+                        existingAdmin?.password
+                    );
+                    if (validPassword) {
+                        return FormateError({ error: "Old password is same as new password" });
+                    }
                 }
 
                 // Check if otp is valid
@@ -192,7 +194,8 @@ class AdminService {
                 }
 
                 await this.repository.UpdateUser(existingAdmin._id, {
-                    password
+                    password,
+                    isEmailVerified: true,
                 });
 
                 return FormateData({ message: "Password updated successfully" });
@@ -201,7 +204,6 @@ class AdminService {
             return FormateError({ error: "Invalid Credentials" });
         } catch (err: any) {
             console.log(err);
-            
             return FormateError({ error: "Password Reset Failed"});
         }
     }
