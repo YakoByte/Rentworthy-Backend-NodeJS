@@ -1,5 +1,5 @@
 import { cancelBookingModel, productModel, historyModel } from "../models";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 import moment from "moment";
 import {
   cancelBookingRequest,
@@ -19,7 +19,7 @@ class CancelBookingRepository {
       );
 
       const findUser = await cancelBookingModel.aggregate([
-        { $match: { _id: new ObjectId(cancelBooking._id), isDeleted: false } },
+        { $match: { _id: new Types.ObjectId(cancelBooking._id), isDeleted: false } },
         {
           $lookup: {
             from: "users",
@@ -54,7 +54,7 @@ class CancelBookingRepository {
       let cancelBooking: any;
       if (cancelBookingInputs._id) {
         cancelBooking = await cancelBookingModel.findOne({
-          _id: cancelBookingInputs._id,
+          _id: new Types.ObjectId(cancelBookingInputs._id),
           // isDeleted: false
         });
       } else {
@@ -76,13 +76,13 @@ class CancelBookingRepository {
   ) {
     try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
-      { _id: cancelBookingInputs._id },
+      { _id: new Types.ObjectId(cancelBookingInputs._id) },
       { ...cancelBookingInputs },
       { new: true }
     );
     if (cancelBookingResult) {
       const findUser = await cancelBookingModel.aggregate([
-        { $match: { _id: new ObjectId(cancelBookingResult._id), isDeleted: false } },
+        { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
         {
           $lookup: {
             from: "users",
@@ -118,14 +118,14 @@ class CancelBookingRepository {
   ) {
     try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
-      { _id: cancelBookingInputs._id },
+      { _id: new Types.ObjectId(cancelBookingInputs._id) },
       { ...cancelBookingInputs },
       { new: true }
     );
 
     if (cancelBookingResult) {
       const findUser = await cancelBookingModel.aggregate([
-        { $match: { _id: new ObjectId(cancelBookingResult._id), isDeleted: false } },
+        { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
         {
           $lookup: {
             from: "users",
@@ -162,14 +162,14 @@ class CancelBookingRepository {
   ) {
     try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
-      { _id: cancelBookingInputs._id, isDeleted: false },
+      { _id: new Types.ObjectId(cancelBookingInputs._id), isDeleted: false },
       { isDeleted: true },
       { new: true }
     );
     if (cancelBookingResult) {
 
       const findUser = await cancelBookingModel.aggregate([
-        { $match: { _id: new ObjectId(cancelBookingResult._id), isDeleted: false } },
+        { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
         {
           $lookup: {
             from: "users",
