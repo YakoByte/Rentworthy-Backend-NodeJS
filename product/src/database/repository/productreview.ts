@@ -4,43 +4,34 @@ import {
   productRatingModel,
   Bookings,
 } from "../models";
+import { Types } from "mongoose";
 import { getProductReviewRequest } from "../../interface/productreview";
 import { getAllProductLike } from "../../interface/productlike";
 
 class ProductReviewRepository {
   async CreateProductReview(productInputs: any) {
-    try {
+    try {      
       const findProduct = await productReviewModel
         .findOne({
-          productId: productInputs.productId,
-          userId: productInputs.userId,
-        })
-        .lean();
+          productId: new Types.ObjectId(productInputs.productId),
+          userId: new Types.ObjectId(productInputs.userId),
+        });
 
       let bookings = await Bookings.aggregate([
         {
           $match: {
-            productId: productInputs.productId,
-            userId: productInputs.userId,
+            productId: new Types.ObjectId(productInputs.productId),
+            userId: new Types.ObjectId(productInputs.userId),
           },
         },
-      ]);
+      ]);      
 
       if (bookings.length > 0) {
         if (findProduct) {
           const updateRes = await productReviewModel
-            .findOneAndUpdate(
-              {
-                _id: findProduct._id,
-              },
-              {
-                $set: {
-                  review: productInputs.review,
-                },
-              },
-              {
-                new: true,
-              }
+            .findOneAndUpdate({ _id: new Types.ObjectId(findProduct._id) },
+              { $set: { review: productInputs.review } },
+              { new: true }
             );
           return updateRes;
         }
@@ -49,9 +40,9 @@ class ProductReviewRepository {
           productId: response.productId,
           log: [
             {
-              objectId: response._id,
+              objectId: new Types.ObjectId(response._id),
               data: {
-                userId: productInputs.userId,
+                userId: new Types.ObjectId(productInputs.userId),
               },
               action: `Review was created for this product id ${response.productId}`,
               date: new Date().toISOString(),
@@ -72,12 +63,12 @@ class ProductReviewRepository {
 
   async GetProductReview(productInputs: getProductReviewRequest) {
     try {
-      let searchQuery: getProductReviewRequest = {};
+      let searchQuery: any = {};
       if (productInputs.userId) {
-        searchQuery.userId = productInputs.userId;
+        searchQuery.userId = new Types.ObjectId(productInputs.userId);
       }
       if (productInputs.productId) {
-        searchQuery.productId = productInputs.productId;
+        searchQuery.productId = new Types.ObjectId(productInputs.productId);
       }
       let getRes = await productReviewModel.find(searchQuery).lean();
       let getRating = await productRatingModel.find(searchQuery).lean();
@@ -91,10 +82,8 @@ class ProductReviewRepository {
             item.userId.toString() == element.userId
         );
         if (tempRating) {
-          console.log("tempRating", tempRating);
           element.rating = tempRating.rating;
         }
-        console.log("element", element.rating);
         tempRes.push(element);
       });
 
@@ -112,7 +101,7 @@ class ProductReviewRepository {
         productInputs.page = 0;
       }
       const findReview = await productReviewModel.aggregate([
-        { $match: { productId: productInputs.productId, isDeleted: false } },
+        { $match: { productId: new Types.ObjectId(productInputs.productId), isDeleted: false } },
         { $skip: productInputs.page },
         { $limit: productInputs.limit },
         {
