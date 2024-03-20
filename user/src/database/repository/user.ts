@@ -123,8 +123,8 @@ class AdminRepository {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
-        { : false },
-        { neisActivew: true }
+        { isActive: false },
+        { new: true }
       );
 
       const profile = await profileModel.findOneAndUpdate(
