@@ -23,7 +23,7 @@ export default (app: Express) => {
     app.get('/get-cancel-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            req.query.userId = authUser._id;
+            req.query.user = authUser;
 
             const data = await service.getCancelBooking({ ...req.query });
             return res.json(data);

@@ -133,8 +133,14 @@ export interface cancelBookingApproveRequest {
 
 // for get cancelBooking
 export interface cancelBookingGetRequest {
-    _id?: string,
-    userId?: string,
+    _id?: string;
+    userId?: string;
+    user?: {
+        _id: string;
+        roleName: string;
+        email: string;
+    };
+    role?: string;
     page?: string,
     limit?: string,
 }

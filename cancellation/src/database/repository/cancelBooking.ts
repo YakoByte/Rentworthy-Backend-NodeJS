@@ -51,18 +51,39 @@ class CancelBookingRepository {
   //get cancelBooking by id , all cancelBooking
   async getAllCancelBooking(cancelBookingInputs: cancelBookingGetRequest) {
     try {
+      let skip = Number(cancelBookingInputs.page) * Number(cancelBookingInputs.limit) - Number(cancelBookingInputs.limit) || 0;
+      let limit = Number(cancelBookingInputs.limit) || 10;
       let cancelBooking: any;
       if (cancelBookingInputs._id) {
         cancelBooking = await cancelBookingModel.findOne({
           _id: new Types.ObjectId(cancelBookingInputs._id),
-          // isDeleted: false
+          isDeleted: false
         });
+      } else if(cancelBookingInputs.userId) {
+        cancelBooking = await cancelBookingModel.find({
+          userId: new Types.ObjectId(cancelBookingInputs.userId),
+          isDeleted: false
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      } else if(cancelBookingInputs.user?._id) {
+        cancelBooking = await cancelBookingModel.find({
+          userId: new Types.ObjectId(cancelBookingInputs.user._id),
+          isDeleted: false
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
       } else {
         cancelBooking = await cancelBookingModel.find({
-          ...cancelBookingInputs,
-          // isDeleted: false
-        });
+          isDeleted: false
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
       }
+
       return cancelBooking;
     } catch (error) {
       console.log("error", error);
