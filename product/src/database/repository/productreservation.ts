@@ -4,6 +4,7 @@ import {
   updateProductReservation,
   getAvailables,
 } from "../../interface/productreservation";
+import { Types } from "mongoose";
 
 class ProductReservationRepository {
   async CreateProductReservation(productInputs: productReservationRequest) {
@@ -91,7 +92,7 @@ class ProductReservationRepository {
       for (let oneObj of resp) {
         await productReservationModel.findOneAndUpdate(
           {
-            productId: oneObj.productId,
+            productId: new Types.ObjectId(oneObj.productId),
             month: oneObj.month,
             year: oneObj.year,
           },
@@ -153,7 +154,7 @@ class ProductReservationRepository {
       for (let oneObj of resp) {
         await productReservationModel.findOneAndUpdate(
           {
-            productId: oneObj.productId,
+            productId: new Types.ObjectId(oneObj.productId),
             month: oneObj.month,
             year: oneObj.year,
           },
@@ -215,7 +216,7 @@ class ProductReservationRepository {
       for (let oneObj of resp) {
         await productReservationModel.findOneAndUpdate(
           {
-            productId: oneObj.productId,
+            productId: new Types.ObjectId(oneObj.productId),
             month: oneObj.month,
             year: oneObj.year,
           },
@@ -243,7 +244,7 @@ class ProductReservationRepository {
     try {
       let response = await productReservationModel
         .find({
-          productId: productInputs.productId,
+          productId: new Types.ObjectId(productInputs.productId),
         })
         .lean();
       return response;

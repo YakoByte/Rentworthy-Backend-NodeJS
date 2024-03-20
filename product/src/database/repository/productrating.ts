@@ -1,36 +1,34 @@
 import { productRatingModel, historyModel, Bookings } from "../models";
+import { Types } from "mongoose";
 import {
-  productRatingRequest,
   getProductRatingRequest,
-  AuthenticatedRequest,
   getAllProductRating,
 } from "../../interface/productrating";
 
 class ProductRatingRepository {
   async CreateProductRating(productInputs: any) {
     try {
-      const findProduct = await productRatingModel
+        const findProduct = await productRatingModel
         .findOne({
-          productId: productInputs.productId,
-          userId: productInputs.userId,
-        })
-        .lean();
+          productId: new Types.ObjectId(productInputs.productId),
+          userId: new Types.ObjectId(productInputs.userId),
+        });
 
       let bookings = await Bookings.aggregate([
         {
           $match: {
-            productId: productInputs.productId,
-            userId: productInputs.userId,
+            productId: new Types.ObjectId(productInputs.productId),
+            userId: new Types.ObjectId(productInputs.userId),
           },
         },
-      ]);
+      ]); 
 
       if (bookings.length > 0) {
         if (findProduct) {
           const updateRes = await productRatingModel
             .findOneAndUpdate(
               {
-                _id: findProduct._id,
+                _id: new Types.ObjectId(findProduct._id),
               },
               {
                 $set: {
@@ -72,12 +70,12 @@ class ProductRatingRepository {
 
   async GetProductRating(productInputs: getProductRatingRequest) {
     try {
-      let searchQuery: getProductRatingRequest = {};
+      let searchQuery: any = {};
       if (productInputs.userId) {
-        searchQuery.userId = productInputs.userId;
+        searchQuery.userId = new Types.ObjectId(productInputs.userId);
       }
       if (productInputs.productId) {
-        searchQuery.productId = productInputs.productId;
+        searchQuery.productId = new Types.ObjectId(productInputs.productId);
       }
       let getRes = await productRatingModel.find(searchQuery).lean();
       return getRes;
@@ -95,7 +93,7 @@ class ProductRatingRepository {
       }
 
       const findReview = await productRatingModel.aggregate([
-        { $match: { productId: productInputs.productId, isDeleted: false } },
+        { $match: { productId: new Types.ObjectId(productInputs.productId), isDeleted: false } },
         { $skip: productInputs.page },
         { $limit: productInputs.limit },
         {
@@ -130,7 +128,7 @@ class ProductRatingRepository {
     try {
       const countsPromises = Array.from({ length: 5 }, (_, index) =>
         productRatingModel.countDocuments({
-          productId: productInputs.productId,
+          productId: new Types.ObjectId(productInputs.productId),
           rating: index + 1,
           isDeleted: false,
         })

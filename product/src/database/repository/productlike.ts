@@ -1,4 +1,5 @@
 import { productLikeModel, historyModel } from "../models";
+import { Types } from "mongoose";
 import {
   productLikeRequest,
   getProductLikeRequest,
@@ -10,11 +11,11 @@ class ProductLikeRepository {
     try {
       const findProduct = await productLikeModel
         .findOne({
-          productId: productInputs.productId,
-          userId: productInputs.userId,
+          productId: new Types.ObjectId(productInputs.productId),
+          userId: new Types.ObjectId(productInputs.userId),
         })
-        .lean();
-      const updateObj = {
+
+        const updateObj = {
         isFav: productInputs.isFav,
         isDeleted: productInputs.isFav ? false : true,
       };
@@ -22,7 +23,7 @@ class ProductLikeRepository {
         const updateRes = await productLikeModel
           .findOneAndUpdate(
             {
-              _id: findProduct._id,
+              _id: new Types.ObjectId(findProduct._id),
             },
             {
               $set: updateObj,
@@ -59,12 +60,12 @@ class ProductLikeRepository {
 
   async GetProductLikes(productInputs: getProductLikeRequest) {
     try {
-      let searchQuery: getProductLikeRequest = {};
+      let searchQuery: any = {};
       if (productInputs.userId) {
-        searchQuery.userId = productInputs.userId;
+        searchQuery.userId = new Types.ObjectId(productInputs.userId);
       }
       if (productInputs.productId) {
-        searchQuery.productId = productInputs.productId;
+        searchQuery.productId = new Types.ObjectId(productInputs.productId);
       }
       let getRes = await productLikeModel.find(searchQuery).lean();
       return getRes;
@@ -81,7 +82,7 @@ class ProductLikeRepository {
         productInputs.page = 0;
       }
       const findLike = await productLikeModel.aggregate([
-        { $match: { productId: productInputs.productId, isDeleted: false } },
+        { $match: { productId: new Types.ObjectId(productInputs.productId), isDeleted: false } },
         { $skip: productInputs.page },
         { $limit: productInputs.limit },
         {
@@ -115,7 +116,7 @@ class ProductLikeRepository {
   async GetLikeCount(productInputs: getAllProductLike) {
     try {
       let count = await productLikeModel.countDocuments({
-        productId: productInputs.productId,
+        productId: new Types.ObjectId(productInputs.productId),
         isFav: true,
         isDeleted: false,
       });
