@@ -119,7 +119,7 @@ class AdminRepository {
     }
   }
 
-  async BlockedUser(userId: string) {
+  async BlockedUser(userId: string, blockedReason: string) {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
@@ -129,7 +129,7 @@ class AdminRepository {
 
       const profile = await profileModel.findOneAndUpdate(
         { userId: userId },
-        { isActive: false, isBlocked: true },
+        { isActive: false, isBlocked: true, blockedReason: blockedReason },
         { new: true }
       );
 
@@ -140,7 +140,7 @@ class AdminRepository {
     }
   }
 
-  async UnBlockedUser(userId: string) {
+  async UnBlockUser(userId: string) {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
@@ -150,7 +150,7 @@ class AdminRepository {
 
       const profile = await profileModel.findOneAndUpdate(
         { userId: userId },
-        { isActive: true, isBlocked: false },
+        { isActive: true, isBlocked: false, blockedReason: '' },
         { new: true }
       );
 

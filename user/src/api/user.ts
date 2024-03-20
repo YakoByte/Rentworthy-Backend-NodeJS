@@ -153,7 +153,7 @@ export default (app: Express) => {
   // API = social logIn
   app.post('/block-user',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await adminService.BlockedUser(req.body.userId);
+      const data = await adminService.BlockedUser(req.body.userId, req.body.reason);
       return res.json(data);
     } catch (err) {
       next(err);

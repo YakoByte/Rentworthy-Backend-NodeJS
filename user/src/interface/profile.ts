@@ -19,6 +19,7 @@ export interface Profile extends Document {
     email?: string;
     isActive?: boolean;
     isBlocked?: boolean;
+    blockedReason?: string;
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage: Types.ObjectId;
@@ -40,6 +41,7 @@ export interface profileRequest {
     email?: string;
     isActive?: boolean;
     isBlocked?: boolean;
+    blockedReason?: string;
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage: string;
@@ -58,6 +60,7 @@ export interface updateProfile {
     email?: string;
     isActive?: boolean;
     isBlocked?: boolean;
+    blockedReason?: string;
     isReported?: boolean;
     isDeleted?: boolean;
     profileImage?: string;
@@ -72,6 +75,7 @@ export interface getProfileRequest {
     isDeleted?: boolean;
     isActive?: boolean;
     isBlocked?: boolean;
+    blockedReason?: string;
     limit?: number;
     page?: number;
     criteria?: string;

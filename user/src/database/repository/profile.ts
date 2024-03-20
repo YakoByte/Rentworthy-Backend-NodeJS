@@ -330,7 +330,7 @@ class profileRepository {
         isDeleted: false,
         isBlocked: false,
       });
-      console.log("findProfile", findProfile);
+
       //if profile exist
       if (findProfile) {
         await profileModel.findOneAndUpdate(

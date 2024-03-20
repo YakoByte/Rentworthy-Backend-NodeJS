@@ -32,6 +32,9 @@ const userSchema: Schema = new Schema<Profile>(
       type: Boolean,
       default: false,
     },
+    blockedReason: {
+      type: String,
+    },
     isReported: {
       type: Boolean,
       default: false,

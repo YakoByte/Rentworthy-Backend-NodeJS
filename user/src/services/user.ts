@@ -86,9 +86,9 @@ class AdminService {
         }
     }
 
-    async BlockedUser(userId: string) {
+    async BlockedUser(userId: string, reason: string) {
         try {
-            const existingAdmin = await this.repository.BlockedUser(userId);
+            const existingAdmin = await this.repository.BlockedUser(userId, reason);
             return FormateData(existingAdmin);
         } catch (err: any) {
             return FormateError({ error: "Profile Not found" });
@@ -97,7 +97,7 @@ class AdminService {
 
     async UnBlockUser(userId: string) {
         try {
-            const existingAdmin = await this.repository.UnBlockedUser(userId);
+            const existingAdmin = await this.repository.UnBlockUser(userId);
             return FormateData(existingAdmin);
         } catch (err: any) {
             return FormateError({ error: "Profile Not found" });
