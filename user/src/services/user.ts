@@ -125,7 +125,7 @@ class AdminService {
                     userInputs.oldPassword,
                     existingAdmin.password
                 );
-                if (!validPassword) {
+                if (validPassword) {
                     return FormateError({ error: "Old password is not correct" });
                 }
                 //old password and new password should not be same
@@ -181,7 +181,7 @@ class AdminService {
                     password,
                     existingAdmin.password
                 );
-                if (!validPassword) {
+                if (validPassword) {
                     return FormateError({ error: "Old password is same as new password" });
                 }
 

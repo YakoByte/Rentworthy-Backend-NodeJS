@@ -41,8 +41,7 @@ class ProductReviewRepository {
               {
                 new: true,
               }
-            )
-            .lean();
+            );
           return updateRes;
         }
         const response = await productReviewModel.create(productInputs);
@@ -63,7 +62,6 @@ class ProductReviewRepository {
         await history.save();
         return response;
       } else {
-        console.log("there needs to be a booking before giving review.");
         return { message: "there needs to be a booking before giving review." };
       }
     } catch (err) {
