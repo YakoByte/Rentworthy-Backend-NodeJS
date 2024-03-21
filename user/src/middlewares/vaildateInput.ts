@@ -4,7 +4,11 @@ import { FormateData, FormateError } from "../utils";
 const validateEmailFormat = (email: string): boolean => {
   try {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    return emailRegex.test(email);
+    if(email && email !== null){ 
+      return emailRegex.test(email);
+    }
+
+    return true
   } catch (error) {
     console.error(error);
     return false;
@@ -37,7 +41,11 @@ const validatePasswordFormat = (password: string): boolean => {
 const validateNumberFormat = (number: string): boolean => {
   try {
     const numberRegex = /^[0-9]+$/;
-    return numberRegex.test(number);
+    if(number && number !== null) {
+      return numberRegex.test(number);
+    }
+
+    return true
   } catch (error) {
     console.error(error);
     return false;
