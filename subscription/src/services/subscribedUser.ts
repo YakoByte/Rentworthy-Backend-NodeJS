@@ -36,11 +36,9 @@ class SubscribedUserService {
                 existingSubscribedUsers = await this.repository.getSubscribedUserByPaymentId(SubscribedUserInputs);
             } else {
                 existingSubscribedUsers = await this.repository.getAllSubscribedUser({
-                    skip:
-                      Number(SubscribedUserInputs.page) * Number(SubscribedUserInputs.limit) -
-                        Number(SubscribedUserInputs.limit) || 0,
+                    skip: Number(SubscribedUserInputs.page) * Number(SubscribedUserInputs.limit) - Number(SubscribedUserInputs.limit) || 0,
                     limit: Number(SubscribedUserInputs.limit) || 10,
-                  });
+                });
             }
 
             return FormateData(existingSubscribedUsers);

@@ -204,7 +204,7 @@ class SubscriptionRepository {
     }
   }
 
-  //get Subscription  by title
+  //get Subscription  by point
   async getSubscriptionByPoint(SubscriptionInputs: subscriptionGetRequest) {
     try {   
       let point = SubscriptionInputs.points;
@@ -289,6 +289,47 @@ class SubscriptionRepository {
       throw new Error("Unable to Get Subscription");
     }
   }
+
+  //get Subscription  by currency
+  async getSubscriptionByCurrency(SubscriptionInputs: subscriptionGetRequest) {
+    try {             
+      const SubscriptionResult = await SubscriptionModel.aggregate([
+        {
+          $match: { currency: SubscriptionInputs.currency, isActive: true, isDeleted: false },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+            ],
+            as: "images",
+          },
+        },
+      ]);      
+  
+      if (!SubscriptionResult || SubscriptionResult.length === 0) {
+        return { message: "No Subscription found" };
+      }
+  
+      // Using map and Promise.all to process all asynchronous operations
+      await Promise.all(SubscriptionResult.map(async (element) => {
+        if (element.images.length > 0) {
+          await Promise.all(element.images.map(async (image: any) => {
+            let newPath = await generatePresignedUrl(image.imageName);
+            image.path = newPath;
+          }));
+        }
+      }));
+  
+      return SubscriptionResult;
+    } catch (err) {
+      console.error("Error:", err);
+      throw new Error("Unable to Get Subscription");
+    }
+  }
   
   //update Subscription by id
   async updateSubscriptionById(SubscriptionInputs: subscriptionUpdateRequest) {
@@ -323,6 +364,22 @@ class SubscriptionRepository {
     } catch (err: any) {
       console.log("error", err);
       throw new Error("Unable to Delete Subscription");
+    }
+  }
+
+  //get Subscription By Id
+  async getSubscriptionPlanById(_id: string) {
+    try {
+      const SubscriptionResult = await SubscriptionModel.findById(_id)  
+  
+      if (!SubscriptionResult) {
+        return { message: "No Subscription found" };
+      }
+
+      return SubscriptionResult;
+    } catch (err: any) {
+      console.log("error", err);
+      throw new Error("Unable to Get Subscription");
     }
   }
 }

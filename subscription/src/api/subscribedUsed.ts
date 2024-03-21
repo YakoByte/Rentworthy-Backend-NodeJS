@@ -10,10 +10,7 @@ export default (app: Express) => {
   const service = new SubscribedUserService();
 
   // API = create new SubscribedUser
-  app.post(
-    "/create-SubscribedUser",
-    UserAuth,
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.post("/create-SubscribedUser", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
@@ -52,10 +49,7 @@ export default (app: Express) => {
   );
 
   // API = update SubscribedUser by id
-  app.put(
-    "/update-SubscribedUser",
-    UserAuth,
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.put("/update-SubscribedUser", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
@@ -72,10 +66,7 @@ export default (app: Express) => {
   );
 
   //API = delete SubscribedUser
-  app.delete(
-    "/delete-SubscribedUser",
-    UserAuth,
-    async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.delete("/delete-SubscribedUser", UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
