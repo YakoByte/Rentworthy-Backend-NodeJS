@@ -9,7 +9,7 @@ import {
     GenerateSignature,
     ValidatePassword,
 } from '../utils';
-import { userSignRequest, userLoginRequest, userSetPasswordRequest, socialUserSignRequest, socialUserLoginRequest, forgotPassword } from '../interface/user';
+import { userSignRequest, userLoginRequest, userSetPasswordRequest, socialUserSignRequest, socialUserLoginRequest, forgotPassword, GetUserRequest } from '../interface/user';
 
 // All Business logic will be here
 class AdminService {
@@ -285,11 +285,89 @@ class AdminService {
         }
     }
 
-    async GetAllUsers() {
+    async GetAllUsers(userInputs: GetUserRequest) {
         try {
-            const existingAdmin = await this.repository.FindAllUsers();
-            return FormateData(existingAdmin);
-        } catch (err: any) {
+            let existingUser: any;
+            if(userInputs._id) {
+                existingUser = await this.repository.FindUserDataById(userInputs._id);
+            }
+            else if(userInputs.email) {
+                existingUser = await this.repository.FindUserByEmail(userInputs.email);
+            }
+            else if(userInputs.phoneNo) {
+                existingUser = await this.repository.FindUserByPhoneNo({
+                    phoneNo: userInputs.phoneNo,
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.roleName) {
+                existingUser = await this.repository.FindUserByRole({
+                    roleName: userInputs.roleName,
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.loginType) {
+                existingUser = await this.repository.FindUserByLoginType({
+                    loginType: userInputs.loginType,
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.os) {
+                existingUser = await this.repository.FindUserByOS({
+                    os: userInputs.os,
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.bussinessType) {
+                existingUser = await this.repository.FindUserByBussinessType({
+                    bussinessType: userInputs.bussinessType,
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.isActive) {
+                existingUser = await this.repository.FindAllActiveUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.isBlocked) {
+                existingUser = await this.repository.FindAllBlockedUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.isDeleted) {
+                existingUser = await this.repository.FindAllDeletedUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.isVerified) {
+                existingUser = await this.repository.FindAllVerifiedUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else if(userInputs.isUnverified) {
+                existingUser = await this.repository.FindAllUnVerifiedUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10 
+                });
+            }
+            else {
+                existingUser = await this.repository.FindAllUsers({
+                    skip: Number(userInputs.page) * Number(userInputs.limit) - Number(userInputs.limit) || 0,
+                    limit: Number(userInputs.limit) || 10
+                });
+            }
+
+            return FormateData(existingUser);
+        } catch (error: any) {
             return FormateError({ error: "Data Not found" });
         }
     }

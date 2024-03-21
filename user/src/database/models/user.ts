@@ -43,10 +43,6 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false,
     },
-    isAuthenticated: {
-      type: Boolean,
-      default: false,
-    },
     isActive: {
       type: Boolean,
       default: true,
@@ -55,9 +51,13 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
     loginType: {
       type: String,
-      enum: ["google", "fb", "apple", "regular"],
+      enum: ["google", "facebook", "apple", "regular"],
       default: "regular"
     },
     os: {

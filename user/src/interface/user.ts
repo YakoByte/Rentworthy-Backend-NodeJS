@@ -28,9 +28,9 @@ export interface User extends Document {
     roleId: Types.ObjectId;
     appleId?: string;
     isGuest?: boolean;
-    isAuthenticated?: boolean;
     isActive?: boolean;
     isDeleted?: boolean;
+    isBlocked?: boolean;
     loginType?: string;
     os?: string;
     isEmailVerified?: boolean;
@@ -53,9 +53,9 @@ export interface userSignRequest {
     appleId?: string;
     location?: string;
     isGuest?: boolean;
-    isAuthenticated?: boolean;
     isActive?: boolean;
     isDeleted?: boolean;
+    isBlocked?: boolean;
     roleName?: string;
     loginType?: string;
 }
@@ -99,9 +99,9 @@ export interface socialUserSignRequest {
     appleId?: string;
     location?: string;
     isGuest?: boolean;
-    isAuthenticated?: boolean;
     isActive?: boolean;
     isDeleted?: boolean;
+    isBlocked?: boolean;
     roleName?: string;
     loginType?: string;
 }
@@ -113,4 +113,21 @@ export interface socialUserLoginRequest {
     roleName: string;
     loginType?: string;
     os?: string;
+}
+
+export interface GetUserRequest {
+    _id: string;
+    email: string;
+    phoneNo: string;
+    bussinessType: string;
+    roleName: string;
+    loginType: string;
+    os: string;
+    isActive: boolean;
+    isDeleted: boolean;
+    isBlocked: boolean;
+    isUnverified: boolean;
+    isVerified: boolean;
+    page: string;
+    limit: string;
 }

@@ -29,7 +29,7 @@ class ProfileService {
 
     // get all profile
     async getAllProfile(profileInputs: getProfileRequest) {
-        try {            
+        try {                        
             let existingProfile: any[];
 
             if(profileInputs._id) {
@@ -38,19 +38,19 @@ class ProfileService {
             else if(profileInputs.userId) {
                 existingProfile = await this.repository.getProfileByUserId(profileInputs);
             }
-            else if(profileInputs.isActive === true) {
+            else if(profileInputs.isActive) {
                 existingProfile = await this.repository.getAllActiveProfile({
                     skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
                     limit: Number(profileInputs.limit) || 10 
                 });
             }
-            else if(profileInputs.isBlocked === true) {
+            else if(profileInputs.isBlocked) {
                 existingProfile = await this.repository.getAllBlockedProfile({
                     skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
                     limit: Number(profileInputs.limit) || 10 
                 });
             }
-            else if(profileInputs.isDeleted === true) {
+            else if(profileInputs.isDeleted) {
                 existingProfile = await this.repository.getAllDeletedProfile({
                     skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
                     limit: Number(profileInputs.limit) || 10 

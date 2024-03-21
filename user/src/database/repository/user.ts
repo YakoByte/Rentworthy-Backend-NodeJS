@@ -123,7 +123,7 @@ class AdminRepository {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
-        { isActive: false },
+        { isActive: false, isBlocked: true },
         { new: true }
       );
 
@@ -144,7 +144,7 @@ class AdminRepository {
     try {
       const user = await userModel.findOneAndUpdate(
         { _id: userId },
-        { isActive: true },
+        { isActive: true, isBlocked: false },
         { new: true }
       );
 
@@ -232,9 +232,10 @@ class AdminRepository {
     }
   }
 
-  async FindAllUsers() {
+  //get user data
+  async FindUserDataById(_id: string) {
     try {
-      const users = await userModel.find();
+      const users = await userModel.findById(_id).populate('roleId');
       return users;
     } catch (error) {
       console.log("err", error);
@@ -242,6 +243,133 @@ class AdminRepository {
     }
   }
 
+  async FindUserByEmail(email: string) {
+    try {
+      const users = await userModel.findOne({ email }).populate('roleId');
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindUserByPhoneNo(userInput: {phoneNo: string, skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ phoneNo: userInput.phoneNo }).populate('roleId');
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find().populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindUserByRole(userInput: {roleName: string, skip: number, limit: number}) {
+    try {
+      const role = await roleModel.findOne({ name: userInput.roleName });
+
+      if(!role) {
+        throw new Error(`Role with name '${userInput.roleName}' not found.`);
+      }
+
+      const users = await userModel.find({ roleId: role._id }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindUserByLoginType(userInput: {loginType: string, skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ loginType: userInput.loginType }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindUserByOS(userInput: {os: string, skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ os: userInput.os }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindUserByBussinessType(userInput: {bussinessType: string, skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ bussinessType: userInput.bussinessType }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllActiveUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ isActive: true }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllDeletedUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ isDeleted: true }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllBlockedUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ isBlocked: true }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllUnVerifiedUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ $or: [{ isEmailVerified: false, isPhoneNoVerified: false }] }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  async FindAllVerifiedUsers(userInput: {skip: number, limit: number}) {
+    try {
+      const users = await userModel.find({ $or: [{ isEmailVerified: true, isPhoneNoVerified: true }] }).populate('roleId').skip(userInput.skip).limit(userInput.limit);
+      return users;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Find All Users");
+    }
+  }
+
+  //get count
   async getAllOsCount() {
     try {
       const users = await userModel.aggregate([

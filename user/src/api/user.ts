@@ -171,9 +171,7 @@ export default (app: Express) => {
 
   app.get('/get-all-users', UserAuth, isAdmin, async (req: any, res: Response, next: NextFunction) => {
     try {
-      const clientPlatform = req.clientPlatform;
-      const data = await adminService.GetAllUsers();
-      console.log("data", data)
+      const data = await adminService.GetAllUsers(req.query);
       return res.json(data);
     } catch (err) {
       next(err);
