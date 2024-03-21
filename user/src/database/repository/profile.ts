@@ -47,16 +47,162 @@ class profileRepository {
   }
 
   //get all profile active or inactive blocked or unblocked
-  async getAllProfile({
-    skip,
-    limit,
-  }: {
-    skip: number;
-    limit: number;
-  }) {
+  async getAllProfile({skip, limit}: { skip: number; limit: number; }) {
     try {    
       const findProfile = await profileModel.aggregate([
-        { $match: { isDeleted: false, isBlocked: false } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "locations",
+            localField: "locationId",
+            foreignField: "_id",
+            as: "locationId",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "profileImage",
+            foreignField: "_id",
+            as: "profileImage",
+          },
+        },
+      ]);
+
+
+      await Promise.all(
+        findProfile.map(async (profile: any) => {
+          await Promise.all(
+            profile.profileImage.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+
+      return findProfile;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to get AllProfile");
+    }
+  }
+
+  async getAllBlockedProfile({skip, limit}: { skip: number; limit: number; }) {
+    try {    
+      const findProfile = await profileModel.aggregate([
+        { $match: { isBlocked: true } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "locations",
+            localField: "locationId",
+            foreignField: "_id",
+            as: "locationId",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "profileImage",
+            foreignField: "_id",
+            as: "profileImage",
+          },
+        },
+      ]);
+
+
+      await Promise.all(
+        findProfile.map(async (profile: any) => {
+          await Promise.all(
+            profile.profileImage.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+
+      return findProfile;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to get AllProfile");
+    }
+  }
+
+  async getAllDeletedProfile({skip, limit}: { skip: number; limit: number; }) {
+    try {    
+      const findProfile = await profileModel.aggregate([
+        { $match: { isDeleted: true } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "locations",
+            localField: "locationId",
+            foreignField: "_id",
+            as: "locationId",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "userId",
+          },
+        },
+        {
+          $lookup: {
+            from: "images",
+            localField: "profileImage",
+            foreignField: "_id",
+            as: "profileImage",
+          },
+        },
+      ]);
+
+
+      await Promise.all(
+        findProfile.map(async (profile: any) => {
+          await Promise.all(
+            profile.profileImage.map(async (element: any) => {
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            })
+          );
+        })
+      );
+
+      return findProfile;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to get AllProfile");
+    }
+  }
+
+  async getAllActiveProfile({skip, limit}: { skip: number; limit: number; }) {
+    try {    
+      const findProfile = await profileModel.aggregate([
+        { $match: { isActive: true } },
         { $skip: skip },
         { $limit: limit },
         {

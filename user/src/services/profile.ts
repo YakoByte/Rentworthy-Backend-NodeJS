@@ -38,12 +38,29 @@ class ProfileService {
             else if(profileInputs.userId) {
                 existingProfile = await this.repository.getProfileByUserId(profileInputs);
             }
+            else if(profileInputs.isActive === true) {
+                existingProfile = await this.repository.getAllActiveProfile({
+                    skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
+                    limit: Number(profileInputs.limit) || 10 
+                });
+            }
+            else if(profileInputs.isBlocked === true) {
+                existingProfile = await this.repository.getAllBlockedProfile({
+                    skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
+                    limit: Number(profileInputs.limit) || 10 
+                });
+            }
+            else if(profileInputs.isDeleted === true) {
+                existingProfile = await this.repository.getAllDeletedProfile({
+                    skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
+                    limit: Number(profileInputs.limit) || 10 
+                });
+            }
             else {
                 existingProfile = await this.repository.getAllProfile({
-                    skip:
-                    Number(profileInputs.page) * Number(profileInputs.limit) -
-                      Number(profileInputs.limit) || 0,
-                  limit: Number(profileInputs.limit) || 10});
+                    skip: Number(profileInputs.page) * Number(profileInputs.limit) - Number(profileInputs.limit) || 0,
+                    limit: Number(profileInputs.limit) || 10
+                });
             }
 
             return FormateData(existingProfile);
