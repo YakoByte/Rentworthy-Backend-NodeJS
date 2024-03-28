@@ -58,6 +58,11 @@ const categorySchema: Schema = new Schema<Booking>(
         isAccepted: {
             type: Boolean,
         },
+        bookingTime: {
+            type: Date,
+            required: true,
+            default: new Date()
+        },
         acceptedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",

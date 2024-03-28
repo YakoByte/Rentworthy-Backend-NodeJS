@@ -1,4 +1,4 @@
-import { cancelBookingModel, productModel, historyModel } from "../models";
+import { cancelBookingModel, cancellationPlanModel, BookingModel } from "../models";
 import { Types } from "mongoose";
 import moment from "moment";
 import {
@@ -14,26 +14,58 @@ class CancelBookingRepository {
   //create cancelBooking
   async CreateCancelBooking(cancelBookingInputs: cancelBookingRequest) {
     try {
-      const cancelBooking = await cancelBookingModel.create(
-        cancelBookingInputs
-      );
+      const existingCancelBooking = await cancelBookingModel.findOne({bookingId: cancelBookingInputs.bookingId, isDeleted: false});
+      if(existingCancelBooking) {
+        return { message: "Booking already Cancelled" };
+      }
 
-      const findUser = await cancelBookingModel.aggregate([
+      const existingBooking = await BookingModel.findById(cancelBookingInputs.bookingId);
+      if(!existingBooking) {
+        return { message: "Booking not found" };
+      }
+
+      const existingCacellationPlan = await cancellationPlanModel.findById(cancelBookingInputs.cancellationPolicyId);
+      if(!existingCacellationPlan) {
+        return { message: "Cancellation plan not found" };
+      }
+
+      if(existingBooking.price <= existingCacellationPlan.minimumCharges) {
+        return { message: 'The booking price must be greater than or equal to the cancellation plan price' };  
+      }
+
+      const bookingTime = Date.now() - existingBooking?.bookingTime.getTime();
+      const maximumCancellationHoursMillis = existingCacellationPlan.maximumCancellationHours * 60 * 60 * 1000;
+
+      if (bookingTime > maximumCancellationHoursMillis) {
+        return { message: 'The booking time must be less than or equal to the cancellation plan maximum time' };  
+      }
+
+      if(existingCacellationPlan.cancellationChargesType === 'Percentage') {
+        cancelBookingInputs.cancellationCharges = `${(existingCacellationPlan.cancellationCharges / 100) * existingBooking.price}`;
+        cancelBookingInputs.cancellationAmount = `${existingBooking.price - ((existingCacellationPlan.cancellationCharges / 100) * existingBooking.price)}`;
+      } else if(existingCacellationPlan.cancellationChargesType === 'Fixed') {
+        cancelBookingInputs.cancellationCharges = `${existingCacellationPlan.cancellationCharges}`;
+        cancelBookingInputs.cancellationAmount = `${existingBooking.price - (existingCacellationPlan.cancellationCharges)}`;
+      }
+
+      const cancelBooking = await cancelBookingModel.create(cancelBookingInputs);
+
+      const findUser: any = await cancelBookingModel.aggregate([
         { $match: { _id: new Types.ObjectId(cancelBooking._id), isDeleted: false } },
         {
           $lookup: {
             from: "users",
             localField: "userId",
             foreignField: "_id",
-            as: "userId",
-          },
+            as: "user"
+          }
         },
-        { $unwind: "userId" }
-      ]);
+        { $unwind: "$user" }
+      ]);      
 
-      if (findUser[0].userId.email) {
+      if (findUser[0].user.email) {
         const emailOptions = {
-          toUser: findUser[0].userId.email,
+          toUser: findUser[0].user.email,
           subject: "Cancellation Initiated",
           templateVariables: { action: "Cancellation Initiated" },
         };
@@ -58,12 +90,12 @@ class CancelBookingRepository {
         cancelBooking = await cancelBookingModel.findOne({
           _id: new Types.ObjectId(cancelBookingInputs._id),
           isDeleted: false
-        });
+        }).populate('cancellationPolicyId');
       } else if(cancelBookingInputs.userId) {
         cancelBooking = await cancelBookingModel.find({
           userId: new Types.ObjectId(cancelBookingInputs.userId),
           isDeleted: false
-        })
+        }).populate('cancellationPolicyId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -72,13 +104,14 @@ class CancelBookingRepository {
           userId: new Types.ObjectId(cancelBookingInputs.user._id),
           isDeleted: false
         })
+        .populate('cancellationPolicyId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
       } else {
         cancelBooking = await cancelBookingModel.find({
           isDeleted: false
-        })
+        }).populate('cancellationPolicyId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -92,15 +125,14 @@ class CancelBookingRepository {
   }
 
   //update cancelBooking by id
-  async updateCancelBookingById(
-    cancelBookingInputs: cancelBookingUpdateRequest
-  ) {
+  async updateCancelBookingById(cancelBookingInputs: cancelBookingUpdateRequest) {
     try {
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
       { _id: new Types.ObjectId(cancelBookingInputs._id) },
       { ...cancelBookingInputs },
       { new: true }
     );
+
     if (cancelBookingResult) {
       const findUser = await cancelBookingModel.aggregate([
         { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
@@ -134,61 +166,66 @@ class CancelBookingRepository {
   }
   }
 
-  async approveRejectCancelBookingById(
-    cancelBookingInputs: cancelBookingApproveRequest
-  ) {
+  async approveRejectCancelBookingById(cancelBookingInputs: cancelBookingApproveRequest) {
     try {
-    const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
-      { _id: new Types.ObjectId(cancelBookingInputs._id) },
-      { ...cancelBookingInputs },
-      { new: true }
-    );
-
-    if (cancelBookingResult) {
-      const findUser = await cancelBookingModel.aggregate([
-        { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "userId",
-          },
-        },
-        { $unwind: "userId" }
-      ]);
-
-      if (findUser[0].userId.email) {
-        const emailOptions = {
-          toUser: findUser[0].userId.email,
-          subject: `Cancellation ${cancelBookingInputs.status}`,
-          templateVariables: { action: `Cancellation ${cancelBookingInputs.status}` },
-        };
-
-        sendEmail(emailOptions);
+      const existingCancelBooking = await cancelBookingModel.findOne({_id: new Types.ObjectId(cancelBookingInputs._id), isDeleted: false});
+      if(existingCancelBooking) {
+        return { message: "Booking Already Cancelled " };
       }
-
-      return cancelBookingResult;
+  
+      const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
+        { _id: new Types.ObjectId(cancelBookingInputs._id) },
+        { ...cancelBookingInputs },
+        { new: true }
+      );
+  
+      if (cancelBookingResult) {
+        const findUser = await cancelBookingModel.aggregate([
+          { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "user"
+            }
+          },
+          { $unwind: "$user" }
+        ]);      
+  
+        if (findUser[0].user.email) {
+          const emailOptions = {
+            toUser: findUser[0].user.email,
+            subject: `Cancellation ${cancelBookingInputs.status}`,
+            templateVariables: { action: `Cancellation ${cancelBookingInputs.status}` },
+          };
+  
+          sendEmail(emailOptions);
+        }
+  
+        return cancelBookingResult;
+      }
+      return { message: "Data not found" };
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to approve Booking");
     }
-    return { message: "Data not found" };
-  } catch (error) {
-    console.log("error", error);
-    throw new Error("Unable to approve Booking");
-  }
   }
 
   //delete cancelBooking by id
-  async deleteCancelBookingById(
-    cancelBookingInputs: cancelBookingDeleteRequest
-  ) {
+  async deleteCancelBookingById(cancelBookingInputs: cancelBookingDeleteRequest) {
     try {
+      const existingCancelBooking = await cancelBookingModel.findOne({_id: new Types.ObjectId(cancelBookingInputs._id), isApproved: true});
+      if(existingCancelBooking) {
+        return { message: "Cancellation Can't Delete " };
+      }
+
     const cancelBookingResult = await cancelBookingModel.findOneAndUpdate(
       { _id: new Types.ObjectId(cancelBookingInputs._id), isDeleted: false },
       { isDeleted: true },
       { new: true }
     );
     if (cancelBookingResult) {
-
       const findUser = await cancelBookingModel.aggregate([
         { $match: { _id: new Types.ObjectId(cancelBookingResult._id), isDeleted: false } },
         {
@@ -196,15 +233,15 @@ class CancelBookingRepository {
             from: "users",
             localField: "userId",
             foreignField: "_id",
-            as: "userId",
-          },
+            as: "user"
+          }
         },
-        { $unwind: "userId" }
-      ]);
+        { $unwind: "$user" }
+      ]);      
 
-      if (findUser[0].userId.email) {
+      if (findUser[0].user.email) {
         const emailOptions = {
-          toUser: findUser[0].userId.email,
+          toUser: findUser[0].user.email,
           subject: "Cancellation Deleted",
           templateVariables: { action: "Cancellation Deleted" },
         };

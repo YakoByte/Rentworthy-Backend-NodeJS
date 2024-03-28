@@ -149,7 +149,6 @@ class BookingRepository {
         return { message: "Product not available in this Date" }
       }
 
-
       // call updateLevel api
       const profile: any = await profileModel.findOneAndUpdate(
         {
@@ -159,16 +158,15 @@ class BookingRepository {
         },
         { $inc: { points: 1 } },
         { new: true }
-      );
+      );      
 
-      if (profile.points >= 3000 && profile.level < 2) {
+      if (profile?.points >= 3000 && profile?.level < 2) {
         profile.level = 2;
       }
-      if (profile.points >= 6000 && profile.level < 3) {
+      if (profile?.points >= 6000 && profile?.level < 3) {
         profile.level = 3;
       }
-      await profile.save();
-
+      await profile?.save();
       
       //already booked
       let findSameBooking = await bookingModel.find({

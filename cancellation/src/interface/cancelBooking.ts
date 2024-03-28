@@ -13,8 +13,6 @@ export interface postAuthenticatedRequest extends Request {
         userId: Types.ObjectId;
         cancellationPolicyId: Types.ObjectId;
         cancellationCharges: string;
-        cancellationChargesType: string;
-        cancellationHours: string;
         cancellationDate: Date;
         cancellationAmount: string;
     }
@@ -79,16 +77,15 @@ export interface CancelBooking extends Document {
     description: string;
     userId: Types.ObjectId;
     cancellationPolicyId: Types.ObjectId;
-    cancellationCharges: string;
-    cancellationChargesType: string;
-    cancellationHours: string;
+    cancellationCharges: number;
     cancellationDate: Date;
-    cancellationAmount: string;
+    cancellationAmount: number;
     status: string;
     isApproved: boolean;
     isDeleted: boolean;
     approvedBy: Types.ObjectId;
 }
+
 export interface approveAuthenticatedRequest extends Request {
     user?: {
         _id: string;
@@ -111,8 +108,6 @@ export interface cancelBookingRequest {
     userId: Types.ObjectId;
     cancellationPolicyId: Types.ObjectId;
     cancellationCharges: string;
-    cancellationChargesType: string;
-    cancellationHours: string;
     cancellationDate: Date;
     cancellationAmount: string;
 }

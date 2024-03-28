@@ -13,19 +13,20 @@ const cancellationPlanSchema: Schema = new Schema<CancellationPlan>(
             required: true,
         },
         cancellationCharges: {
-            type: String,
+            type: Number,
             required: true,
         },
         cancellationChargesType: {
             type: String,
             required: true,
+            enum: ["Percentage", "Fixed"], // Percentage
         },
         minimumCharges: {
-            type: String,
+            type: Number,
             required: true,
         },
-        minimumCancellationHours: {
-            type: String,
+        maximumCancellationHours: {
+            type: Number,
             required: true,
         },
         isDeleted: {

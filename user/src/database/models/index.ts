@@ -9,6 +9,7 @@ import locationModel from './location';
 import addressModel from './address';
 import businessModel from './business';
 import imageModel from './image';
+import ProductModel from './product';
 
 // Then, export them:
 export {
@@ -20,5 +21,6 @@ export {
     locationModel,
     addressModel,
     businessModel,
-    imageModel
+    imageModel,
+    ProductModel,
 };

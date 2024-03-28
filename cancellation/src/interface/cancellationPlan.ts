@@ -12,7 +12,7 @@ export interface postAuthenticatedRequest extends Request {
         cancellationCharges: string;
         cancellationChargesType: string;
         minimumCharges: string;
-        minimumCancellationHours: string;
+        maximumCancellationHours: string;
     }
 
 }
@@ -31,7 +31,7 @@ export interface updateAuthenticatedRequest extends Request {
         cancellationCharges?: string;
         cancellationChargesType?: string;
         minimumCharges?: string;
-        minimumCancellationHours?: string;
+        maximumCancellationHours?: string;
     }
 
 }
@@ -65,10 +65,10 @@ export interface AuthenticatedRequest extends Request {
 export interface CancellationPlan extends Document {
     planName: string;
     description: string;
-    cancellationCharges: string;
+    cancellationCharges: number;
     cancellationChargesType: string;
-    minimumCharges: string;
-    minimumCancellationHours: string;
+    minimumCharges: number;
+    maximumCancellationHours: number;
     isDeleted: boolean;
     createdBy: Types.ObjectId;
 }
@@ -80,7 +80,7 @@ export interface cancellationPlanRequest {
     cancellationCharges: string;
     cancellationChargesType: string;
     minimumCharges: string;
-    minimumCancellationHours: string;
+    maximumCancellationHours: string;
     createdBy: string;
 }
 
@@ -91,7 +91,7 @@ export interface cancellationPlanUpdateRequest {
     cancellationCharges?: string;
     cancellationChargesType?: string;
     minimumCharges?: string;
-    minimumCancellationHours?: string;
+    maximumCancellationHours?: string;
 }
 
 // // for get cancellationPlan

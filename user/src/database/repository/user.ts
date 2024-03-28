@@ -1,4 +1,4 @@
-import { userModel, roleModel, historyModel, profileModel } from "../models";
+import { userModel, roleModel, historyModel, profileModel, ProductModel } from "../models";
 import moment from "moment";
 import {
   GeneratePassword,
@@ -133,6 +133,8 @@ class AdminRepository {
         { new: true }
       );
 
+      await ProductModel.updateMany({ userId: userId }, { $set: { isActive: false } }, { new: true });
+
       return {user, profile};
     } catch (error) {
       console.log("err", error);
@@ -153,6 +155,8 @@ class AdminRepository {
         { isActive: true, isBlocked: false, blockedReason: '' },
         { new: true }
       );
+
+      await ProductModel.updateMany({ userId: userId }, { $set: { isActive: true } }, { new: true });
 
       return {user, profile};
     } catch (error) {

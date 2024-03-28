@@ -75,6 +75,7 @@ export interface Booking extends Document {
     price: number;
     totalAmount: number;
     expandId?: Types.ObjectId;
+    bookingTime: Date;
     isAccepted?: boolean;
     acceptedBy?: string;
 }

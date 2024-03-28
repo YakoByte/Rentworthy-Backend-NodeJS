@@ -13,19 +13,15 @@ const cancelBookingSchema: Schema = new Schema<CancelBooking>(
             ref: "cancellationPlan",
         },
         cancellationCharges: {
-            type: String,
-        },
-        cancellationChargesType: {
-            type: String,
+            type: Number,
         },
         cancellationDate: {
             type: Date,
-        },
-        cancellationHours: {
-            type: String,
+            required: true,
+            default: new Date(),
         },
         cancellationAmount: {
-            type: String,
+            type: Number,
         },
         approvedBy: {
             type: mongoose.Schema.Types.ObjectId,

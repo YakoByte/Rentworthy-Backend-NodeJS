@@ -640,15 +640,7 @@ class ProductRepository {
   }
 
   //get all product
-  async getAllProduct({
-    skip,
-    limit,
-    userId,
-  }: {
-    skip: number;
-    limit: number;
-    userId: string;
-  }) {    
+  async getAllProduct({ skip, limit, userId }: { skip: number; limit: number; userId: string }) {    
     try {
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
@@ -882,11 +874,7 @@ class ProductRepository {
   }
 
   // get product by location
-  async getProductByLocation(productInputs: {
-    lat: number;
-    long: number;
-    userId: string;
-  }) {
+  async getProductByLocation(productInputs: { lat: number; long: number; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
