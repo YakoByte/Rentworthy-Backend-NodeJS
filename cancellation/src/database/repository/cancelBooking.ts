@@ -34,7 +34,7 @@ class CancelBookingRepository {
       }
 
       const bookingTime = Date.now() - existingBooking?.bookingTime.getTime();
-      const maximumCancellationHoursMillis = existingCacellationPlan.maximumCancellationHours * 60 * 60 * 1000;
+      const maximumCancellationHoursMillis = existingCacellationPlan.maximumCancellationHours * 60 * 60 * 1000;      
 
       if (bookingTime > maximumCancellationHoursMillis) {
         return { message: 'The booking time must be less than or equal to the cancellation plan maximum time' };  
