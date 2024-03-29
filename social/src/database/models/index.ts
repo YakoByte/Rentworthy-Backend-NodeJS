@@ -7,7 +7,7 @@ import contactUsModel from "./contactus";
 import TermConditionModel from "./termsCondition";
 import PrivacyPolicyModel from "./privacyPolicy";
 import AboutUSModel from "./aboutUs";
-import NotificationModel from "./notification";
+import Notification from "./notification";
 import imageModel from './image';
 // ... repeat for each model
 
@@ -16,7 +16,7 @@ export {
   historyModel,
   adsModel,
   productModel,
-  NotificationModel,
+  Notification,
   recommendationModel,
   contactUsModel,
   TermConditionModel,

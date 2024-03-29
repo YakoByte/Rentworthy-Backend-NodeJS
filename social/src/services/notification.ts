@@ -1,68 +1,154 @@
-import NotificationRepository from '../database/repository/notification';
+import { Request, Response } from "express";
+import NotificationRepository from "../database/repository/notification";
+import { ICreateNotification } from "../interface/notification";
 import { FormateData, FormateError } from '../utils';
 
-import { notificationRequest, notificationUpdateRequest, notificationGetRequest, notificationDeleteRequest } from '../interface/notification';
+const notificationRepository = new NotificationRepository();
 
-// All Business logic will be here
 class NotificationService {
-    private repository: NotificationRepository;
+  // create Notification
+  async createNotification(req: Request, res: Response) {
+    try {
+      const { receiverId, title, description, type } = req.body;
 
-    constructor() {
-        this.repository = new NotificationRepository();
+      // Create Notification
+      const data: ICreateNotification = {
+        receiverId,
+        title,
+        description,
+        type,
+        isRead: false,
+        isDeleted: false,
+        isActive: true,
+      };
+
+      const result = await notificationRepository.createNotification(data);
+      if (!result) {
+        return res.status(404).json({ error: "Notification not created" });
+      }
+
+      const response_data = FormateData(result);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
     }
-    // create Notification
-    async CreateNotification(NotificationInputs: notificationRequest) {
-        try {
-            const existingNotification: any = await this.repository.CreateNotification(
-                NotificationInputs
-            );
+  }
 
-            return FormateData(existingNotification);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Create NOtification" });
-        }
+  // update Notification
+  async updateNotification(req: Request, res: Response) {
+    try {
+      const { ...data } = req.body;
+
+      // Update Notification
+      const result = await notificationRepository.updateNotification(data);
+      if (!result) {
+        return res.status(404).json({ error: "Notification not updated" });
+      }
+
+      const response_data = FormateData(result);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
     }
+  }
 
-    // get Notification by id
-    async getNotification(NotificationInputs: notificationRequest) {
-        try {
-            let existingNotification: any
-            existingNotification = await this.repository.getNotification(
-                NotificationInputs
-            );
+  // delete Notification
+  async deleteNotification(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-            return FormateData(existingNotification);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Get Notification" });
-        }
+      // Delete Notification
+      const Notification = await notificationRepository.deleteNotification(id);
+      if (!Notification) {
+        return res.status(404).json({ error: "Notification not deleted" });
+      }
+
+      const response_data = FormateData(Notification);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
     }
+  }
 
-    // update Notification by id
-    async updateById(NotificationInputs: notificationUpdateRequest) {
-        try {
-            const existingNotification: any = await this.repository.updateNotificationById(
-                NotificationInputs
-            );
+  // get all Notificationes
+  async getNotifications(req: Request, res: Response) {
+    try {
+      let { id, receiverId, pageNo, limit } = req.query;
 
-            return FormateData(existingNotification);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to update Notification" });
-        }
+      pageNo = pageNo !== undefined ? String(pageNo) : "-1";
+      limit = limit !== undefined ? String(limit) : "-1";
+
+      const pageNoNumber = pageNo !== "-1" ? parseInt(pageNo, 10) : -1;
+      const limitNumber = limit !== "-1" ? parseInt(limit, 10) : -1;
+
+      let Notification;
+
+      if(id){
+        Notification = await notificationRepository.getNotificationById(String(id));
+      }
+
+      else if(receiverId) {
+        Notification = await notificationRepository.getNotificationByReceiverId(String(receiverId));
+      }
+
+      else {
+        Notification = await notificationRepository.getNotification(pageNoNumber, limitNumber);
+      }
+
+      if (!Notification) {
+        return res.status(404).json({ error: "Notificationes not found" });
+      }
+
+      const response_data = FormateData(Notification);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
     }
+  }
 
-    // delete Notification by id  (soft delete)
-    async deleteNotification(NotificationInputs: notificationDeleteRequest) {
-        try {
-            const existingNotification: any = await this.repository.deleteNotificationById(
-                NotificationInputs
-            );
+  // get Notification by id
+  async getNotificationById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-            return FormateData(existingNotification);
-        } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Notification" });
-        }
+      // Get Notification
+      const Notification = await notificationRepository.getNotificationById(id);
+      if (!Notification) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+
+      await notificationRepository.updateNotification({ _id: id, isRead: true });
+
+      const response_data = FormateData(Notification);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
     }
+  }
 
+  // get Notification by id
+  async getNotificationByReceiverId(req: any, res: Response) {
+    try {
+      const { _id: receiverId } = req.user;
+
+      // Get Notification
+      const Notification = await notificationRepository.getNotificationByReceiverId(receiverId);
+      if (!Notification) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+
+      const response_data = FormateData(Notification);
+      return res.status(200).json(response_data);
+    } catch (error: any) {
+      const response_data = FormateError(error);
+      return res.status(500).json(response_data);
+    }
+  }
 }
 
-export = NotificationService;
+export default NotificationService;

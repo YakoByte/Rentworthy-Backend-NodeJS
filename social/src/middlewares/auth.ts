@@ -2,7 +2,7 @@ import { ValidateSignature } from '../utils';
 import { Request, Response, NextFunction } from 'express';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-  const isAuthorized: boolean = await ValidateSignature(req);
+  const isAuthorized: boolean = await ValidateSignature(req);    
 
   if (isAuthorized) {
     return next();

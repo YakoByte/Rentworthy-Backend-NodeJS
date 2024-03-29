@@ -1,78 +1,116 @@
-import { NotificationModel } from "../models";
+import { Notification } from "../models/index";
 import {
-  notificationRequest,
-  notificationUpdateRequest,
+  ICreateNotification,
+  IGetNotifications,
+  IUpdateNotification,
 } from "../../interface/notification";
 
 class NotificationRepository {
-  //create Notification
-  async CreateNotification(NotificationInputs: notificationRequest) {
+  // create Notification
+  async createNotification(data: ICreateNotification): Promise<IGetNotifications> {
     try {
-      const NotificationResult = await NotificationModel.create(
-        NotificationInputs
-      );
-      if (NotificationResult) {
-        return NotificationResult;
-      }
-      return { message: "Failed to create Notification" };
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Create Notification");
+      const notification = await Notification.create(data);
+
+      return notification.toObject() as IGetNotifications;
+    } catch (error) {
+      console.error("Error creating Notification:", error);
+      throw new Error("Notification creation failed");
     }
   }
 
-  //get one Notification
-  async getNotification(NotificationInputs: notificationRequest) {
+  // update Notification by id
+  async updateNotification(data: IUpdateNotification): Promise<IGetNotifications> {
     try {
-      const NotificationResult = await NotificationModel.find(
-        NotificationInputs
-      );
-      if (!NotificationResult) {
-        return { message: "No Notification" };
+      if(data.receiverId) {
+        await Notification.findByIdAndUpdate(data._id, { $push: { receiverId: data.receiverId } }, { new: true });
+        delete  data["receiverId"];
       }
-      return NotificationResult;
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Get Notification");
-    }
-  }
-
-  //update Notification by id
-  async updateNotificationById(NotificationInputs: notificationUpdateRequest) {
-    try {
-      const NotificationResult = await NotificationModel.findOneAndUpdate(
-        { _id: NotificationInputs._id, isDeleted: false },
-        { $set: NotificationInputs },
+      const updateNotification = await Notification.findByIdAndUpdate(
+        data._id,
+        data,
         { new: true }
       );
 
-      if (NotificationResult) {
-        return NotificationResult;
+      if (!updateNotification) {
+        throw new Error(`Notification with id ${data._id} not found`);
       }
 
-      return { message: "Notification Update failed" };
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Update Notification");
+      return updateNotification.toObject() as IGetNotifications;
+    } catch (error) {
+      console.error("Error updating Notification:", error);
+      throw new Error("Notification updation failed");
     }
   }
 
-  //delete Notification by id
-  async deleteNotificationById(NotificationInputs: { _id: string }) {
+  // delete Notification by id
+  async deleteNotification(id: string): Promise<Boolean> {
     try {
-      const NotificationResult = await NotificationModel.findOneAndUpdate(
-        { _id: NotificationInputs._id, isDeleted: false },
-        { isDeleted: true },
-        { new: true }
-      );
-      if (NotificationResult) {
-        return { message: "Notification Deleted" };
+      const notification = await Notification.findByIdAndUpdate(id, { isDeleted: true, isActive: false }, { new: true });
+
+      if (!notification) {
+        throw new Error(`Notification with id ${id} not found`);
       }
 
-      return { message: "Notification Delete Failed" };
-    } catch (err: any) {
-      console.log("error", err);
-      throw new Error("Unable to Delete Notification");
+      return true;
+    } catch (error) {
+      console.error("Error deleting Notification:", error);
+      throw new Error("Notification deletion failed");
+    }
+  }
+
+  // get all Notifications
+  async getNotification(pageNo: number, limit: number): Promise<IGetNotifications[]> {
+    try {
+      let notifications = [];
+
+      if (pageNo === -1 || limit === -1) {
+        // Retrieve all Notifications if pageNo or limit is -1
+        notifications = await Notification.find({ isDeleted: false, isActive: true });
+      } else {
+        // Retrieve paginated Notifications
+        notifications = await Notification.find({ isDeleted: false, isActive: true })
+          .skip((pageNo - 1) * limit)
+          .limit(limit);
+      }
+
+      if (!notifications) {
+        throw new Error("Notifications not found");
+      }
+
+      return notifications.map((notification) =>
+      notification.toObject()
+      ) as IGetNotifications[];
+    } catch (error) {
+      console.error("Error getting Notifications:", error);
+      throw new Error("Notifications not found");
+    }
+  }
+
+  // get Notification by id
+  async getNotificationById(id: string): Promise<IGetNotifications> {
+    try {
+      const notification = await Notification.findById(id);
+      if (!notification) {
+        throw new Error(`Notification with id ${id} not found`);
+      }
+      return notification.toObject() as IGetNotifications;
+    } catch (error) {
+      console.error("Error getting Notification:", error);
+      throw new Error("Notification not found");
+    }
+  }
+
+  // get Notification
+  async getNotificationByReceiverId(receiverId: string): Promise<IGetNotifications[]> {
+    try {
+      const notifications = await Notification.find({ receiverId: { $in: [receiverId] }, isActive: true, isDeleted: false });
+      if (!notifications) {
+        throw new Error(`Notification with receiverId ${receiverId} not found`);
+      }
+      return notifications.map((notification) => notification.toObject()) as IGetNotifications[];
+    } catch (error) {
+      console.error("Error getting Notification:", error);
+      throw new Error("Notification not found");
     }
   }
 }

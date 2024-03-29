@@ -3,34 +3,15 @@ import mongoose, { Schema } from "mongoose";
 import { Notification } from "../../interface/notification";
 
 const notificationSchema: Schema = new Schema<Notification>(
-    {
-        title: {
-            type: String,
-            required: true,
+        {
+            title: { type: String, required: true },
+            description: { type: String },
+            isRead: { type: Boolean, default: false },
+            receiverId: [{ type: Schema.Types.ObjectId, ref: "User" }],
+            type: { type: String },
+            isDeleted: { type: Boolean, default: false },
+            isActive: { type: Boolean, default: true }
         },
-        desc: {
-            type: String,
-        },
-        type: {
-            type: String,
-        },
-        isRead: {
-            type: Boolean,
-            default: false,
-        },
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-        receiverId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-        isDeleted: {
-            type: Boolean,
-            default: false,
-        },
-    },
     { timestamps: true }
 );
 

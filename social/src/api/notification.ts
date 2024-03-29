@@ -1,57 +1,25 @@
-import { Express, Request, Response, NextFunction } from "express";
-import NotificationService from "../services/notification";
+import { Express, Request, Response, NextFunction } from 'express';
+import NotificationService from '../services/notification';
 import UserAuth from "../middlewares/auth";
-import { notificationRequest } from "../interface/notification";
 
 export default (app: Express) => {
-  const service = new NotificationService();
+    const notificationService = new NotificationService();
 
-  // API = create new Notification
-  app.post("/create-notification", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await service.CreateNotification(
-          req.body as notificationRequest
-        );
-        res.status(200).json(result);
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
+    // create Notification
+    app.post('/notification', UserAuth, notificationService.createNotification);
 
-  // API = get Notification by id
-  app.get("/get-notification", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await service.getNotification(req.query);
-        res.status(200).json(result);
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
+    // update Notification
+    app.put('/notification', UserAuth, notificationService.updateNotification);
 
-  // API = update Notification by id
-  app.put("/update-notification-by-id", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await service.updateById({ ...req.body, ...req.query });
-        res.status(200).json(result);
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
+    // delete Notification
+    app.delete('/notification/:id', UserAuth, notificationService.deleteNotification);
 
-  // API = delete Notification by id
-  app.delete("/delete-notification-by-id", UserAuth, async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await service.deleteNotification({
-          ...req.body,
-          ...req.query,
-        });
-        res.status(200).json(result);
-      } catch (err: any) {
-        next(err);
-      }
-    }
-  );
-};
+    // get Notification
+    app.get('/notification', UserAuth, notificationService.getNotifications);
+
+    // get Notification by Id
+    app.get('/notification/user', UserAuth, notificationService.getNotificationByReceiverId);
+
+    // get Notification by Id
+    app.get('/notification/:id', UserAuth, notificationService.getNotificationById);
+}
