@@ -98,6 +98,7 @@ export interface Booking extends Document {
     expandId?: Types.ObjectId;
     isAccepted?: boolean;
     status?: string;
+    bookingTime?:Date;
     acceptedBy?: string;
 }
 

@@ -84,6 +84,11 @@ const bookingSchema: Schema = new Schema<Booking>(
             default: "Requested",
             enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled"]
         },
+        bookingTime: {
+            type: Date,
+            required: true,
+            default: new Date()
+        },
         acceptedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
