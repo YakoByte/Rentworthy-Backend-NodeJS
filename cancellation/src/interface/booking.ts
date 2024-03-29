@@ -65,9 +65,16 @@ export interface AuthenticatedRequest extends Request {
 
 export interface Booking extends Document {
     productId: Types.ObjectId;
+    preRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        image: string;
+    }[];
     startDate: Date;
     endDate: Date;
     userId: Types.ObjectId;
+    paymentId?: Types.ObjectId;
     quantity: number;
     isDeleted?: boolean;
     images: string[];
@@ -75,8 +82,9 @@ export interface Booking extends Document {
     price: number;
     totalAmount: number;
     expandId?: Types.ObjectId;
-    bookingTime: Date;
     isAccepted?: boolean;
+    status?: string;
+    bookingTime:Date;
     acceptedBy?: string;
 }
 

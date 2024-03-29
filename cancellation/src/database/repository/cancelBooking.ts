@@ -50,6 +50,8 @@ class CancelBookingRepository {
 
       const cancelBooking = await cancelBookingModel.create(cancelBookingInputs);
 
+      await BookingModel.findByIdAndUpdate(cancelBookingInputs.bookingId, {isDeleted: true, status: "Cancelled"}, {new: true});
+
       const findUser: any = await cancelBookingModel.aggregate([
         { $match: { _id: new Types.ObjectId(cancelBooking._id), isDeleted: false } },
         {

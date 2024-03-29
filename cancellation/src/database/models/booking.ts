@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 import { Booking } from "../../interface/booking";
 
-const categorySchema: Schema = new Schema<Booking>(
+const bookingSchema: Schema = new Schema<Booking>(
     {
         productId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +22,10 @@ const categorySchema: Schema = new Schema<Booking>(
             ref: "user",
             required: true,
         },
+        paymentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "payment",
+        },
         quantity: {
             type: Number,
             required: true,
@@ -34,7 +38,6 @@ const categorySchema: Schema = new Schema<Booking>(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "image",
-                required: true,
             },
         ],
         addressId: {
@@ -58,6 +61,29 @@ const categorySchema: Schema = new Schema<Booking>(
         isAccepted: {
             type: Boolean,
         },
+        preRentalScreening: [{
+            question: {
+                type: String,
+                required: true,
+            },
+            answer: {
+                type: String,
+                required: true,
+            },
+            ansBoolean: {
+                type: Boolean,
+                required: true,
+            },
+            images: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "image",
+            }],
+        }],
+        status: {
+            type: String,
+            default: "Requested",
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled"]
+        },
         bookingTime: {
             type: Date,
             required: true,
@@ -72,6 +98,6 @@ const categorySchema: Schema = new Schema<Booking>(
     { timestamps: true }
 );
 
-const Bookings = mongoose.model<Booking>("Booking", categorySchema);
+const Bookings = mongoose.model<Booking>("Booking", bookingSchema);
 
 export default Bookings;
