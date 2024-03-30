@@ -10,17 +10,28 @@ class MessageRepository {
   async CreateMessage(messageInputs: messageRequest) {
     try {
       let room = await roomModel.findOne({
+        $or: [
+          {
+            userId: messageInputs.senderId,
+            vendorId: messageInputs.receiverId,
+          },
+          {
+            userId: messageInputs.receiverId,
+            vendorId: messageInputs.senderId,
+          },
+        ],
         _id: messageInputs.roomId,
         isDeleted: false,
       });
-      console.log("room", room);
+
       if (room) {
         let messageResult = await messageModel.create(messageInputs);
         return messageResult;
+      } else {
+        throw new Error("Room not found");
       }
-      return { message: "Room not found" };
     } catch (error) {
-      console.log("error", error);
+      console.log("Error:", error);
       throw new Error("Unable to Create Message");
     }
   }
@@ -46,18 +57,24 @@ class MessageRepository {
 
   //get message
   async GetMessage(messageInputs: getMessageRequest) {
-    try {
-      let criteria: getMessageRequest = { isDeleted: false };
+    try {      
+      let criteria: any = { isDeleted: false };
       if (messageInputs.senderId) {
         criteria = { ...criteria, senderId: messageInputs.senderId };
       }
-      if (messageInputs.receiverId) {
+      else if (messageInputs.receiverId) {
         criteria = { ...criteria, receiverId: messageInputs.receiverId };
       }
-      if (messageInputs.roomId) {
+      else if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
+      } 
+      else {
+        criteria = {
+        ...criteria,
+        $or: [{ receiverId: messageInputs.userId }, { senderId: messageInputs.userId }],
+        }
       }
-      let message = await messageModel.findOne(criteria);
+      let message = await messageModel.find(criteria);
       if (!message) {
         return { message: "Message not found" };
       }
@@ -67,16 +84,16 @@ class MessageRepository {
       throw new Error("Unable to Get Message");
     }
   }
+
   // get messages
   async GetMessages(messageInputs: messageRequest) {
     try {
       let criteria: messageRequest = { isDeleted: false };
-      if (messageInputs.userId) {
-        criteria = {
-          ...criteria,
-          senderId: messageInputs.userId,
-          receiverId: messageInputs.userId,
-        };
+      if (messageInputs.senderId) {
+        criteria = { ...criteria, senderId: messageInputs.senderId };
+      }
+      if (messageInputs.receiverId) {
+        criteria = { ...criteria, senderId: messageInputs.receiverId };
       }
       if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
@@ -91,6 +108,7 @@ class MessageRepository {
       throw new Error("Unable to Get Message");
     }
   }
+
   // delete message
   async DeleteMessage(messageInputs: deleteMessageRequest) {
     try {
@@ -99,9 +117,10 @@ class MessageRepository {
         isDeleted: false,
       });
       if (!message) {
-        return { message: "Message not found" };
+        return {
+          message: "Message not found",
+        };
       }
-
       let messageResult = await messageModel.updateOne(
         {
           _id: messageInputs._id,

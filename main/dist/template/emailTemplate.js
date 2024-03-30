@@ -28,9 +28,6 @@ exports.sendEmail = void 0;
 const nodemailer = __importStar(require("nodemailer"));
 const config_1 = require("../config");
 function sendEmail(options) {
-    console.log(config_1.GOOGLE_EMAIL, config_1.GOOGLE_PASS);
-    // Read the HTML email template from the file
-    // const emailTemplate = fs.readFileSync("", 'utf-8');
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
         service: "Gmail", // e.g., 'Gmail'

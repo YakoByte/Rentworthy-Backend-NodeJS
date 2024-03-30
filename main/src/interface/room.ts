@@ -41,6 +41,10 @@ export interface getRoomRequest {
     userId?: string;
     vendorId?: string;
     isDeleted?: boolean;
+    rentingId?: string;
+    isActive?: boolean;
+    unRead?: string;
+    lastMessage?: boolean;
     roomId?: string;
 }
 

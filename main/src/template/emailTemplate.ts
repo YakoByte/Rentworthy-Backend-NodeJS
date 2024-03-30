@@ -11,11 +11,6 @@ interface EmailOptions {
 }
 
 export function sendEmail(options: EmailOptions): void {
-  console.log(GOOGLE_EMAIL, GOOGLE_PASS);
-
-  // Read the HTML email template from the file
-  // const emailTemplate = fs.readFileSync("", 'utf-8');
-
   // Create a Nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: "Gmail", // e.g., 'Gmail'

@@ -45,19 +45,9 @@ export interface messageRequest {
     isDeleted?: boolean;
 }
 
-export interface groupMessageRequest {
-    senderId?: string;
-    receiverId?: string;
-    userId?: string;
-    message?: string;
-    messageType?: string;
-    roomId?: string;
-    isSeen?: boolean;
-    isDeleted?: boolean;
-}
-
 export interface getMessageRequest {
     _id?: string;
+    userId?: string;
     senderId?: string;
     message?: string;
     receiverId?: string;

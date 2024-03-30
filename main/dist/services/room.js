@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const room_1 = __importDefault(require("../database/repository/room"));
 const utils_1 = require("../utils");
+const app_error_1 = require("../utils/app-error");
 // All Business logic will be here
 class roomService {
     repository;
@@ -17,27 +18,27 @@ class roomService {
             return existingRoom;
         }
         catch (err) {
-            return (0, utils_1.FormateError)({ error: "Data not Created" });
+            throw new app_error_1.APIError("Data Not found", err);
         }
     }
     // get room
     async GetRoom(roomInputs) {
         try {
             const existingRoom = await this.repository.GetRoom(roomInputs);
-            return existingRoom;
+            return (0, utils_1.FormateData)(existingRoom);
         }
         catch (err) {
-            return (0, utils_1.FormateError)({ error: "Data not Found" });
+            throw new app_error_1.APIError("Data Not found", err);
         }
     }
     // get rooms
     async GetRooms(roomInputs) {
         try {
             const existingRoom = await this.repository.GetRooms(roomInputs);
-            return existingRoom;
+            return (0, utils_1.FormateData)(existingRoom);
         }
         catch (err) {
-            return (0, utils_1.FormateError)({ error: "Data not Found" });
+            throw new app_error_1.APIError("Data Not found", err);
         }
     }
     // delete room
@@ -47,7 +48,7 @@ class roomService {
             return (0, utils_1.FormateData)(existingRoom);
         }
         catch (err) {
-            return (0, utils_1.FormateError)({ error: "Data not Deleted" });
+            throw new app_error_1.APIError("Data Not found", err);
         }
     }
 }

@@ -1,5 +1,12 @@
 import roomRepository from '../database/repository/room';
-import { FormateData, FormateError } from '../utils';
+import {
+    FormateData,
+    // GeneratePassword,
+    // GenerateSalt,
+    // GenerateSignature,
+    // ValidatePassword,
+} from '../utils';
+import { APIError, BadRequestError } from '../utils/app-error';
 
 import { roomRequest, getRoomRequest, deleteRoomRequest } from '../interface/room';
 
@@ -10,13 +17,14 @@ class roomService {
     constructor() {
         this.repository = new roomRepository();
     }
+
     // create room
     async CreateRoom(roomInputs: roomRequest) {
         try {
             const existingRoom: any = await this.repository.CreateRoom(roomInputs);
             return existingRoom;
         } catch (err: any) {
-            return FormateError({ error: "Data not Created" });
+            throw new APIError("Data Not found", err);
         }
     }
 
@@ -24,9 +32,9 @@ class roomService {
     async GetRoom(roomInputs: getRoomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRoom(roomInputs);
-            return existingRoom;
+            return FormateData(existingRoom);
         } catch (err: any) {
-            return FormateError({ error: "Data not Found" });
+            throw new APIError("Data Not found", err);
         }
     }
 
@@ -34,9 +42,9 @@ class roomService {
     async GetRooms(roomInputs: roomRequest) {
         try {
             const existingRoom: any = await this.repository.GetRooms(roomInputs);
-            return existingRoom;
+            return FormateData(existingRoom);
         } catch (err: any) {
-            return FormateError({ error: "Data not Found" });
+            throw new APIError("Data Not found", err);
         }
     }
 
@@ -46,9 +54,10 @@ class roomService {
             const existingRoom: any = await this.repository.DeleteRoom(roomInputs);
             return FormateData(existingRoom);
         } catch (err: any) {
-            return FormateError({ error: "Data not Deleted" });
+            throw new APIError("Data Not found", err);
         }
     }
+
 }
 
 export = roomService;

@@ -5,12 +5,11 @@ class RoomRepository {
     //create room
     async CreateRoom(roomInputs) {
         try {
-            console.log("roomInputs", roomInputs);
             let room = await models_1.roomModel.findOne({
-                isDeleted: false,
                 productId: roomInputs.productId,
                 userId: roomInputs.userId,
                 vendorId: roomInputs.vendorId,
+                isDeleted: false,
             });
             if (room) {
                 return room;
@@ -27,19 +26,77 @@ class RoomRepository {
     async GetRoom(roomInputs) {
         try {
             let criteria = { isDeleted: false };
+            let room;
             if (roomInputs.productId) {
                 criteria = { ...criteria, productId: roomInputs.productId };
+                roomInputs.lastMessage = true;
+            }
+            if (roomInputs._id) {
+                criteria = { ...criteria, _id: roomInputs._id };
+                roomInputs.lastMessage = true;
             }
             if (roomInputs.userId) {
-                criteria = { ...criteria, userId: roomInputs.userId };
+                criteria = {
+                    ...criteria,
+                    $or: [{ userId: roomInputs.userId }, { vendorId: roomInputs.userId }],
+                    isActive: true,
+                    isDeleted: false,
+                };
+                room = await models_1.roomModel.find(criteria);
             }
             if (roomInputs.vendorId) {
                 criteria = { ...criteria, vendorId: roomInputs.vendorId };
+                room = await models_1.roomModel.find(criteria);
             }
-            if (roomInputs.roomId) {
-                criteria = { ...criteria, _id: roomInputs.roomId };
+            if (roomInputs.rentingId) {
+                criteria = { ...criteria, userId: roomInputs.rentingId };
+                room = await models_1.roomModel.find(criteria);
             }
-            let room = await models_1.roomModel.findOne(criteria);
+            if (roomInputs.unRead) {
+                // show only unread messages rooms
+                //if message is seen then dont show that room
+                let tempRooms = await models_1.roomModel.find(criteria);
+                room = [];
+                for (let i = 0; i < tempRooms.length; i++) {
+                    const element = tempRooms[i];
+                    let message = await models_1.messageModel.find({
+                        roomId: element._id,
+                        isSeen: false,
+                    });
+                    if (message) {
+                        room.push({
+                            ...element,
+                            lastMessage: message.message,
+                            lastMessageTime: message.createdAt,
+                        });
+                    }
+                }
+                // room = await roomModel.find(criteria);
+            }
+            if (roomInputs.lastMessage) {
+                // show only unread messages rooms
+                //if message is seen then dont show that room
+                let tempRooms = await models_1.roomModel.find(criteria).lean();
+                room = [];
+                for (let i = 0; i < tempRooms.length; i++) {
+                    const element = tempRooms[i];
+                    let message = await models_1.messageModel
+                        .find({ roomId: element._id })
+                        .sort({ createdAt: -1 })
+                        .lean();
+                    if (message) {
+                        room.push({
+                            ...element,
+                            lastMessage: message.message,
+                            lastMessageTime: message.createdAt,
+                        });
+                    }
+                    else {
+                        room.push({ ...element, lastMessage: "", lastMessageTime: "" });
+                    }
+                }
+                // room = await roomModel.find(criteria);
+            }
             if (!room) {
                 return { message: "Room not found" };
             }
@@ -70,7 +127,7 @@ class RoomRepository {
             for (let i = 0; i < rooms.length; i++) {
                 const element = rooms[i];
                 let lastMessage = await models_1.messageModel
-                    .findOne({ roomId: element._id })
+                    .find({ roomId: element._id })
                     .sort({ createdAt: -1 });
                 if (lastMessage) {
                     element.lastMessage = lastMessage.message;

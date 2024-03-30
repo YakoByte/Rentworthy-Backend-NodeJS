@@ -1,29 +1,20 @@
 import { roomModel, messageModel } from "../models";
 import {
-  roomData,
   roomRequest,
   getRoomRequest,
   deleteRoomRequest,
 } from "../../interface/room";
-import {
-  messageData,
-  messageRequest,
-  getMessageRequest,
-  deleteMessageRequest,
-} from "../../interface/messages";
 
 class RoomRepository {
   //create room
   async CreateRoom(roomInputs: roomRequest) {
     try {
-      console.log("roomInputs", roomInputs);
       let room = await roomModel.findOne({
-        isDeleted: false,
         productId: roomInputs.productId,
         userId: roomInputs.userId,
         vendorId: roomInputs.vendorId,
+        isDeleted: false,
       });
-
       if (room) {
         return room;
       }
@@ -37,21 +28,78 @@ class RoomRepository {
 
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
-    try {
-      let criteria: getRoomRequest = { isDeleted: false };
+    try {            
+      let criteria: any = { isDeleted: false };
+      let room: any;
       if (roomInputs.productId) {
         criteria = { ...criteria, productId: roomInputs.productId };
+        roomInputs.lastMessage = true;
+      }
+      if (roomInputs._id) {
+        criteria = { ...criteria, _id: roomInputs._id };
+        roomInputs.lastMessage = true;
       }
       if (roomInputs.userId) {
-        criteria = { ...criteria, userId: roomInputs.userId };
+        criteria = {
+          ...criteria,
+          $or: [{ userId: roomInputs.userId }, { vendorId: roomInputs.userId }],
+          isActive: true,
+          isDeleted: false,
+        };
+        room = await roomModel.find(criteria);
       }
       if (roomInputs.vendorId) {
         criteria = { ...criteria, vendorId: roomInputs.vendorId };
+        room = await roomModel.find(criteria);
       }
-      if (roomInputs.roomId) {
-        criteria = { ...criteria, _id: roomInputs.roomId };
+      if (roomInputs.rentingId) {
+        criteria = { ...criteria, userId: roomInputs.rentingId };
+        room = await roomModel.find(criteria);
       }
-      let room = await roomModel.findOne(criteria);
+      if (roomInputs.unRead) {
+        // show only unread messages rooms
+        //if message is seen then dont show that room
+        let tempRooms: any = await roomModel.find(criteria);
+        room = [];
+        for (let i = 0; i < tempRooms.length; i++) {
+          const element: any = tempRooms[i];
+          let message: any = await messageModel.find({
+            roomId: element._id,
+            isSeen: false,
+          });
+          if (message) {
+            room.push({
+              ...element,
+              lastMessage: message.message,
+              lastMessageTime: message.createdAt,
+            });
+          }
+        }
+        // room = await roomModel.find(criteria);
+      }
+      if (roomInputs.lastMessage) {
+        // show only unread messages rooms
+        //if message is seen then dont show that room
+        let tempRooms: any = await roomModel.find(criteria).lean();
+        room = [];
+        for (let i = 0; i < tempRooms.length; i++) {
+          const element: any = tempRooms[i];
+          let message: any = await messageModel
+            .find({ roomId: element._id })
+            .sort({ createdAt: -1 })
+            .lean();
+          if (message) {
+            room.push({
+              ...element,
+              lastMessage: message.message,
+              lastMessageTime: message.createdAt,
+            });
+          } else {
+            room.push({ ...element, lastMessage: "", lastMessageTime: "" });
+          }
+        }
+        // room = await roomModel.find(criteria);
+      }
       if (!room) {
         return { message: "Room not found" };
       }
@@ -62,6 +110,7 @@ class RoomRepository {
       throw new Error("Unable to Get Room");
     }
   }
+
   // get rooms
   async GetRooms(roomInputs: roomRequest) {
     try {
@@ -79,11 +128,10 @@ class RoomRepository {
       if (!roomInputs) {
         return { message: "Room not found" };
       }
-
       for (let i = 0; i < rooms.length; i++) {
         const element: any = rooms[i];
         let lastMessage: any = await messageModel
-          .findOne({ roomId: element._id })
+          .find({ roomId: element._id })
           .sort({ createdAt: -1 });
         if (lastMessage) {
           element.lastMessage = lastMessage.message;
@@ -96,6 +144,7 @@ class RoomRepository {
       throw new Error("Unable to Get Room");
     }
   }
+
   //delete room
   async DeleteRoom(roomInputs: deleteRoomRequest) {
     try {
