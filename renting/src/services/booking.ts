@@ -169,6 +169,24 @@ class bookingService {
         }
     }
 
+    async BlockedBooking(bookingId: string, reason: string) {
+        try {
+            const existingBooking = await this.repository.BlockedBooking(bookingId, reason);
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Profile Not found" });
+        }
+    }
+
+    async UnBlockBooking(bookingId: string) {
+        try {
+            const existingBooking = await this.repository.UnBlockBooking(bookingId);
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Profile Not found" });
+        }
+    }
+
     //count booking
     async CountProductBooking(bookingInputs: { productId: string }) {
         try {

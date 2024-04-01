@@ -223,6 +223,25 @@ export default (app: Express) => {
         }
     });
 
+    // API = block booking
+  app.post('/block-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await service.BlockedBooking(req.body.bookingId, req.body.reason);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/unblock-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await service.UnBlockBooking(req.body.bookingId);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
     //API = count Booking
     app.get('/count-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

@@ -1487,6 +1487,36 @@ class BookingRepository {
     }
   }
 
+  async BlockedBooking(bookingId: string, blockedReason: string) {
+    try {
+      const booking = await bookingModel.findOneAndUpdate(
+        { _id: bookingId },
+        { isBlocked: true, blockedReason: blockedReason, status: "Blocked", $push: { statusHistory: "Blocked" } },
+        { new: true }
+      );
+
+      return booking;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Delete User");
+    }
+  }
+
+  async UnBlockBooking(bookingId: string) {
+    try {
+      const booking = await bookingModel.findOneAndUpdate(
+        { _id: bookingId },
+        { isBlocked: false, blockedReason: '', status: "UnBlocked", $push: { statusHistory: "UnBlocked" } },
+        { new: true }
+      );
+
+      return booking;
+    } catch (error) {
+      console.log("err", error);
+      throw new Error("Error on Delete User");
+    }
+  }
+
   //count booking
   async CountProductBooking(bookingInputs: { productId: string }) {
     try {
