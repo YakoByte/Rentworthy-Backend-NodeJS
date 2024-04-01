@@ -668,7 +668,6 @@ class ProductRepository {
             as: "userId",
           },
         },
-        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);      
 
       const wishlistPromises = await Promise.all(
