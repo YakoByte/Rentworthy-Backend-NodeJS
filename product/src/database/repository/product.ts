@@ -426,6 +426,7 @@ class ProductRepository {
             as: "userId",
           },
         },
+        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -548,6 +549,7 @@ class ProductRepository {
             as: "userId",
           },
         },
+        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -640,12 +642,12 @@ class ProductRepository {
   }
 
   //get all product
-  async getAllProduct({ skip, limit, userId }: { skip: number; limit: number; userId: string }) {    
+  async getAllProduct(productInputs: { skip: number; limit: number; userId: string, price?: string }) {    
     try {
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
-        { $skip: skip },
-        { $limit: limit },
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -666,6 +668,7 @@ class ProductRepository {
             as: "userId",
           },
         },
+        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);      
 
       const wishlistPromises = await Promise.all(
@@ -726,9 +729,9 @@ class ProductRepository {
 
             let wishlistData = null;
 
-            if (userId) {
+            if (productInputs.userId) {
               wishlistData = await Wishlists.findOne({
-                userId: userId,
+                userId: productInputs.userId,
                 productIds: element._id,
               });
             }
@@ -874,7 +877,7 @@ class ProductRepository {
   }
 
   // get product by location
-  async getProductByLocation(productInputs: { lat: number; long: number; userId: string }) {
+  async getProductByLocation(productInputs: { lat: number; long: number; userId: string, price?: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -909,6 +912,7 @@ class ProductRepository {
             as: "userId",
           },
         },
+        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -1001,7 +1005,7 @@ class ProductRepository {
   }
 
   // get product by name and search using regex
-  async getProductByName(productInputs: { name: string; userId: string }) {
+  async getProductByName(productInputs: { name: string; userId: string, price?: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -1031,6 +1035,7 @@ class ProductRepository {
             as: "userId",
           },
         },
+        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(

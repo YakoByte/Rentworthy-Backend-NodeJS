@@ -78,6 +78,14 @@ class BookingRepository {
       const booking = new bookingModel(tempObj);
       bookingResult = await booking.save();
 
+      if(bookingInputs.status) {
+        await bookingModel.findByIdAndUpdate(
+          bookingResult._id, 
+          { $push: { statusHistory: bookingInputs.status } }, 
+          { new: true }
+        );
+      }
+
       if (bookingResult) {
         let tempBody = {
           productId: bookingInputs.productId,
@@ -198,6 +206,13 @@ class BookingRepository {
       const booking = new bookingModel(tempObj);
       bookingResult = await booking.save();
 
+      if(bookingInputs.status) {
+        await bookingModel.findByIdAndUpdate(
+          bookingResult._id, 
+          { $push: { statusHistory: bookingInputs.status } }, 
+          { new: true }
+        );
+      }
       
       if (bookingResult) {
         let tempBody = {
@@ -1082,6 +1097,14 @@ class BookingRepository {
         { new: true }
       );
       if (bookingResult) {
+        if(bookingInputs.status) {
+          await bookingModel.findByIdAndUpdate(
+            bookingResult._id, 
+            { $push: { statusHistory: bookingInputs.status } }, 
+            { new: true }
+          );
+        }
+
         return bookingResult;
       }
       return { message: "Booking not found" };
@@ -1100,6 +1123,14 @@ class BookingRepository {
         { new: true }
       );
       if (bookingResult) {
+        if(bookingInputs.status) {
+          await bookingModel.findByIdAndUpdate(
+            bookingResult._id, 
+            { $push: { statusHistory: bookingInputs.status } }, 
+            { new: true }
+          );
+        } 
+
         return bookingResult;
       }
         return { message: "Booking not found" };
@@ -1129,11 +1160,18 @@ class BookingRepository {
       if (!product) {
         return { message: "unauthorized user for this product" };
       }
+
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
-        { isAccepted: true, acceptedBy: bookingInputs.acceptedBy, status: "Confirmed" },
+        { 
+          isAccepted: false, 
+          acceptedBy: bookingInputs.acceptedBy, 
+          status: "Confirmed", 
+          $push: { statusHistory: "Confirmed" } 
+        },
         { new: true }
       );
+      
       if (bookingResult) {
         const findUser = await bookingModel.aggregate([
           {
@@ -1187,9 +1225,15 @@ class BookingRepository {
       if (!product) {
         return { message: "unauthorized user for this product" };
       }
+
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
-        { isAccepted: false, acceptedBy: bookingInputs.acceptedBy, status: "Rejected" },
+        { 
+          isAccepted: false, 
+          acceptedBy: bookingInputs.acceptedBy, 
+          status: "Rejected", 
+          $push: { statusHistory: "Rejected" } 
+        },
         { new: true }
       );
 
@@ -1254,6 +1298,7 @@ class BookingRepository {
       if (!booking) {
         return { message: "Booking not found" };
       }
+
       //check product owner
       let product = await productModel.findOne({
         _id: booking.productId,
@@ -1263,13 +1308,19 @@ class BookingRepository {
       if (!product) {
         return { message: "unauthorized user for this product" };
       }
+
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
-        { isAccepted: false, acceptedBy: bookingInputs.acceptedBy, status: "Rejected" },
+        { 
+          isAccepted: false, 
+          acceptedBy: bookingInputs.acceptedBy, 
+          status: "Rejected", 
+          $push: { statusHistory: "Rejected" } 
+        },
         { new: true }
       );
 
-      if (bookingResult) {
+      if (bookingResult) {        
         // Prepare data for updating product reservation status
       let tempBody = {
         productId: bookingResult.productId,
@@ -1369,9 +1420,10 @@ class BookingRepository {
     try {
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
-        { isDeleted: true, status:  "Cancelled" },
+        { isDeleted: true, status:  "Cancelled", $push: { statusHistory: "Cancelled" }},
         { new: true }
       );
+
       if (bookingResult) {
         return bookingResult;
       }

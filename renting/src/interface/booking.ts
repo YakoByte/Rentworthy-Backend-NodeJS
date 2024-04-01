@@ -97,6 +97,7 @@ export interface Booking extends Document {
     totalAmount: number;
     expandId?: Types.ObjectId;
     isAccepted?: boolean;
+    statusHistory?: string[];
     status?: string;
     bookingTime?:Date;
     acceptedBy?: string;
@@ -105,6 +106,7 @@ export interface Booking extends Document {
 export interface bookingRequest {
     _id?: string;
     productId: string;
+    statusHistory?: string[];
     status?: string;
     startDate: Date;
     endDate: Date;
@@ -121,14 +123,13 @@ export interface bookingRequest {
     price: string;
     totalAmount: string;
     expandId?: string;
+    acceptedBy?: string
 }
 
 export interface bookingRequestWithPayment {
     _id?: string;
     productId: string;
-    // paymentId: Types.ObjectId;
-    // paymentMethodId: string
-    // paymentIntentId: string
+    statusHistory?: string[];
     status?: string;
     startDate: Date;
     endDate: Date;
@@ -158,9 +159,10 @@ export interface bookingGetRequest {
     page?: string;
     limit?: string;
     productId?: string;
-    startDate?: string;   // pending, accepted, rejected, completed
+    startDate?: string; 
     endDate?: string;
-    status?: string;      // activeBooking, requests, rented, requested
+    statusHistory?: string[];
+    status?: string;     
 }
 
 // for delete booking

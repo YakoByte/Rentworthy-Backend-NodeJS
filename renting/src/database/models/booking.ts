@@ -79,6 +79,11 @@ const bookingSchema: Schema = new Schema<Booking>(
                 ref: "image",
             }],
         }],
+        statusHistory: [{
+            type: String,
+            default: "Requested",
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled"]
+        }],
         status: {
             type: String,
             default: "Requested",

@@ -47,22 +47,26 @@ class productService {
         existingProduct = await this.repository.getProductByName({
           name: productInputs.search,
           userId: productInputs.userId || "",
+          price: productInputs.price
         });
       } else if (productInputs.categoryId) {
         existingProduct = await this.repository.getProductByCategoryId({
           categoryId: productInputs.categoryId,
           userId: productInputs.userId || "",
+          price: productInputs.price
         });
       } else if (productInputs.subCategoryId) {
         existingProduct = await this.repository.getProductBySubCategoryId({
           subCategoryId: productInputs.subCategoryId,
           userId: productInputs.userId || "",
+          price: productInputs.price
         });
       } else if (productInputs.lat && productInputs.long) {
         existingProduct = await this.repository.getProductByLocation({
           lat: Number(productInputs.lat),
           long: Number(productInputs.long),
           userId: productInputs.userId || "",
+          price: productInputs.price
         });
       } else if (productInputs.price) {
         existingProduct = await this.repository.getProductPriceSortingWise({
@@ -79,6 +83,7 @@ class productService {
               Number(productInputs.limit) || 0,
           limit: Number(productInputs.limit) || 10,
           userId: productInputs.userId || "",
+          price: productInputs.price
         });
       }
 
