@@ -1434,6 +1434,59 @@ class BookingRepository {
     }
   }
 
+  //track booking by id
+  async trackBookingById(bookingInputs: { _id: string }) {
+    try {
+      const bookingResult = await bookingModel.findOne({ _id: bookingInputs._id });
+
+      if (bookingResult) {
+        const data = {
+          _id: bookingResult._id,
+          productId: bookingResult.productId,
+          userId: bookingResult.userId,
+          paymentId: bookingResult.paymentId,
+          quantity: bookingResult.quantity,
+          bookingTime: bookingResult.bookingTime,
+          currentStatus: bookingResult.status,
+          history: bookingResult.statusHistory 
+        }
+        return data;
+      }
+
+      return { message: "Booking not found" };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to delete Booking");
+    }
+  }
+
+  //track booking
+  async trackBooking(bookingInputs: { skip: number, limit: number }) {
+    try {
+      const bookingResult = await bookingModel.find().skip(bookingInputs.skip).limit(bookingInputs.limit);
+
+      if (bookingResult) {
+        return Promise.all(bookingResult.map(async (element) => {
+          return {
+            _id: element._id,
+            productId: element.productId,
+            userId: element.userId,
+            paymentId: element.paymentId,
+            quantity: element.quantity,
+            bookingTime: element.bookingTime,
+            currentStatus: element.status,
+            history: element.statusHistory 
+          };
+        }));
+      }      
+
+      return { message: "Booking not found" };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to delete Booking");
+    }
+  }
+
   //count booking
   async CountProductBooking(bookingInputs: { productId: string }) {
     try {

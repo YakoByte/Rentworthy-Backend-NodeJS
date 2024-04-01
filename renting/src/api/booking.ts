@@ -206,6 +206,23 @@ export default (app: Express) => {
         }
     });
 
+    //API = track booking
+    app.get('/track-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let data;
+            let authUser = req.user as { _id: string; roleName: string; email: string; };
+            if(req.query._id) {
+                data = await service.trackBookingById({_id: req.query._id, user: authUser})
+            }
+            else {
+                data = await service.trackBooking({page: req.query.page, limit: req.query.limit, user: authUser});
+            }
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     //API = count Booking
     app.get('/count-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

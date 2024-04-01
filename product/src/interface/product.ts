@@ -133,6 +133,14 @@ export interface productSorting {
     userId?: string;
     skip: number;
     limit: number;
+    _id?: string
+    search?: string;
+    categoryId?: string;
+    subCategoryId?: string;
+    ownerId?: string;
+    roleName?: string;
+    lat?: string;
+    long?: string;
 }
 
 // for delete Product

@@ -123,7 +123,9 @@ export interface bookingRequest {
     price: string;
     totalAmount: string;
     expandId?: string;
-    acceptedBy?: string
+    acceptedBy?: string;
+    page?: string;
+    limit?: string;
 }
 
 export interface bookingRequestWithPayment {

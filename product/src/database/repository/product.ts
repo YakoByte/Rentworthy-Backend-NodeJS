@@ -426,7 +426,6 @@ class ProductRepository {
             as: "userId",
           },
         },
-        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -549,7 +548,6 @@ class ProductRepository {
             as: "userId",
           },
         },
-        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -642,7 +640,7 @@ class ProductRepository {
   }
 
   //get all product
-  async getAllProduct(productInputs: { skip: number; limit: number; userId: string, price?: string }) {    
+  async getAllProduct(productInputs: { skip: number; limit: number; userId: string}) {    
     try {
       const findProduct = await productModel.aggregate([
         { $match: { isDeleted: false, isActive: true } },
@@ -759,8 +757,42 @@ class ProductRepository {
   // get product sorting wise
   async getProductPriceSortingWise(productInputs: productSorting) {
     try {
+      let criteria: any = { isDeleted: false, isActive: true };
+      if (productInputs._id) {
+        criteria._id = new Types.ObjectId(productInputs._id);
+      }
+      else if (productInputs.categoryId) {
+        criteria.categoryId = new Types.ObjectId(productInputs.categoryId);
+      }
+      else if (productInputs.subCategoryId) {
+        criteria.subCategoryId = new Types.ObjectId(productInputs.subCategoryId);
+      }
+      else if (productInputs.userId) {
+        criteria.userId = new Types.ObjectId(productInputs.userId);
+      }
+      else if (productInputs.ownerId) {
+        criteria.userId = new Types.ObjectId(productInputs.ownerId);
+      }
+      else if (productInputs.search) {
+        criteria.name = { $regex: productInputs.search, $options: "i" }
+      }
+      else if(productInputs.lat && productInputs.long) {
+        criteria = {
+          $geoNear: {
+              near: {
+                  type: "Point",
+                  coordinates: [Number(productInputs.lat), Number(productInputs.long)],
+              },
+              distanceField: "dist.calculated",
+              maxDistance: 100000,
+              includeLocs: "dist.location",
+              spherical: true,
+          },
+      };
+      }
+
       const findProduct = await productModel.aggregate([
-        { $match: { isDeleted: false, isActive: true } },
+        { $match: criteria },
         { $skip: productInputs.skip },
         { $limit: productInputs.limit },
         {
@@ -876,7 +908,7 @@ class ProductRepository {
   }
 
   // get product by location
-  async getProductByLocation(productInputs: { lat: number; long: number; userId: string, price?: string }) {
+  async getProductByLocation(productInputs: { lat: number; long: number; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -911,7 +943,6 @@ class ProductRepository {
             as: "userId",
           },
         },
-        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
@@ -1004,7 +1035,7 @@ class ProductRepository {
   }
 
   // get product by name and search using regex
-  async getProductByName(productInputs: { name: string; userId: string, price?: string }) {
+  async getProductByName(productInputs: { name: string; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -1034,7 +1065,6 @@ class ProductRepository {
             as: "userId",
           },
         },
-        { $sort: { price: productInputs.price === "asc" ? 1 : -1 } },
       ]);
 
       const wishlistPromises = await Promise.all(
