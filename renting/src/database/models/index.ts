@@ -9,6 +9,7 @@ import imageModel from './image';
 import profileModel from './profile';
 import productReservationModel from './productreservation';
 import PaymentModel from './payment';
+import AddressModel from './address';
 
 // ... repeat for each model
 
@@ -23,4 +24,5 @@ export {
     profileModel,
     productReservationModel,
     PaymentModel,
+    AddressModel,
 };

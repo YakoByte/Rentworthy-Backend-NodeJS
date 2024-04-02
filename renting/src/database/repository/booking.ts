@@ -1,4 +1,4 @@
-import { bookingModel, productModel, productReservationModel, profileModel, PaymentModel } from "../models";
+import { bookingModel, productModel, productReservationModel, profileModel, PaymentModel, AddressModel } from "../models";
 import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 import {
@@ -1441,6 +1441,7 @@ class BookingRepository {
 
       if (bookingResult) {
         const payment = await PaymentModel.findById(bookingResult.paymentId);
+        const address = await AddressModel.findById(bookingResult.addressId);
         const product = await productModel.findById(bookingResult.paymentId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
@@ -1452,6 +1453,15 @@ class BookingRepository {
         const data =  {
             _id: bookingResult._id,
             productId: bookingResult.productId,
+            address: {
+              phoneNumber: address?.phoneNo,
+              zipcode: address?.zipcode,
+              state: address?.state,
+              city: address?.city,
+              fullAddress: address?.fullAddress,
+              unitNumber: address?.unitNumber,
+              typeOfAddress: address?.typeOfAddress
+            },
             productName: product?.name,
             productImage: product?.images,
             amount: payment?.amount,
