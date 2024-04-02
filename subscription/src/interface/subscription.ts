@@ -15,6 +15,8 @@ export interface AuthenticatedRequest extends Request {
     description?: string;
     title?: string;
     timelimit?: string;
+    page?: string;
+    limit?: string;
   };
   files?: any;
 }

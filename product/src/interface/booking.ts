@@ -20,7 +20,10 @@ export interface Booking extends Document {
     totalAmount: number;
     expandId?: Types.ObjectId;
     isAccepted?: boolean;
+    isBlocked?: boolean;
+    blockedReason?: string; 
+    statusHistory?: string[];
     status?: string;
-    bookingTime?: Date;
+    bookingTime?:Date;
     acceptedBy?: string;
 }

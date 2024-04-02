@@ -1,4 +1,4 @@
-import { bookingModel, productModel, productReservationModel, profileModel } from "../models";
+import { bookingModel, productModel, productReservationModel, profileModel, PaymentModel } from "../models";
 import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 import {
@@ -1440,16 +1440,29 @@ class BookingRepository {
       const bookingResult = await bookingModel.findOne({ _id: bookingInputs._id });
 
       if (bookingResult) {
-        const data = {
-          _id: bookingResult._id,
-          productId: bookingResult.productId,
-          userId: bookingResult.userId,
-          paymentId: bookingResult.paymentId,
-          quantity: bookingResult.quantity,
-          bookingTime: bookingResult.bookingTime,
-          currentStatus: bookingResult.status,
-          history: bookingResult.statusHistory 
-        }
+        const payment = await PaymentModel.findById(bookingResult.paymentId);
+        const product = await productModel.findById(bookingResult.paymentId);
+          if(product?.images && product.images.length > 0) {
+            product.images.forEach(async(element: any) => {
+              let newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            });
+          }
+
+        const data =  {
+            _id: bookingResult._id,
+            productId: bookingResult.productId,
+            productName: product?.name,
+            productImage: product?.images,
+            amount: payment?.amount,
+            paymentReferenceId: payment?.paymentId,
+            userId: bookingResult.userId,
+            paymentId: bookingResult.paymentId,
+            quantity: bookingResult.quantity,
+            bookingTime: bookingResult.bookingTime,
+            currentStatus: bookingResult.status,
+            history: bookingResult.statusHistory 
+          };
         return data;
       }
 
@@ -1467,9 +1480,23 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
+          const product = await productModel.findById(element.paymentId);
+          if(product?.images && product.images.length > 0) {
+            product.images.forEach(async(element: any) => {
+              let newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            });
+          }
+
+          const payment = await PaymentModel.findById(element.paymentId);
+
           return {
             _id: element._id,
             productId: element.productId,
+            productName: product?.name,
+            productImage: product?.images,
+            amount: payment?.amount,
+            paymentReferenceId: payment?.paymentId,
             userId: element.userId,
             paymentId: element.paymentId,
             quantity: element.quantity,

@@ -34,6 +34,13 @@ const bookingSchema: Schema = new Schema<Booking>(
             type: Boolean,
             default: false,
         },
+        isBlocked: {
+            type: Boolean,
+            default: false,
+        },
+        blockedReason: {
+            type: String,
+        },
         images: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -79,10 +86,15 @@ const bookingSchema: Schema = new Schema<Booking>(
                 ref: "image",
             }],
         }],
+        statusHistory: [{
+            type: String,
+            default: "Requested",
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked"]
+        }],
         status: {
             type: String,
             default: "Requested",
-            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled"]
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked"]
         },
         bookingTime: {
             type: Date,

@@ -8,6 +8,7 @@ import expandDatesModel from './expandDates';
 import imageModel from './image';
 import profileModel from './profile';
 import productReservationModel from './productreservation';
+import PaymentModel from './payment';
 
 // ... repeat for each model
 
@@ -21,4 +22,5 @@ export {
     imageModel,
     profileModel,
     productReservationModel,
+    PaymentModel,
 };
