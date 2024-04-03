@@ -1459,7 +1459,7 @@ class BookingRepository {
       const bookingResult = await bookingModel.findOne({ _id: bookingInputs._id });
 
       if (bookingResult) {
-        const payment = await PaymentModel.findById(bookingResult.paymentId);
+        const payment = await PaymentModel.findById(bookingResult.productId);
         const address = await AddressModel.findById(bookingResult.addressId);
         const product = await productModel.findById(bookingResult.paymentId);
           if(product?.images && product.images.length > 0) {
@@ -1467,7 +1467,7 @@ class BookingRepository {
               let newPath = await generatePresignedUrl(element.imageName);
               element.path = newPath;
             });
-          }
+          }          
 
         const data =  {
             _id: bookingResult._id || "",
@@ -1509,7 +1509,7 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element.paymentId);
+          const product = await productModel.findById(element.productId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element.imageName);
@@ -1560,7 +1560,7 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element.paymentId);
+          const product = await productModel.findById(element.productId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element.imageName);
