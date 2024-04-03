@@ -1459,12 +1459,12 @@ class BookingRepository {
       const bookingResult = await bookingModel.findOne({ _id: bookingInputs._id });
 
       if (bookingResult) {
-        const payment = await PaymentModel.findById(bookingResult.productId);
-        const address = await AddressModel.findById(bookingResult.addressId);
-        const product = await productModel.findById(bookingResult.paymentId);
+        const payment = await PaymentModel.findById(bookingResult?.productId);
+        const address = await AddressModel.findById(bookingResult?.addressId);
+        const product = await productModel.findById(bookingResult?.paymentId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
-              let newPath = await generatePresignedUrl(element.imageName);
+              let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
             });
           }          
@@ -1505,12 +1505,12 @@ class BookingRepository {
   //track booking by userID
   async trackUserBooking(bookingInputs: { userId: string, skip: number, limit: number }) {
     try {
-      const bookingResult = await bookingModel.find({userId: bookingInputs.userId}).skip(bookingInputs.skip).limit(bookingInputs.limit);
+      const bookingResult = await bookingModel.find({userId: bookingInputs?.userId}).skip(bookingInputs?.skip).limit(bookingInputs?.limit);
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
           const product = await productModel.findById(element?.productId);
-          if(product?.images && product.images.length > 0) {
+          if(product?.images && product?.images?.length > 0) {
             product.images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
@@ -1556,12 +1556,12 @@ class BookingRepository {
   //track booking
   async trackBooking(bookingInputs: { skip: number, limit: number }) {
     try {
-      const bookingResult = await bookingModel.find().skip(bookingInputs.skip).limit(bookingInputs.limit);
+      const bookingResult = await bookingModel.find().skip(bookingInputs?.skip).limit(bookingInputs?.limit);
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
           const product = await productModel.findById(element?.productId);
-          if(product?.images && product.images.length > 0) {
+          if(product?.images && product?.images?.length > 0) {
             product.images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
