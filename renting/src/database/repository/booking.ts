@@ -1461,19 +1461,46 @@ class BookingRepository {
       if (bookingResult) {
         const payment = await PaymentModel.findById(bookingResult?.productId);
         const address = await AddressModel.findById(bookingResult?.addressId);
-        const product = await productModel.findById(bookingResult?.paymentId);
-          if(product?.images && product.images.length > 0) {
-            product.images.forEach(async(element: any) => {
-              let newPath = await generatePresignedUrl(element?.imageName);
-              element.path = newPath;
-            });
-          }          
+        const product: any = await productModel.aggregate([
+          {
+            $match: {
+              _id: new Types.ObjectId(bookingResult?.productId),
+            },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "images",
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+              ],
+              as: "userId",
+            },
+          },
+        ]);
+        
+        if(product[0]?.images && product[0]?.images?.length > 0) {
+          product[0].images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element?.imageName);
+            element.path = newPath;
+          });
+        }         
 
         const data =  {
             _id: bookingResult?._id || "",
             productId: bookingResult?.productId || "",
-            productName: product?.name || "",
-            productImage: product?.images || "",
+            productName: product[0]?.name || "",
+            productImage: product[0]?.images || "",
             amount: payment?.amount || "",
             address: {
               phoneNumber: address?.phoneNo || "",
@@ -1509,9 +1536,36 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element?.productId);
-          if(product?.images && product?.images?.length > 0) {
-            product.images.forEach(async(element: any) => {
+          const product: any = await productModel.aggregate([
+            {
+              $match: {
+                _id: new Types.ObjectId(element?.productId),
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "images",
+                foreignField: "_id",
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                as: "images",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+                ],
+                as: "userId",
+              },
+            },
+          ]);
+          
+          if(product[0]?.images && product[0]?.images?.length > 0) {
+            product[0].images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
             });
@@ -1523,8 +1577,8 @@ class BookingRepository {
           return {
             _id: element?._id || "",
             productId: element?.productId || "",
-            productName: product?.name || "",
-            productImage: product?.images || "",
+            productName: product[0]?.name || "",
+            productImage: product[0]?.images || "",
             amount: payment?.amount || "",
             address: {
               phoneNumber: address?.phoneNo || "",
@@ -1560,9 +1614,36 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element?.productId);
-          if(product?.images && product?.images?.length > 0) {
-            product.images.forEach(async(element: any) => {
+          const product: any = await productModel.aggregate([
+            {
+              $match: {
+                _id: new Types.ObjectId(element?.productId),
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "images",
+                foreignField: "_id",
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                as: "images",
+              },
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+                ],
+                as: "userId",
+              },
+            },
+          ]);
+          
+          if(product[0]?.images && product[0]?.images?.length > 0) {
+            product[0].images.forEach(async(element: any) => {
               let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
             });
@@ -1574,8 +1655,8 @@ class BookingRepository {
           return {
             _id: element?._id || "",
             productId: element?.productId || "",
-            productName: product?.name || "",
-            productImage: product?.images || "",
+            productName: product[0]?.name || "",
+            productImage: product[0]?.images || "",
             amount: payment?.amount || "",
             address: {
               phoneNumber: address?.phoneNo || "",
@@ -1600,7 +1681,7 @@ class BookingRepository {
       return { message: "Booking not found" };
     } catch (err) {
       console.log("error", err);
-      throw new Error("Unable to delete Booking");
+      throw new Error("Unable to Track Booking");
     }
   }
 
