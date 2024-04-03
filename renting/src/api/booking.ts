@@ -213,8 +213,9 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             if(req.query._id) {
                 data = await service.trackBookingById({_id: req.query._id, user: authUser})
-            }
-            else {
+            } else if (authUser.roleName === 'user') {
+                data = await service.trackUserBooking({page: req.query.page, limit: req.query.limit, user: authUser})
+            } else {
                 data = await service.trackBooking({page: req.query.page, limit: req.query.limit, user: authUser});
             }
             return res.json(data);
@@ -224,23 +225,37 @@ export default (app: Express) => {
     });
 
     // API = block booking
-  app.post('/block-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = await service.BlockedBooking(req.body.bookingId, req.body.reason);
-      return res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
+    app.post('/block-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const data = await service.BlockedBooking(req.body.bookingId, req.body.reason);
+        return res.json(data);
+      } catch (err) {
+        next(err);
+      }
+    });
 
-  app.post('/unblock-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = await service.UnBlockBooking(req.body.bookingId);
-      return res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
+    // API = block booking  
+    app.post('/unblock-booking',UserAuth, isAdmin, async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const data = await service.UnBlockBooking(req.body.bookingId);
+        return res.json(data);
+      } catch (err) {
+        next(err);
+      }
+    });
+
+    // API = update review of booking by id
+    app.put('/update-booking-review', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            if(!req.body._id) {
+                return res.json({ message: "Booking ID is required" })
+            }
+            const data = await service.updateBookingReview({_id: req.body._id, ownerReview: req.body?.ownerReview, rentalReview: req.body?.rentalReview});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 
     //API = count Booking
     app.get('/count-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

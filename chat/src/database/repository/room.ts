@@ -1,9 +1,11 @@
-import { roomModel, messageModel } from "../models";
+import { roomModel, messageModel, ProfileModel, ProductModel, BookingModel } from "../models";
 import {
   roomRequest,
   getRoomRequest,
   deleteRoomRequest,
 } from "../../interface/room";
+import { Types } from "mongoose";
+import { generatePresignedUrl } from "../../utils/aws";
 
 class RoomRepository {
   //create room
@@ -28,9 +30,8 @@ class RoomRepository {
 
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
-    try {            
+    try {                  
       let criteria: any = { isDeleted: false };
-      let room: any;
       if (roomInputs.productId) {
         criteria = { ...criteria, productId: roomInputs.productId };
         roomInputs.lastMessage = true;
@@ -39,6 +40,15 @@ class RoomRepository {
         criteria = { ...criteria, _id: roomInputs._id };
         roomInputs.lastMessage = true;
       }
+      if (roomInputs.vendorId) {
+        criteria = { ...criteria, vendorId: roomInputs.vendorId };
+      }
+      if (roomInputs.rentingId) {
+        criteria = { ...criteria, userId: roomInputs.rentingId };
+      }
+      if (roomInputs.bookingId) {
+        criteria = { ...criteria, bookingId: roomInputs.bookingId };
+      }
       if (roomInputs.userId) {
         criteria = {
           ...criteria,
@@ -46,65 +56,186 @@ class RoomRepository {
           isActive: true,
           isDeleted: false,
         };
-        room = await roomModel.find(criteria);
       }
-      if (roomInputs.vendorId) {
-        criteria = { ...criteria, vendorId: roomInputs.vendorId };
-        room = await roomModel.find(criteria);
-      }
-      if (roomInputs.rentingId) {
-        criteria = { ...criteria, userId: roomInputs.rentingId };
-        room = await roomModel.find(criteria);
-      }
-      if (roomInputs.unRead) {
-        // show only unread messages rooms
-        //if message is seen then dont show that room
-        let tempRooms: any = await roomModel.find(criteria);
-        room = [];
-        for (let i = 0; i < tempRooms.length; i++) {
-          const element: any = tempRooms[i];
-          let message: any = await messageModel.find({
-            roomId: element._id,
-            isSeen: false,
-          });
-          if (message) {
-            room.push({
-              ...element,
-              lastMessage: message.message,
-              lastMessageTime: message.createdAt,
-            });
-          }
-        }
-        // room = await roomModel.find(criteria);
-      }
-      if (roomInputs.lastMessage) {
-        // show only unread messages rooms
-        //if message is seen then dont show that room
-        let tempRooms: any = await roomModel.find(criteria).lean();
-        room = [];
-        for (let i = 0; i < tempRooms.length; i++) {
-          const element: any = tempRooms[i];
-          let message: any = await messageModel
+
+      let room = await roomModel.find(criteria);
+
+      if (!room) {
+        return { message: "Room not found" };
+      }   
+      
+      let AllRoom = [];
+
+      for (let i = 0; i < room.length; i++) {
+        const element: any = room[i];
+
+        let message: any = await messageModel
             .find({ roomId: element._id })
             .sort({ createdAt: -1 })
             .lean();
-          if (message) {
-            room.push({
-              ...element,
-              lastMessage: message.message,
-              lastMessageTime: message.createdAt,
-            });
-          } else {
-            room.push({ ...element, lastMessage: "", lastMessageTime: "" });
-          }
+        let unSeenMessageCount: any = await messageModel.countDocuments({
+          roomId: element._id,
+          isSeen: false,
+        });
+        let unSeenMessages: any = await messageModel.find({
+          roomId: element._id,
+          isSeen: false,
+        });
+      
+        let promiseArray: Promise<any>[] = [];
+        unSeenMessages.forEach((element: any) => {
+            promiseArray.push(new Promise((resolve, reject) => {
+                resolve({
+                    message: element.message,
+                    messageTime: element.createdAt,
+                });
+            }));
+        });
+  
+        unSeenMessages = await Promise.all(promiseArray);
+
+        let receiverProfile = await ProfileModel.aggregate([
+          {
+            $match: { userId: new Types.ObjectId(element.vendorId), isDeleted: false, isActive: true },
+          },
+          {
+            $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } },
+                ],
+                as: "profileImage",
+            },
+          }, 
+          {
+            $unwind: {
+              path: "$profileImage",
+              preserveNullAndEmptyArrays: true
+            }
+          },
+        ]);
+        if (receiverProfile.length > 0 && receiverProfile[0]?.profileImage?.imageName) {
+          receiverProfile[0].profile = await generatePresignedUrl(receiverProfile[0].profileImage.imageName);
         }
-        // room = await roomModel.find(criteria);
-      }
-      if (!room) {
-        return { message: "Room not found" };
+        
+        let senderProfile = await ProfileModel.aggregate([
+          {
+            $match: { userId: new Types.ObjectId(element.userId), isDeleted: false, isActive: true },
+          },
+          {
+            $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } },
+                ],
+                as: "profileImage",
+            },
+          }, 
+          {
+            $unwind: {
+              path: "$profileImage",
+              preserveNullAndEmptyArrays: true
+            }
+          },
+        ]);
+        if (senderProfile.length > 0 && senderProfile[0]?.profileImage?.imageName) {
+          senderProfile[0].profile = await generatePresignedUrl(senderProfile[0].profileImage.imageName);
+        }
+
+        let productProfile = await ProductModel.aggregate([
+          {
+            $match: { _id: new Types.ObjectId(element.productId) },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "images",
+            },
+          },
+          {
+            $unwind: {
+              path: "$profileImage",
+              preserveNullAndEmptyArrays: true
+            }
+          },
+        ]);
+        productProfile[0]?.images?.forEach(async(element: any) => {
+          let newPath = await generatePresignedUrl(element.imageName);
+          element.path = newPath;
+        });
+
+        let booking = await BookingModel.findById(element.bookingId);
+        let bookingData:any;
+        if(booking) {
+          let BookingProfile = await ProductModel.aggregate([
+            {
+              $match: { _id: new Types.ObjectId(booking.productId) },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "images",
+                foreignField: "_id",
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                as: "images",
+              },
+            },
+            {
+              $unwind: {
+                path: "$profileImage",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+          ]);
+          
+          Promise.all(BookingProfile.map(element => {
+            if (element.images) {
+                return Promise.all(element.images.map((imgelement: any) => {
+                    return generatePresignedUrl(imgelement.imageName).then(newPath => {
+                        element.path = newPath;
+                    });
+                }));
+            }
+          })).then(() => {
+              const bookingData = {
+                  BookingProfile: BookingProfile[0]?.images[0]?.path || "",
+                  BookingName: BookingProfile[0]?.name || "",
+              };
+              console.log("Booking data:", bookingData);
+          }).catch(error => {
+              console.error("An error occurred:", error);
+          });
+        }
+        
+        AllRoom.push({
+            _id: element?._id || "",
+            senderId: element?.senderId || "",
+            vendorId: element?.vendorId || "",
+            isDeleted: element?.isDeleted ? true : false,
+            isActive: element?.isActive ? true : false,
+            lastMessage: message?.message || "",
+            lastMessageTime: message.createdAt || "",
+            unSeenMessageCount: unSeenMessageCount,
+            unSeenMessages: unSeenMessages,
+            productProfile: productProfile[0]?.images[0]?.path || "",
+            productName: productProfile[0]?.name || "",
+            BookingProfile: bookingData?.BookingProfile || "",
+            BookingName: bookingData?.BookingName || "",
+            receiverProfile: receiverProfile[0]?.profile || "",
+            receiverName: receiverProfile[0]?.userName || "",
+            senderProfile: senderProfile[0]?.profile || "",
+            senderName: senderProfile[0]?.userName || "",
+        });
       }
 
-      return room;
+      return AllRoom;
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to Get Room");

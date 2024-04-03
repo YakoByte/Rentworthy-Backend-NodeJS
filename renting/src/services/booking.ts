@@ -114,6 +114,19 @@ class bookingService {
         }
     }
 
+    // update booking by id
+    async updateBookingReview(bookingInputs: bookingUpdateRequest) {
+        try {
+            const existingBooking: any = await this.repository.updateBookingReview(
+                bookingInputs
+            );
+
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to update Booking" });
+        }
+    }
+
     // update preRentalScreening by id
     async updatePreRentalScreeningById(bookingInputs: bookingRequest) {
         try {
@@ -144,6 +157,23 @@ class bookingService {
     async trackBooking(bookingInputs: bookingGetRequest) {
         try {
             const existingBooking: any = await this.repository.trackBooking({
+                skip:
+                    Number(bookingInputs.page) * Number(bookingInputs.limit) -
+                    Number(bookingInputs.limit) || 0,
+                limit: Number(bookingInputs.limit) || 10,
+            });
+
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
+    // track booking by id
+    async trackUserBooking(bookingInputs: bookingGetRequest) {
+        try {
+            const existingBooking: any = await this.repository.trackUserBooking({
+                userId: bookingInputs.user._id,
                 skip:
                     Number(bookingInputs.page) * Number(bookingInputs.limit) -
                     Number(bookingInputs.limit) || 0,

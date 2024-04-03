@@ -465,13 +465,11 @@ class BookingRepository {
           },
           {
             $lookup: {
-              from: "images",
-              localField: "profileImage",
-              foreignField: "_id",
-              pipeline: [
-                { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
-              ],
-              as: "profileImage",
+                from: "images",
+                localField: "images",
+                foreignField: "_id",
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                as: "images",
             },
           },
         ]);        
@@ -883,7 +881,10 @@ class BookingRepository {
             as: "productId",
           },
         },
-        { $unwind: "$productId" },
+        { $unwind: {
+          path: "$productId",
+          preserveNullAndEmptyArrays: true
+        }},
         {
           $lookup: {
             from: "users",
@@ -1114,6 +1115,24 @@ class BookingRepository {
     }
   }
 
+  //update booking by id
+  async updateBookingReview(bookingInputs: bookingUpdateRequest) {
+    try {
+      const bookingResult = await bookingModel.findOneAndUpdate(
+        { _id: bookingInputs._id, isDeleted: false },
+        { ...bookingInputs },
+        { new: true }
+      );
+      if (bookingResult) {
+        return bookingResult;
+      }
+      return { message: "Booking not found" };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to update Booking");
+    }
+  }
+  
   // update preRentalScreening by booking id
   async updatePreRentalScreeningByBookingId(bookingInputs: bookingRequest) {
     try {
@@ -1475,6 +1494,47 @@ class BookingRepository {
           };
         return data;
       }
+
+      return { message: "Booking not found" };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to delete Booking");
+    }
+  }
+
+  //track booking by userID
+  async trackUserBooking(bookingInputs: { userId: string, skip: number, limit: number }) {
+    try {
+      const bookingResult = await bookingModel.find({userId: bookingInputs.userId}).skip(bookingInputs.skip).limit(bookingInputs.limit);
+
+      if (bookingResult) {
+        return Promise.all(bookingResult.map(async (element) => {
+          const product = await productModel.findById(element.paymentId);
+          if(product?.images && product.images.length > 0) {
+            product.images.forEach(async(element: any) => {
+              let newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            });
+          }
+
+          const payment = await PaymentModel.findById(element.paymentId);
+
+          return {
+            _id: element._id,
+            productId: element.productId,
+            productName: product?.name,
+            productImage: product?.images,
+            amount: payment?.amount,
+            paymentReferenceId: payment?.paymentId,
+            userId: element.userId,
+            paymentId: element.paymentId,
+            quantity: element.quantity,
+            bookingTime: element.bookingTime,
+            currentStatus: element.status,
+            history: element.statusHistory 
+          };
+        }));
+      }      
 
       return { message: "Booking not found" };
     } catch (err) {

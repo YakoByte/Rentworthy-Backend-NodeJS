@@ -106,6 +106,12 @@ const bookingSchema: Schema = new Schema<Booking>(
             ref: "user",
             required: false,
         },
+        rentalReview: {
+            type: String
+        },
+        ownerReview: {
+            type: String
+        }
     },
     { timestamps: true }
 );

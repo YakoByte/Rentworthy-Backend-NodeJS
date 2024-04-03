@@ -8,6 +8,10 @@ const roomSchema: Schema = new Schema<Room>(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Product",
         },
+        bookingId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Booking",
+        },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

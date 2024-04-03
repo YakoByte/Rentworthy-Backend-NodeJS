@@ -27,6 +27,8 @@ export interface postAuthenticatedRequest extends Request {
         totalAmount: string;
         isAccepted?: boolean;
         acceptedBy?: string;
+        rentalReview?: string;
+        ownerReview?: string;
         status?: string;
     }
 
@@ -103,6 +105,8 @@ export interface Booking extends Document {
     status?: string;
     bookingTime?:Date;
     acceptedBy?: string;
+    rentalReview?: string;
+    ownerReview?: string;
 }
 
 export interface bookingRequest {
@@ -126,6 +130,8 @@ export interface bookingRequest {
     totalAmount: string;
     expandId?: string;
     acceptedBy?: string;
+    rentalReview?: string;
+    ownerReview?: string;
     page?: string;
     limit?: string;
 }
@@ -148,8 +154,10 @@ export interface bookingRequestWithPayment {
 
 export interface bookingUpdateRequest {
     _id: string,
-    isAccepted: boolean,    // true or false
-    acceptedBy: string
+    isAccepted?: boolean,    // true or false
+    acceptedBy?: string,
+    rentalReview?: string;
+    ownerReview?: string;
 }
 
 // for get booking
@@ -167,6 +175,8 @@ export interface bookingGetRequest {
     endDate?: string;
     statusHistory?: string[];
     status?: string;     
+    rentalReview?: string;
+    ownerReview?: string;
 }
 
 // for delete booking

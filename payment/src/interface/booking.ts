@@ -26,4 +26,6 @@ export interface Booking extends Document {
     status?: string;
     bookingTime?:Date;
     acceptedBy?: string;
+    rentalReview?: string;
+    ownerReview?: string;
 }

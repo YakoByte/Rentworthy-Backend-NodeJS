@@ -62,23 +62,30 @@ class MessageRepository {
       if (messageInputs.senderId) {
         criteria = { ...criteria, senderId: messageInputs.senderId };
       }
-      else if (messageInputs.receiverId) {
+      if (messageInputs.receiverId) {
         criteria = { ...criteria, receiverId: messageInputs.receiverId };
       }
-      else if (messageInputs.roomId) {
+      if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
       } 
-      else {
-        criteria = {
-        ...criteria,
-        $or: [{ receiverId: messageInputs.userId }, { senderId: messageInputs.userId }],
-        }
+
+      if (messageInputs?.receiverId === messageInputs?.userId && messageInputs?.roomId) {
+        await messageModel.findOneAndUpdate(
+            { receiverId: messageInputs.receiverId, roomId: messageInputs.roomId },
+            { $set: { isSeen: true } },
+            { new: true }
+        );
       }
-      let message = await messageModel.find(criteria);
-      if (!message) {
-        return { message: "Message not found" };
+
+      let messages = await messageModel.find(criteria);
+      if (!messages || messages.length === 0) {
+          messages = await messageModel.find({
+              isDeleted: false,
+              $or: [{ receiverId: messageInputs.userId }, { senderId: messageInputs.userId }]
+          });
       }
-      return message;
+      
+      return messages;
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to Get Message");
