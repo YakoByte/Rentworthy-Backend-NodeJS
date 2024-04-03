@@ -77,8 +77,8 @@ export interface subscriptionGetRequest {
   timelimit?: string;
   title?: string;
   planId?: string;
-  page?: number;
-  limit?: number;
+  page?: string;
+  limit?: string;
 }
 
 export interface subscriptionDeleteRequest {
