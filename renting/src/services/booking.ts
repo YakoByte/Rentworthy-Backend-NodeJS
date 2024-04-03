@@ -173,7 +173,7 @@ class bookingService {
     async trackUserBooking(bookingInputs: bookingGetRequest) {
         try {
             const existingBooking: any = await this.repository.trackUserBooking({
-                userId: bookingInputs.user._id,
+                userId: bookingInputs.userId || "",
                 skip:
                     Number(bookingInputs.page) * Number(bookingInputs.limit) -
                     Number(bookingInputs.limit) || 0,

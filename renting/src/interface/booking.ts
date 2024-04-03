@@ -168,6 +168,7 @@ export interface bookingGetRequest {
         roleName: string;
         email: string;
     };
+    userId?: string;
     page?: string;
     limit?: string;
     productId?: string;

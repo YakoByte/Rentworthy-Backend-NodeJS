@@ -1470,27 +1470,27 @@ class BookingRepository {
           }
 
         const data =  {
-            _id: bookingResult._id,
-            productId: bookingResult.productId,
+            _id: bookingResult._id || "",
+            productId: bookingResult.productId || "",
+            productName: product?.name || "",
+            productImage: product?.images || "",
+            amount: payment?.amount || "",
             address: {
-              phoneNumber: address?.phoneNo,
-              zipcode: address?.zipcode,
-              state: address?.state,
-              city: address?.city,
-              fullAddress: address?.fullAddress,
-              unitNumber: address?.unitNumber,
-              typeOfAddress: address?.typeOfAddress
+              phoneNumber: address?.phoneNo || "",
+              zipcode: address?.zipcode || "",
+              state: address?.state || "",
+              city: address?.city || "",
+              fullAddress: address?.fullAddress || "",
+              unitNumber: address?.unitNumber || "",
+              typeOfAddress: address?.typeOfAddress || ""
             },
-            productName: product?.name,
-            productImage: product?.images,
-            amount: payment?.amount,
-            paymentReferenceId: payment?.paymentId,
-            userId: bookingResult.userId,
-            paymentId: bookingResult.paymentId,
-            quantity: bookingResult.quantity,
-            bookingTime: bookingResult.bookingTime,
-            currentStatus: bookingResult.status,
-            history: bookingResult.statusHistory 
+            paymentReferenceId: payment?.paymentId || "",
+            userId: bookingResult.userId || "",
+            paymentId: bookingResult.paymentId || "",
+            quantity: bookingResult.quantity || "",
+            bookingTime: bookingResult.bookingTime || "",
+            currentStatus: bookingResult.status || "",
+            history: bookingResult.statusHistory || [] 
           };
         return data;
       }
@@ -1518,20 +1518,30 @@ class BookingRepository {
           }
 
           const payment = await PaymentModel.findById(element.paymentId);
+          const address = await AddressModel.findById(element.addressId);
 
           return {
-            _id: element._id,
-            productId: element.productId,
-            productName: product?.name,
-            productImage: product?.images,
-            amount: payment?.amount,
-            paymentReferenceId: payment?.paymentId,
-            userId: element.userId,
-            paymentId: element.paymentId,
-            quantity: element.quantity,
-            bookingTime: element.bookingTime,
-            currentStatus: element.status,
-            history: element.statusHistory 
+            _id: element._id || "",
+            productId: element.productId || "",
+            productName: product?.name || "",
+            productImage: product?.images || "",
+            amount: payment?.amount || "",
+            address: {
+              phoneNumber: address?.phoneNo || "",
+              zipcode: address?.zipcode || "",
+              state: address?.state || "",
+              city: address?.city || "",
+              fullAddress: address?.fullAddress || "",
+              unitNumber: address?.unitNumber || "",
+              typeOfAddress: address?.typeOfAddress || ""
+            },
+            paymentReferenceId: payment?.paymentId || "",
+            userId: element.userId || "",
+            paymentId: element.paymentId || "",
+            quantity: element.quantity || "",
+            bookingTime: element.bookingTime || "",
+            currentStatus: element.status || "",
+            history: element.statusHistory || [] 
           };
         }));
       }      
@@ -1559,20 +1569,30 @@ class BookingRepository {
           }
 
           const payment = await PaymentModel.findById(element.paymentId);
+          const address = await AddressModel.findById(element.addressId);
 
           return {
-            _id: element._id,
-            productId: element.productId,
-            productName: product?.name,
-            productImage: product?.images,
-            amount: payment?.amount,
-            paymentReferenceId: payment?.paymentId,
-            userId: element.userId,
-            paymentId: element.paymentId,
-            quantity: element.quantity,
-            bookingTime: element.bookingTime,
-            currentStatus: element.status,
-            history: element.statusHistory 
+            _id: element._id || "",
+            productId: element.productId || "",
+            productName: product?.name || "",
+            productImage: product?.images || "",
+            amount: payment?.amount || "",
+            address: {
+              phoneNumber: address?.phoneNo || "",
+              zipcode: address?.zipcode || "",
+              state: address?.state || "",
+              city: address?.city || "",
+              fullAddress: address?.fullAddress || "",
+              unitNumber: address?.unitNumber || "",
+              typeOfAddress: address?.typeOfAddress || ""
+            },
+            paymentReferenceId: payment?.paymentId || "",
+            userId: element.userId || "",
+            paymentId: element.paymentId || "",
+            quantity: element.quantity || "",
+            bookingTime: element.bookingTime || "",
+            currentStatus: element.status || "",
+            history: element.statusHistory || [] 
           };
         }));
       }      

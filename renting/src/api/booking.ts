@@ -213,8 +213,10 @@ export default (app: Express) => {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
             if(req.query._id) {
                 data = await service.trackBookingById({_id: req.query._id, user: authUser})
+            } else if (req.query.userId) {
+                data = await service.trackUserBooking({page: req.query.page, limit: req.query.limit, userId: req.query.userId, user: authUser})
             } else if (authUser.roleName === 'user') {
-                data = await service.trackUserBooking({page: req.query.page, limit: req.query.limit, user: authUser})
+                data = await service.trackUserBooking({page: req.query.page, limit: req.query.limit, userId: authUser._id, user: authUser})
             } else {
                 data = await service.trackBooking({page: req.query.page, limit: req.query.limit, user: authUser});
             }
