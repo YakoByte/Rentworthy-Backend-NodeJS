@@ -1470,8 +1470,8 @@ class BookingRepository {
           }          
 
         const data =  {
-            _id: bookingResult._id || "",
-            productId: bookingResult.productId || "",
+            _id: bookingResult?._id || "",
+            productId: bookingResult?.productId || "",
             productName: product?.name || "",
             productImage: product?.images || "",
             amount: payment?.amount || "",
@@ -1485,12 +1485,12 @@ class BookingRepository {
               typeOfAddress: address?.typeOfAddress || ""
             },
             paymentReferenceId: payment?.paymentId || "",
-            userId: bookingResult.userId || "",
-            paymentId: bookingResult.paymentId || "",
-            quantity: bookingResult.quantity || "",
-            bookingTime: bookingResult.bookingTime || "",
-            currentStatus: bookingResult.status || "",
-            history: bookingResult.statusHistory || [] 
+            userId: bookingResult?.userId || "",
+            paymentId: bookingResult?.paymentId || "",
+            quantity: bookingResult?.quantity || "",
+            bookingTime: bookingResult?.bookingTime || "",
+            currentStatus: bookingResult?.status || "",
+            history: bookingResult?.statusHistory || [] 
           };
         return data;
       }
@@ -1509,20 +1509,20 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element.productId);
+          const product = await productModel.findById(element?.productId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
-              let newPath = await generatePresignedUrl(element.imageName);
+              let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
             });
           }
 
-          const payment = await PaymentModel.findById(element.paymentId);
-          const address = await AddressModel.findById(element.addressId);
+          const payment = await PaymentModel.findById(element?.paymentId);
+          const address = await AddressModel.findById(element?.addressId);
 
           return {
-            _id: element._id || "",
-            productId: element.productId || "",
+            _id: element?._id || "",
+            productId: element?.productId || "",
             productName: product?.name || "",
             productImage: product?.images || "",
             amount: payment?.amount || "",
@@ -1536,12 +1536,12 @@ class BookingRepository {
               typeOfAddress: address?.typeOfAddress || ""
             },
             paymentReferenceId: payment?.paymentId || "",
-            userId: element.userId || "",
-            paymentId: element.paymentId || "",
-            quantity: element.quantity || "",
-            bookingTime: element.bookingTime || "",
-            currentStatus: element.status || "",
-            history: element.statusHistory || [] 
+            userId: element?.userId || "",
+            paymentId: element?.paymentId || "",
+            quantity: element?.quantity || "",
+            bookingTime: element?.bookingTime || "",
+            currentStatus: element?.status || "",
+            history: element?.statusHistory || [] 
           };
         }));
       }      
@@ -1560,20 +1560,20 @@ class BookingRepository {
 
       if (bookingResult) {
         return Promise.all(bookingResult.map(async (element) => {
-          const product = await productModel.findById(element.productId);
+          const product = await productModel.findById(element?.productId);
           if(product?.images && product.images.length > 0) {
             product.images.forEach(async(element: any) => {
-              let newPath = await generatePresignedUrl(element.imageName);
+              let newPath = await generatePresignedUrl(element?.imageName);
               element.path = newPath;
             });
           }
 
-          const payment = await PaymentModel.findById(element.paymentId);
-          const address = await AddressModel.findById(element.addressId);
+          const payment = await PaymentModel.findById(element?.paymentId);
+          const address = await AddressModel.findById(element?.addressId);
 
           return {
-            _id: element._id || "",
-            productId: element.productId || "",
+            _id: element?._id || "",
+            productId: element?.productId || "",
             productName: product?.name || "",
             productImage: product?.images || "",
             amount: payment?.amount || "",
@@ -1587,12 +1587,12 @@ class BookingRepository {
               typeOfAddress: address?.typeOfAddress || ""
             },
             paymentReferenceId: payment?.paymentId || "",
-            userId: element.userId || "",
-            paymentId: element.paymentId || "",
-            quantity: element.quantity || "",
-            bookingTime: element.bookingTime || "",
-            currentStatus: element.status || "",
-            history: element.statusHistory || [] 
+            userId: element?.userId || "",
+            paymentId: element?.paymentId || "",
+            quantity: element?.quantity || "",
+            bookingTime: element?.bookingTime || "",
+            currentStatus: element?.status || "",
+            history: element?.statusHistory || [] 
           };
         }));
       }      

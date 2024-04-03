@@ -83,6 +83,8 @@ class PaymentService {
         stripeAccount = account.id;
 
         await this.repository.VerifyAccountStripeId(stripeAccount, userId);
+      } else {
+        account = stripeAccount;
       }
 
       // const accountLinksResult = await stripe.accountLinks.create({
@@ -120,6 +122,8 @@ class PaymentService {
         stripeAccount = customer.id;
 
         await this.repository.VerifyCustomerStripeId(stripeAccount, userId);
+      } else {
+        customer = stripeAccount;
       }
 
       // const accountLinksResult = await stripe.accountLinks.create({
