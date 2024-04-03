@@ -122,7 +122,10 @@ export interface productGetRequest {
     sort?: string;
     price?: string;
     cancellationTimeLimit?: number;
-    rejectionReason? :string;
+    rejectionReason?: string;
+    isVerified?: boolean;
+    isRejected?: boolean;
+    isPending?: boolean;
 }
 
 export interface productSorting {

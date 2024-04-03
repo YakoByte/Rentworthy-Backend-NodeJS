@@ -102,7 +102,7 @@ export default (app: Express) => {
         }
     });
 
-    // // API = get product by id and search and all product
+    // API = get product by id and search and all product
     app.get('/get-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             req.query = {...req.query}

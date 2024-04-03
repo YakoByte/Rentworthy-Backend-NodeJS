@@ -34,7 +34,29 @@ class productService {
   async getProduct(productInputs: productGetRequest) {
     try {      
       let existingProduct: any;
-      if (productInputs.price) {
+      if (productInputs.isPending) {
+        existingProduct = await this.repository.getProductToApprove({
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+        });
+      } else if (productInputs.isRejected) {
+        existingProduct = await this.repository.getRejectedProduct({
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+        });
+      } else if (productInputs.isVerified) {
+        existingProduct = await this.repository.getAllProduct({
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          userId: productInputs.userId || "",
+        });
+      } else if (productInputs.price) {
         existingProduct = await this.repository.getProductPriceSortingWise({
           price: productInputs.price,
           skip:
