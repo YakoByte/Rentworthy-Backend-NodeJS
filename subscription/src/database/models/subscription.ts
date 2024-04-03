@@ -6,11 +6,12 @@ const subscriptionSchema: Schema = new Schema<Subscription>(
     {
         points: {
             type: Number,
-            required: true,
+            default: 0,
         },
         price: {
             type: Number,
             required: true,
+            default: 0,
         },
         currency: {
             type: String,
@@ -31,7 +32,6 @@ const subscriptionSchema: Schema = new Schema<Subscription>(
         },
         planId: {
             type: String,
-            required: true,
         },
         images: [
             {
