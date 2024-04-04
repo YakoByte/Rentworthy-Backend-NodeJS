@@ -22,7 +22,7 @@ export default (app: Express) => {
     });
 
      // API = approve/reject business info
-     app.put('/approval-business', UserAuth,isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+     app.put('/approval-business', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.approveRejectBusiness(req.body);
             return res.json(data);

@@ -67,14 +67,6 @@ class MessageRepository {
       }
       if (messageInputs.roomId) {
         criteria = { ...criteria, roomId: messageInputs.roomId };
-      } 
-
-      if (messageInputs?.receiverId === messageInputs?.userId && messageInputs?.roomId) {
-        await messageModel.findOneAndUpdate(
-            { receiverId: messageInputs.receiverId, roomId: messageInputs.roomId },
-            { $set: { isSeen: true } },
-            { new: true }
-        );
       }
 
       let messages = await messageModel.find(criteria);
@@ -84,6 +76,17 @@ class MessageRepository {
               $or: [{ receiverId: messageInputs.userId }, { senderId: messageInputs.userId }]
           });
       }
+
+      Promise.all(messages.map((element) => {
+        if (element?.receiverId.toString() === messageInputs?.userId?.toString() && messageInputs?.roomId?.toString() === element?.roomId?.toString()) {          
+            return messageModel.updateMany(
+                { roomId: messageInputs.roomId },
+                { $set: { isSeen: true } },
+                { new: true }
+            );
+        }
+      }));
+      
       
       return messages;
     } catch (error) {

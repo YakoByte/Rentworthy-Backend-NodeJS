@@ -970,7 +970,7 @@ class ProductRepository {
 
   // get product sorting wise
   async getProductPriceSortingWise(productInputs: productSorting) {
-    try {
+    try {      
       let criteria: any = { isVerified: "approved", isDeleted: false, isActive: true };
       if (productInputs._id) {
         criteria._id = new Types.ObjectId(productInputs._id);
@@ -980,9 +980,6 @@ class ProductRepository {
       }
       else if (productInputs.subCategoryId) {
         criteria.subCategoryId = new Types.ObjectId(productInputs.subCategoryId);
-      }
-      else if (productInputs.userId) {
-        criteria.userId = new Types.ObjectId(productInputs.userId);
       }
       else if (productInputs.ownerId) {
         criteria.userId = new Types.ObjectId(productInputs.ownerId);
@@ -1003,7 +1000,7 @@ class ProductRepository {
               spherical: true,
           },
       };
-      }
+      }      
 
       const findProduct = await productModel.aggregate([
         { $match: criteria },
@@ -1110,7 +1107,7 @@ class ProductRepository {
             };
           }
         })
-      );
+      );      
 
       return {
         data: await Promise.all(wishlistPromises),

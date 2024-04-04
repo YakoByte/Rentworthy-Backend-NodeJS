@@ -72,7 +72,7 @@ class RoomRepository {
         let message: any = await messageModel
             .find({ roomId: element._id })
             .sort({ createdAt: -1 })
-            .lean();
+            .limit(1);
         let unSeenMessageCount: any = await messageModel.countDocuments({
           roomId: element._id,
           isSeen: false,
@@ -216,12 +216,12 @@ class RoomRepository {
         
         AllRoom.push({
             _id: element?._id || "",
-            senderId: element?.senderId || "",
+            senderId: element?.userId || "",
             vendorId: element?.vendorId || "",
             isDeleted: element?.isDeleted ? true : false,
             isActive: element?.isActive ? true : false,
-            lastMessage: message?.message || "",
-            lastMessageTime: message.createdAt || "",
+            lastMessage: message[0]?.message || "",
+            lastMessageTime: message[0]?.createdAt || "",
             unSeenMessageCount: unSeenMessageCount,
             unSeenMessages: unSeenMessages,
             productProfile: productProfile[0]?.images[0]?.path || "",

@@ -179,7 +179,7 @@ export default (app: Express) => {
   });
 
   // api = get Windows, Android, iOS, Linux, Other counts
-  app.get('/get-count', UserAuth, isAdmin, async (req: any, res: Response, next: NextFunction) => {
+  app.get('/get-count', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
       const clientPlatform = req.clientPlatform;
       const data = await adminService.GetCount();

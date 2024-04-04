@@ -32,9 +32,25 @@ class productService {
 
   // get product by id , search or all product
   async getProduct(productInputs: productGetRequest) {
-    try {      
+    try {            
       let existingProduct: any;
-      if (productInputs.isPending) {
+      if (productInputs.price) {
+        existingProduct = await this.repository.getProductPriceSortingWise({
+          price: productInputs.price,
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          _id: productInputs?._id,
+          userId: productInputs?.userId,
+          ownerId: productInputs?.ownerId,
+          search: productInputs?.search,
+          categoryId: productInputs?.categoryId,
+          subCategoryId: productInputs?.subCategoryId,
+          lat: productInputs?.lat,
+          long: productInputs?.long,
+        });
+      } else if (productInputs.isPending) {
         existingProduct = await this.repository.getProductToApprove({
           skip:
             Number(productInputs.page) * Number(productInputs.limit) -
@@ -55,22 +71,6 @@ class productService {
               Number(productInputs.limit) || 0,
           limit: Number(productInputs.limit) || 10,
           userId: productInputs.userId || "",
-        });
-      } else if (productInputs.price) {
-        existingProduct = await this.repository.getProductPriceSortingWise({
-          price: productInputs.price,
-          skip:
-            Number(productInputs.page) * Number(productInputs.limit) -
-              Number(productInputs.limit) || 0,
-          limit: Number(productInputs.limit) || 10,
-          _id: productInputs?._id,
-          userId: productInputs?.userId,
-          ownerId: productInputs?.ownerId,
-          search: productInputs?.search,
-          categoryId: productInputs?.categoryId,
-          subCategoryId: productInputs?.subCategoryId,
-          lat: productInputs?.lat,
-          long: productInputs?.long,
         });
       } else if (productInputs._id) {
         existingProduct = await this.repository.getProductById({
