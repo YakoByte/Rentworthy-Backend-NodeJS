@@ -11,14 +11,14 @@ class RoomRepository {
   //create room
   async CreateRoom(roomInputs: roomRequest) {
     try {
-      let existingroom = await roomModel.findOne({
+      const existingroom = await roomModel.findOne({
         $or: [
-          { senderId: roomInputs.senderId, receiverId: roomInputs.receiverId },
-          { senderId: roomInputs.senderId, bookingId: roomInputs.bookingId },
-          { senderId: roomInputs.senderId, productId: roomInputs.productId }
+          { senderId: new Types.ObjectId(roomInputs.senderId), receiverId: new Types.ObjectId(roomInputs.receiverId) },
+          { senderId: new Types.ObjectId(roomInputs.senderId), bookingId: new Types.ObjectId(roomInputs.bookingId) },
+          { senderId: new Types.ObjectId(roomInputs.senderId), productId: new Types.ObjectId(roomInputs.productId) }
         ],
         isDeleted: false, isActive: true
-      });
+      });      
 
       if (!existingroom) {
         if(roomInputs?.receiverId) {
@@ -63,7 +63,7 @@ class RoomRepository {
 
       if (!room) {
         return { message: "Room not found" };
-      }   
+      }
       
       let AllRoom = [];
 
@@ -209,7 +209,6 @@ class RoomRepository {
                   BookingProfile: BookingProfile[0]?.images[0]?.path || "",
                   BookingName: BookingProfile[0]?.name || "",
               };
-              console.log("Booking data:", bookingData);
           }).catch(error => {
               console.error("An error occurred:", error);
           });
@@ -420,7 +419,6 @@ class RoomRepository {
                   BookingProfile: BookingProfile[0]?.images[0]?.path || "",
                   BookingName: BookingProfile[0]?.name || "",
               };
-              console.log("Booking data:", bookingData);
           }).catch(error => {
               console.error("An error occurred:", error);
           });
