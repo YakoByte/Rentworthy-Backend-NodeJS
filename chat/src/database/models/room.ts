@@ -4,6 +4,10 @@ import { Room } from "../../interface/room";
 
 const roomSchema: Schema = new Schema<Room>(
     {
+        senderId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Product",
@@ -12,13 +16,9 @@ const roomSchema: Schema = new Schema<Room>(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Booking",
         },
-        userId: {
+        receiverId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-        },
-        vendorId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Vendor",
         },
         isDeleted: {
             type: Boolean,

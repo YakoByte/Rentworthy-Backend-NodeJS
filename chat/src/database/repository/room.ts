@@ -12,14 +12,17 @@ class RoomRepository {
   async CreateRoom(roomInputs: roomRequest) {
     try {
       let room = await roomModel.findOne({
-        productId: roomInputs.productId,
-        userId: roomInputs.userId,
-        vendorId: roomInputs.vendorId,
-        isDeleted: false,
+        $or: [
+          { senderId: roomInputs.senderId, receiverId: roomInputs.receiverId },
+          { bookingId: roomInputs.bookingId, senderId: roomInputs.senderId, receiverId: roomInputs.receiverId },
+          { productId: roomInputs.productId, senderId: roomInputs.senderId, receiverId: roomInputs.receiverId }
+        ],
+        isDeleted: false, isActive: true
       });
       if (room) {
         return room;
       }
+
       let roomResult = await roomModel.create(roomInputs);
       return roomResult;
     } catch (error) {
@@ -31,31 +34,28 @@ class RoomRepository {
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
     try {                  
-      let criteria: any = { isDeleted: false };
-      if (roomInputs.productId) {
+      let criteria: any = { isDeleted: false, isActive: true };
+      if (roomInputs.receiverId) {
+        criteria = { ...criteria, receiverId: roomInputs.receiverId };
+      }
+      else if (roomInputs.productId) {
         criteria = { ...criteria, productId: roomInputs.productId };
         roomInputs.lastMessage = true;
       }
-      if (roomInputs._id) {
+      else if (roomInputs.bookingId) {
+        criteria = { ...criteria, bookingId: roomInputs.bookingId };
+      }
+      else if (roomInputs._id) {
         criteria = { ...criteria, _id: roomInputs._id };
         roomInputs.lastMessage = true;
       }
-      if (roomInputs.vendorId) {
-        criteria = { ...criteria, vendorId: roomInputs.vendorId };
-      }
-      if (roomInputs.rentingId) {
-        criteria = { ...criteria, userId: roomInputs.rentingId };
-      }
-      if (roomInputs.bookingId) {
-        criteria = { ...criteria, bookingId: roomInputs.bookingId };
-      }
-      if (roomInputs.userId) {
+      else if (roomInputs.senderId) {
         criteria = {
           ...criteria,
-          $or: [{ userId: roomInputs.userId }, { vendorId: roomInputs.userId }],
-          isActive: true,
-          isDeleted: false,
+          $or: [{ senderId: roomInputs.senderId }, { receiverId: roomInputs.senderId }],
         };
+      } else {
+        criteria = {...criteria}
       }
 
       let room = await roomModel.find(criteria);
@@ -96,7 +96,7 @@ class RoomRepository {
 
         let receiverProfile = await ProfileModel.aggregate([
           {
-            $match: { userId: new Types.ObjectId(element.vendorId), isDeleted: false, isActive: true },
+            $match: { senderId: new Types.ObjectId(element.receiverId), isDeleted: false, isActive: true },
           },
           {
             $lookup: {
@@ -104,7 +104,7 @@ class RoomRepository {
                 localField: "profileImage",
                 foreignField: "_id",
                 pipeline: [
-                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } },
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, senderId: 1 } },
                 ],
                 as: "profileImage",
             },
@@ -122,7 +122,7 @@ class RoomRepository {
         
         let senderProfile = await ProfileModel.aggregate([
           {
-            $match: { userId: new Types.ObjectId(element.userId), isDeleted: false, isActive: true },
+            $match: { senderId: new Types.ObjectId(element.senderId), isDeleted: false, isActive: true },
           },
           {
             $lookup: {
@@ -130,7 +130,7 @@ class RoomRepository {
                 localField: "profileImage",
                 foreignField: "_id",
                 pipeline: [
-                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } },
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, senderId: 1 } },
                 ],
                 as: "profileImage",
             },
@@ -155,7 +155,7 @@ class RoomRepository {
               from: "images",
               localField: "images",
               foreignField: "_id",
-              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, senderId: 1 } }],
               as: "images",
             },
           },
@@ -183,7 +183,7 @@ class RoomRepository {
                 from: "images",
                 localField: "images",
                 foreignField: "_id",
-                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, senderId: 1 } }],
                 as: "images",
               },
             },
@@ -216,8 +216,8 @@ class RoomRepository {
         
         AllRoom.push({
             _id: element?._id || "",
-            senderId: element?.userId || "",
-            vendorId: element?.vendorId || "",
+            senderId: element?.senderId || "",
+            receiverId: element?.receiverId || "",
             isDeleted: element?.isDeleted ? true : false,
             isActive: element?.isActive ? true : false,
             lastMessage: message[0]?.message || "",
@@ -249,11 +249,11 @@ class RoomRepository {
       if (roomInputs.productId) {
         criteria = { ...criteria, productId: roomInputs.productId };
       }
-      if (roomInputs.userId) {
-        criteria = { ...criteria, userId: roomInputs.userId };
+      if (roomInputs.senderId) {
+        criteria = { ...criteria, senderId: roomInputs.senderId };
       }
-      if (roomInputs.vendorId) {
-        criteria = { ...criteria, vendorId: roomInputs.vendorId };
+      if (roomInputs.receiverId) {
+        criteria = { ...criteria, receiverId: roomInputs.receiverId };
       }
       let rooms = await roomModel.find(criteria);
       if (!roomInputs) {

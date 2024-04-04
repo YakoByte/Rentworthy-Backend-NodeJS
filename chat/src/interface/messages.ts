@@ -37,7 +37,8 @@ export interface messageData {
 export interface messageRequest {
     senderId?: string;
     receiverId?: string;
-    userId?: string;
+    productId?: string;
+    bookingId?: string;
     message?: string;
     messageType?: string;
     roomId?: string;
@@ -47,7 +48,6 @@ export interface messageRequest {
 
 export interface getMessageRequest {
     _id?: string;
-    userId?: string;
     senderId?: string;
     message?: string;
     receiverId?: string;
