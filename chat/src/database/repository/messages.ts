@@ -26,8 +26,11 @@ class MessageRepository {
         $or: [
           {_id: new Types.ObjectId(messageInputs.roomId)},
           { senderId: new Types.ObjectId(messageInputs.senderId), receiverId: new Types.ObjectId(messageInputs.receiverId) },
+          { receiverId: new Types.ObjectId(messageInputs.senderId), senderId: new Types.ObjectId(messageInputs.receiverId) },
           { senderId: new Types.ObjectId(messageInputs.senderId), bookingId: new Types.ObjectId(messageInputs.bookingId) },
-          { senderId: new Types.ObjectId(messageInputs.senderId), productId: new Types.ObjectId(messageInputs.productId) }
+          { receiverId: new Types.ObjectId(messageInputs.senderId), bookingId: new Types.ObjectId(messageInputs.bookingId) },
+          { senderId: new Types.ObjectId(messageInputs.senderId), productId: new Types.ObjectId(messageInputs.productId) },
+          { receiverId: new Types.ObjectId(messageInputs.senderId), productId: new Types.ObjectId(messageInputs.productId) },
         ],
         isDeleted: false, isActive: true
       });
