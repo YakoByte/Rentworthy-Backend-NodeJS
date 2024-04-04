@@ -31,11 +31,14 @@ export interface roomData {
 }
 
 export interface roomRequest {
+    _id?: string;
     productId?: string;
     bookingId?: string;
     senderId?: string;
     receiverId?: string;
     isDeleted?: boolean;
+    unRead?: string;
+    lastMessage?: boolean;
 }
 
 export interface getRoomRequest {
