@@ -14,13 +14,24 @@ class RoomRepository {
       let room = await roomModel.findOne({
         $or: [
           { senderId: roomInputs.senderId, receiverId: roomInputs.receiverId },
-          { bookingId: roomInputs.bookingId, senderId: roomInputs.senderId, receiverId: roomInputs.receiverId },
-          { productId: roomInputs.productId, senderId: roomInputs.senderId, receiverId: roomInputs.receiverId }
+          { senderId: roomInputs.senderId, bookingId: roomInputs.bookingId },
+          { senderId: roomInputs.senderId, productId: roomInputs.productId }
         ],
         isDeleted: false, isActive: true
       });
       if (room) {
         return room;
+      }
+
+      if(roomInputs?.receiverId) {
+        roomInputs.receiverId = roomInputs?.receiverId.toString();
+      } else if(roomInputs?.productId) {
+        const product = await ProductModel.findById(roomInputs.productId);
+        roomInputs.receiverId = product?.userId.toString();
+      } else if(roomInputs?.bookingId) {
+        const booking = await BookingModel.findById(roomInputs?.bookingId);
+        const product = await ProductModel.findById(booking?.productId);
+        roomInputs.receiverId = product?.userId.toString();
       }
 
       let roomResult = await roomModel.create(roomInputs);
