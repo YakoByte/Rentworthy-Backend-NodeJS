@@ -11,49 +11,60 @@ class RoomRepository {
   //create room
   async CreateRoom(roomInputs: roomRequest) {
     try {
+      if(roomInputs?.receiverId) {
+        roomInputs.receiverId = roomInputs?.receiverId.toString();
+      } else if(roomInputs?.productId) {
+        const product = await ProductModel.findById(roomInputs.productId);
+        roomInputs.receiverId = product?.userId.toString();
+      } else if(roomInputs?.bookingId) {
+        const booking = await BookingModel.findById(roomInputs?.bookingId);
+        const product = await ProductModel.findById(booking?.productId);
+        roomInputs.receiverId = product?.userId.toString();
+      }
+
       const existingroom = await roomModel.findOne({
         $or: [
-          { senderId: new Types.ObjectId(roomInputs.senderId), receiverId: new Types.ObjectId(roomInputs.receiverId) },
-          { senderId: new Types.ObjectId(roomInputs.senderId), bookingId: new Types.ObjectId(roomInputs.bookingId) },
-          { senderId: new Types.ObjectId(roomInputs.senderId), productId: new Types.ObjectId(roomInputs.productId) }
+          { senderId: { $eq: new Types.ObjectId(roomInputs.senderId) } }, { receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) } },
+          { receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) } }, { senderId: { $eq: new Types.ObjectId(roomInputs.receiverId) } },
         ],
         isDeleted: false, isActive: true
       });      
 
       if (!existingroom) {
-        if(roomInputs?.receiverId) {
-          roomInputs.receiverId = roomInputs?.receiverId.toString();
-        } else if(roomInputs?.productId) {
-          const product = await ProductModel.findById(roomInputs.productId);
-          roomInputs.receiverId = product?.userId.toString();
-        } else if(roomInputs?.bookingId) {
-          const booking = await BookingModel.findById(roomInputs?.bookingId);
-          const product = await ProductModel.findById(booking?.productId);
-          roomInputs.receiverId = product?.userId.toString();
-        }
-  
         await roomModel.create(roomInputs);
       }
 
       let criteria: any = { isDeleted: false, isActive: true };
-      if (roomInputs.receiverId) {
-        criteria = { ...criteria, receiverId: roomInputs.receiverId };
-      }
-      else if (roomInputs.productId) {
-        criteria = { ...criteria, productId: roomInputs.productId };
-        roomInputs.lastMessage = true;
-      }
-      else if (roomInputs.bookingId) {
-        criteria = { ...criteria, bookingId: roomInputs.bookingId };
-      }
-      else if (roomInputs._id) {
-        criteria = { ...criteria, _id: roomInputs._id };
-        roomInputs.lastMessage = true;
-      }
-      else if (roomInputs.senderId) {
+      if (roomInputs._id) {
+        criteria = { 
+          ...criteria, 
+          _id: { $eq: new Types.ObjectId(roomInputs._id) } 
+      };
+      } else if (roomInputs.receiverId) {
+        criteria = { 
+          ...criteria,
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) },
+      };
+      } else if (roomInputs.productId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          productId: { $eq: new Types.ObjectId(roomInputs.productId) }
+        };
+      } else if (roomInputs.bookingId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          bookingId: { $eq: new Types.ObjectId(roomInputs.bookingId) } 
+        };
+      } else if (roomInputs.senderId) {
         criteria = {
           ...criteria,
-          $or: [{ senderId: roomInputs.senderId }, { receiverId: roomInputs.senderId }],
+          $or: [{
+            senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+            receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          }]
         };
       } else {
         criteria = {...criteria}
@@ -244,26 +255,38 @@ class RoomRepository {
 
   //get room
   async GetRoom(roomInputs: getRoomRequest) {
-    try {                  
+    try {               
       let criteria: any = { isDeleted: false, isActive: true };
-      if (roomInputs.receiverId) {
-        criteria = { ...criteria, receiverId: roomInputs.receiverId };
-      }
-      else if (roomInputs.productId) {
-        criteria = { ...criteria, productId: roomInputs.productId };
-        roomInputs.lastMessage = true;
-      }
-      else if (roomInputs.bookingId) {
-        criteria = { ...criteria, bookingId: roomInputs.bookingId };
-      }
-      else if (roomInputs._id) {
-        criteria = { ...criteria, _id: roomInputs._id };
-        roomInputs.lastMessage = true;
-      }
-      else if (roomInputs.senderId) {
+      if (roomInputs._id) {
+        criteria = { 
+          ...criteria, 
+          _id: { $eq: new Types.ObjectId(roomInputs._id) } 
+      };
+      } else if (roomInputs.receiverId) {
+        criteria = { 
+          ...criteria,
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) },
+      };
+      } else if (roomInputs.productId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          productId: { $eq: new Types.ObjectId(roomInputs.productId) }
+        };
+      } else if (roomInputs.bookingId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          bookingId: { $eq: new Types.ObjectId(roomInputs.bookingId) } 
+        };
+      } else if (roomInputs.senderId) {
         criteria = {
           ...criteria,
-          $or: [{ senderId: roomInputs.senderId }, { receiverId: roomInputs.senderId }],
+          $or: [{
+            senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+            receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) },
+          }]
         };
       } else {
         criteria = {...criteria}

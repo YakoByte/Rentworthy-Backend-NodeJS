@@ -22,33 +22,26 @@ class MessageRepository {
         isActive: true,
       };
 
+      if(messageInputs?.receiverId) {
+        messageInputs.receiverId = messageInputs?.receiverId.toString();
+      } else if(messageInputs?.productId) {
+        const product = await ProductModel.findById(messageInputs.productId);
+        messageInputs.receiverId = product?.userId.toString();
+      } else if(messageInputs?.bookingId) {
+        const booking = await BookingModel.findById(messageInputs?.bookingId);
+        const product = await ProductModel.findById(booking?.productId);
+        messageInputs.receiverId = product?.userId.toString();
+      }
+
       let room = await roomModel.findOne({
         $or: [
-          {_id: new Types.ObjectId(messageInputs.roomId)},
-          { senderId: new Types.ObjectId(messageInputs.senderId), receiverId: new Types.ObjectId(messageInputs.receiverId) },
-          { receiverId: new Types.ObjectId(messageInputs.senderId), senderId: new Types.ObjectId(messageInputs.receiverId) },
-          { senderId: new Types.ObjectId(messageInputs.senderId), bookingId: new Types.ObjectId(messageInputs.bookingId) },
-          { receiverId: new Types.ObjectId(messageInputs.senderId), bookingId: new Types.ObjectId(messageInputs.bookingId) },
-          { senderId: new Types.ObjectId(messageInputs.senderId), productId: new Types.ObjectId(messageInputs.productId) },
-          { receiverId: new Types.ObjectId(messageInputs.senderId), productId: new Types.ObjectId(messageInputs.productId) },
+          { senderId: { $eq: new Types.ObjectId(messageInputs.senderId) } }, { receiverId: { $eq: new Types.ObjectId(messageInputs.receiverId) } },
+          { receiverId: { $eq: new Types.ObjectId(messageInputs.senderId) } }, { senderId: { $eq: new Types.ObjectId(messageInputs.receiverId) } },
         ],
         isDeleted: false, isActive: true
       });
 
       if (room) {
-        if(room?.receiverId) {
-          messageData.receiverId = room?.receiverId.toString();
-        } else if(room?.productId) {
-          const product = await ProductModel.findById(room.productId);
-          messageData.receiverId = product?.userId.toString();
-        } else if(room?.bookingId) {
-          const booking = await BookingModel.findById(room?.bookingId);
-          const product = await ProductModel.findById(booking?.productId);
-          messageData.receiverId = product?.userId.toString();
-        }
-
-        messageData.roomId = room._id.toString();
-
         let messageResult = await messageModel.create(messageData);
         return messageResult;
       } else {
@@ -64,23 +57,23 @@ class MessageRepository {
   async GetMessage(messageInputs: getMessageRequest) {
     try {      
       let criteria: any = { isDeleted: false, isActive: true };
-      if (messageInputs.senderId) {
-        criteria = { ...criteria, senderId: messageInputs.senderId };
-      }
-      if (messageInputs.receiverId) {
-        criteria = { ...criteria, receiverId: messageInputs.receiverId };
-      }
       if (messageInputs.roomId) {
-        criteria = { ...criteria, roomId: messageInputs.roomId };
+        criteria = { ...criteria, roomId: { $eq: new Types.ObjectId(messageInputs.roomId) } };
+      } else if (messageInputs.receiverId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(messageInputs.senderId) },
+          receiverId: { $eq: new Types.ObjectId(messageInputs.receiverId) },
+        };
+      } else if (messageInputs.senderId) {
+        criteria = { 
+          ...criteria, 
+          senderId: { $eq: new Types.ObjectId(messageInputs.senderId) },
+          receiverId: { $eq: new Types.ObjectId(messageInputs.senderId) },
+        };
       }
 
       let messages = await messageModel.find(criteria);
-      if (!messages || messages.length === 0) {
-          messages = await messageModel.find({
-              isDeleted: false,
-              $or: [{ receiverId: messageInputs.senderId }, { senderId: messageInputs.senderId }]
-          });
-      }
 
       Promise.all(messages.map((element) => {
         if (element?.receiverId.toString() === messageInputs?.senderId?.toString() && messageInputs?.roomId?.toString() === element?.roomId?.toString()) {          
@@ -91,7 +84,6 @@ class MessageRepository {
             );
         }
       }));
-      
       
       return messages;
     } catch (error) {
