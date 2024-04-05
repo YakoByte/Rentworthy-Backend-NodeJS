@@ -33,14 +33,7 @@ class MessageRepository {
         messageInputs.receiverId = product?.userId.toString();
       }
 
-      let room = await roomModel.findOne({
-        $or: [
-          { _id: new Types.ObjectId(messageInputs.roomId) },
-          { senderId: new Types.ObjectId(messageInputs.senderId) }, { receiverId: new Types.ObjectId(messageInputs.receiverId) },
-          { receiverId: new Types.ObjectId(messageInputs.senderId) }, { senderId: new Types.ObjectId(messageInputs.receiverId) },
-        ],
-        isDeleted: false, isActive: true
-      });
+      let room = await roomModel.findOne({ _id: new Types.ObjectId(messageInputs.roomId), isDeleted: false, isActive: true });
 
       if (room) {
         if(room?.senderId?.toString() === messageInputs?.senderId?.toString()) {
@@ -79,9 +72,9 @@ class MessageRepository {
             { receiverId: new Types.ObjectId(messageInputs.senderId) }
           ]
         };
-      }
+      }        
       
-      let messages = await messageModel.find(criteria);
+      let messages = await messageModel.find(criteria);      
 
       Promise.all(messages.map((element) => {
         if (element?.receiverId?.toString() === messageInputs?.senderId?.toString() && messageInputs?.roomId?.toString() === element?.roomId?.toString()) {          

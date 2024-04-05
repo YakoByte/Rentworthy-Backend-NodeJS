@@ -20,14 +20,18 @@ class RoomRepository {
         const booking = await BookingModel.findById(roomInputs?.bookingId);
         const product = await ProductModel.findById(booking?.productId);
         roomInputs.receiverId = product?.userId.toString();
-      }
+      }      
 
       const existingroom = await roomModel.findOne({
-        $or: [
-          { senderId: new Types.ObjectId(roomInputs.senderId) }, { receiverId: new Types.ObjectId(roomInputs.receiverId) },
-          { receiverId: new Types.ObjectId(roomInputs.senderId) }, { senderId: new Types.ObjectId(roomInputs.receiverId) },
-        ],
-        isDeleted: false, isActive: true
+        $and: [
+          {
+            $or: [
+              { senderId: new Types.ObjectId(roomInputs.senderId), receiverId: new Types.ObjectId(roomInputs.receiverId) },
+              { senderId: new Types.ObjectId(roomInputs.receiverId), receiverId: new Types.ObjectId(roomInputs.senderId) }
+            ]
+          },
+          { isDeleted: false, isActive: true }
+        ]
       });      
 
       if (!existingroom) {
