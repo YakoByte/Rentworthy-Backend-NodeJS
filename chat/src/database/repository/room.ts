@@ -24,8 +24,8 @@ class RoomRepository {
 
       const existingroom = await roomModel.findOne({
         $or: [
-          { senderId: { $eq: new Types.ObjectId(roomInputs.senderId) } }, { receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) } },
-          { receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) } }, { senderId: { $eq: new Types.ObjectId(roomInputs.receiverId) } },
+          { senderId: new Types.ObjectId(roomInputs.senderId) }, { receiverId: new Types.ObjectId(roomInputs.receiverId) },
+          { receiverId: new Types.ObjectId(roomInputs.senderId) }, { senderId: new Types.ObjectId(roomInputs.receiverId) },
         ],
         isDeleted: false, isActive: true
       });      
@@ -38,33 +38,33 @@ class RoomRepository {
       if (roomInputs._id) {
         criteria = { 
           ...criteria, 
-          _id: { $eq: new Types.ObjectId(roomInputs._id) } 
+          _id: new Types.ObjectId(roomInputs._id) 
       };
       } else if (roomInputs.receiverId) {
         criteria = { 
           ...criteria,
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) },
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          receiverId: new Types.ObjectId(roomInputs.receiverId),
       };
       } else if (roomInputs.productId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          productId: { $eq: new Types.ObjectId(roomInputs.productId) }
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          productId: new Types.ObjectId(roomInputs.productId),
         };
       } else if (roomInputs.bookingId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          bookingId: { $eq: new Types.ObjectId(roomInputs.bookingId) } 
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          bookingId: new Types.ObjectId(roomInputs.bookingId)
         };
       } else if (roomInputs.senderId) {
         criteria = {
           ...criteria,
-          $or: [{
-            senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-            receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          }]
+          $or: [
+            { senderId: new Types.ObjectId(roomInputs.senderId) },
+            { receiverId: new Types.ObjectId(roomInputs.senderId) }
+          ]
         };
       } else {
         criteria = {...criteria}
@@ -260,33 +260,33 @@ class RoomRepository {
       if (roomInputs._id) {
         criteria = { 
           ...criteria, 
-          _id: { $eq: new Types.ObjectId(roomInputs._id) } 
+          _id: new Types.ObjectId(roomInputs._id)
       };
       } else if (roomInputs.receiverId) {
         criteria = { 
           ...criteria,
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          receiverId: { $eq: new Types.ObjectId(roomInputs.receiverId) },
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          receiverId: new Types.ObjectId(roomInputs.receiverId),
       };
       } else if (roomInputs.productId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          productId: { $eq: new Types.ObjectId(roomInputs.productId) }
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          productId: new Types.ObjectId(roomInputs.productId)
         };
       } else if (roomInputs.bookingId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          bookingId: { $eq: new Types.ObjectId(roomInputs.bookingId) } 
+          senderId: new Types.ObjectId(roomInputs.senderId),
+          bookingId: new Types.ObjectId(roomInputs.bookingId)
         };
       } else if (roomInputs.senderId) {
         criteria = {
           ...criteria,
-          $or: [{
-            senderId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-            receiverId: { $eq: new Types.ObjectId(roomInputs.senderId) },
-          }]
+          $or: [
+            { senderId: new Types.ObjectId(roomInputs.senderId) },
+            { receiverId: new Types.ObjectId(roomInputs.senderId) }
+          ]
         };
       } else {
         criteria = {...criteria}

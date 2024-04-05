@@ -35,13 +35,19 @@ class MessageRepository {
 
       let room = await roomModel.findOne({
         $or: [
-          { senderId: { $eq: new Types.ObjectId(messageInputs.senderId) } }, { receiverId: { $eq: new Types.ObjectId(messageInputs.receiverId) } },
-          { receiverId: { $eq: new Types.ObjectId(messageInputs.senderId) } }, { senderId: { $eq: new Types.ObjectId(messageInputs.receiverId) } },
+          { _id: new Types.ObjectId(messageInputs.roomId) },
+          { senderId: new Types.ObjectId(messageInputs.senderId) }, { receiverId: new Types.ObjectId(messageInputs.receiverId) },
+          { receiverId: new Types.ObjectId(messageInputs.senderId) }, { senderId: new Types.ObjectId(messageInputs.receiverId) },
         ],
         isDeleted: false, isActive: true
       });
 
       if (room) {
+        if(room?.senderId?.toString() === messageInputs?.senderId?.toString()) {
+          messageData.receiverId = room.receiverId.toString();
+        } else {
+          messageData.receiverId = room.senderId.toString();
+        }
         let messageResult = await messageModel.create(messageData);
         return messageResult;
       } else {
@@ -58,27 +64,29 @@ class MessageRepository {
     try {      
       let criteria: any = { isDeleted: false, isActive: true };
       if (messageInputs.roomId) {
-        criteria = { ...criteria, roomId: { $eq: new Types.ObjectId(messageInputs.roomId) } };
+        criteria = { ...criteria, roomId: new Types.ObjectId(messageInputs.roomId) };
       } else if (messageInputs.receiverId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(messageInputs.senderId) },
-          receiverId: { $eq: new Types.ObjectId(messageInputs.receiverId) },
+          senderId: new Types.ObjectId(messageInputs.senderId),
+          receiverId: new Types.ObjectId(messageInputs.receiverId),
         };
       } else if (messageInputs.senderId) {
         criteria = { 
           ...criteria, 
-          senderId: { $eq: new Types.ObjectId(messageInputs.senderId) },
-          receiverId: { $eq: new Types.ObjectId(messageInputs.senderId) },
+          $or: [
+            { senderId: new Types.ObjectId(messageInputs.senderId) },
+            { receiverId: new Types.ObjectId(messageInputs.senderId) }
+          ]
         };
       }
-
+      
       let messages = await messageModel.find(criteria);
 
       Promise.all(messages.map((element) => {
-        if (element?.receiverId.toString() === messageInputs?.senderId?.toString() && messageInputs?.roomId?.toString() === element?.roomId?.toString()) {          
+        if (element?.receiverId?.toString() === messageInputs?.senderId?.toString() && messageInputs?.roomId?.toString() === element?.roomId?.toString()) {          
             return messageModel.updateMany(
-                { roomId: messageInputs.roomId },
+                { roomId: new Types.ObjectId(messageInputs.roomId) },
                 { $set: { isSeen: true } },
                 { new: true }
             );
@@ -92,8 +100,8 @@ class MessageRepository {
     }
   }
 
-   // group message in multiple room
-   async GroupMessage(messageInputs: messageRequest) {
+  // group message in multiple room
+  async GroupMessage(messageInputs: messageRequest) {
     try {
       let room = await roomModel.findOne({
         _id: messageInputs.roomId,
