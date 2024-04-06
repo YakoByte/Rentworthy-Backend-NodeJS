@@ -40,6 +40,18 @@ class bookingService {
         }
     }
 
+    // get User product booking 
+    async getUsersProductBooking(bookingInputs: bookingGetRequest) {
+        try {
+            let existingBooking: any
+            existingBooking = await this.repository.getUsersProductBooking(bookingInputs);
+
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Get Booking" });
+        }
+    }
+
     // get booking by id , userId or all booking
     async getBooking(bookingInputs: bookingGetRequest) {
         try {

@@ -76,6 +76,7 @@ export interface AuthenticatedRequest extends Request {
         productId?: string;
         startDate?: string;
         endDate?: string;
+        status?: string;
     },
 }
 

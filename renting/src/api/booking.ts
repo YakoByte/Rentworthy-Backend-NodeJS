@@ -43,12 +43,20 @@ export default (app: Express) => {
         }
     });
 
+    app.get('/get-user-product-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser = req.user as { _id: string; roleName: string; email: string; };
+            const data = await service.getUsersProductBooking({ ...req.query, user: authUser });
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     // API = get booking by id and search and all booking
     app.get('/get-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.user as { _id: string; roleName: string; email: string; };
-            // req.query.user = authUser;
-
             const data = await service.getBooking({ ...req.query, user: authUser });
             return res.json(data);
         } catch (err) {

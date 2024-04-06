@@ -777,6 +777,241 @@ class BookingRepository {
     }
   }
 
+  // get booking, Requested, Confirmed, Rejected, Shipped, Delivered, Returned, Cancelled
+  async getUsersProductBooking(bookingInputs: bookingGetRequest) {
+    try {
+      const productCriteria: any = { userId: new Types.ObjectId(bookingInputs.user._id), isVerified: "approved", isDeleted: false, isActive: true };
+      if(bookingInputs.productId) {
+        productCriteria._id = bookingInputs.productId
+      }
+      const findProduct: any = await productModel.aggregate([
+        {
+            $match: productCriteria
+        },
+        {
+            $lookup: {
+                from: "images",
+                localField: "images",
+                foreignField: "_id",
+                pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                as: "images",
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                pipeline: [
+                    { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, businessType: 1, loginType: 1 } },
+                ],
+                as: "userId",
+            },
+        },
+      ]);
+
+      if (findProduct.length === 0) {
+        return { message: "Product not found" };
+      }
+
+      await Promise.all(findProduct.map(async (element: any) => {
+        let criteria: any = {isDeleted: false, productId: element._id}
+        if (bookingInputs.status) {
+          criteria.status = bookingInputs.status;
+        }
+        const findBooking = await bookingModel.aggregate([
+          {
+            $match: criteria,
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+              ],
+              as: "rentalUserDetail",
+            },
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productId",
+              foreignField: "_id",
+              as: "productId",
+            },
+          },
+          { $unwind: "$productId" },
+          {
+            $lookup: {
+              from: "users",
+              localField: "productId.userId",
+              foreignField: "_id",
+              pipeline: [
+                { $project: { _id: 1, name: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } }
+              ],
+              as: "OwnerUserDetail",
+            },
+          },
+          {
+            $lookup: {
+              from: "addresses",
+              localField: "addressId",
+              foreignField: "_id",
+              as: "addressId",
+            },
+          },
+          {
+            $lookup: {
+              from: "images",
+              localField: "images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "images",
+            },
+          },
+          { $unwind: {
+            path: "$preRentalScreening",
+            preserveNullAndEmptyArrays: true
+          }},     
+          {
+            $lookup: {
+              from: "images",
+              localField: "preRentalScreening.images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "preRentalScreening.images",
+            },
+          },
+          {
+            $group: {
+              _id: "$_id",
+              productId: { $first: "$productId" },
+              startDate: { $first: "$startDate" },
+              endDate: { $first: "$endDate" },
+              userId: { $first: "$userId" },
+              paymentId: { $first: "$paymentId" },
+              quantity: { $first: "$quantity" },
+              isDeleted: { $first: "$isDeleted" },
+              expandId: { $first: "$expandId" },
+              isAccepted: { $first: "$isAccepted" },
+              images: { $first: "$images" },
+              addressId: { $first: "$addressId" },
+              price: { $first: "$price" },
+              totalAmount: { $first: "$totalAmount" },
+              status: { $first: "$status" },
+              acceptedBy: { $first: "$acceptedBy" },
+              preRentalScreening: { $push: "$preRentalScreening" },
+              createdAt: { $first: "$createdAt" },
+              updatedAt: { $first: "$updatedAt" },
+              rentalUserDetail: { $first: "$rentalUserDetail" },
+              OwnerUserDetail: { $first: "$OwnerUserDetail" },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              startDate: 1,
+              endDate: 1,
+              userId: 1,
+              paymentId: 1,
+              quantity: 1,
+              isDeleted: 1,
+              expandId: 1,
+              isAccepted: 1,
+              images: 1,
+              addressId: 1,
+              price: 1,
+              totalAmount: 1,
+              status: 1,
+              acceptedBy: 1,
+              preRentalScreening: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              rentalUserDetail: 1,
+              OwnerUserDetail: 1
+            },
+          },
+        ]);      
+    
+        await Promise.all(findBooking.map(async (element) => {
+          let profileData = await profileModel.aggregate([
+            {
+              $match: {
+                userId: element.productId.userId
+              },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);        
+    
+          if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {          
+            element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+            element.OwnerUserDetail[0].userName = profileData[0].userName;
+          }
+        }));
+  
+        await Promise.all(findBooking.map(async (element) => {
+          let profileData = await profileModel.aggregate([
+            {
+              $match: {
+                userId: element.userId
+              },
+            },
+            {
+              $lookup: {
+                  from: "images",
+                  localField: "images",
+                  foreignField: "_id",
+                  pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+                  as: "images",
+              },
+            },
+          ]);        
+    
+          if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {          
+            element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+            element.rentalUserDetail[0].userName = profileData[0].userName;
+          }
+        }));
+    
+        await Promise.all(findBooking.map(async (booking) => {
+          await Promise.all(booking.images.map(async (element: { imageName: string; path: string; }) => {
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
+
+        await Promise.all(findBooking.map(async (booking) => {        
+          await Promise.all(booking.preRentalScreening.map(async (screening: any) => {
+            await Promise.all(screening.images.map(async (element: { imageName: string; path: string; }) => {          
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
+          }));
+        }));
+
+        element.bookings = findBooking;
+      }));      
+
+      return findProduct;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Booking");
+    }
+  }
+
   //get all booking
   async getAllBooking(bookingInputs: bookingGetRequest) {
     try {      
