@@ -95,7 +95,7 @@ class PrivacyPolicyRepository {
     try {
       const PrivacyPolicyResult = await PrivacyPolicyModel.findOneAndUpdate(
         { _id: PrivacyPolicyInputs._id },
-        { $set: { images: PrivacyPolicyInputs.images } },
+        { $push: { images: PrivacyPolicyInputs.images } },
         { new: true }
       );
       if (PrivacyPolicyResult) {

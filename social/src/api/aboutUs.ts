@@ -18,14 +18,13 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        // Check if req.file is defined before accessing its properties
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
 
         const data = await service.CreateAboutUS(req.body);
@@ -54,13 +53,13 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
 
         const data = await service.addImagesToAboutUS(req.body);
@@ -77,19 +76,16 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
 
-        const data = await service.updateById({
-          ...req.body,
-          _id: req.query._id as string,
-        });
+        const data = await service.updateAboutUSById(req.body);
         return res.json(data);
       } catch (err) {
         return res.status(500).json({ error: "Internal Server Error" });

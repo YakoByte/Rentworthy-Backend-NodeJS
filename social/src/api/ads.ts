@@ -64,16 +64,15 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
         
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
 
-        // req.body.image = await uploadMultipleImagesWithToken(req.files.map((obj: { path: any }) => obj.path), req.headers.authorization);
         const data = await service.CreateAds(req.body);
         return res.json(data);
       } catch (err) {
@@ -106,13 +105,13 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
 
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
         
         const data = await service.addImagesToAds(req.body);
@@ -128,13 +127,13 @@ export default (app: Express) => {
         let authUser: any = req.user;
         req.body.userId = authUser._id;
         
-        if (req.file) {
+        if (req.files.length > 0) {    
           const imageData = {
-            userId: authUser._id,
-            imageDetails: req.files,
-          }
-
-          req.body.images = await image.CreateImages(imageData);
+              userId: authUser._id,
+              imageDetails: req.files,
+            }
+  
+            req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
         }
 
         const data = await service.updateAdsById({...req.body, _id: req.query._id as string});

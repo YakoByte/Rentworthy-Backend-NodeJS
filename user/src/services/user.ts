@@ -62,7 +62,7 @@ class AdminService {
             return FormateError({ error: "Invalid Credentials" });
 
         } catch (err: any) {
-            return FormateError({ error: "Creation Failed" });
+            return FormateError({ error: "Login Failed" });
         }
     }
 
@@ -77,7 +77,7 @@ class AdminService {
             }
 
             if(!newUser) {
-                throw FormateError({error: "Something went wrong"});
+                throw FormateError({error: "Role Not Found"});
             }
 
             return FormateData(newUser);

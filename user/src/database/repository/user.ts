@@ -18,7 +18,7 @@ class AdminRepository {
       // check signup role
       let roleId = await roleModel.findOne({ name: userInputs.roleName });
       if (!roleId) {
-        throw new Error(`Role with name '${userInputs.roleName}' not found.`);
+        return false;
       } else {
         roleId = roleId._id;
       }

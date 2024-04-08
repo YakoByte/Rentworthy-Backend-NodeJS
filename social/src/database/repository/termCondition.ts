@@ -93,7 +93,7 @@ class TermConditionRepository {
     try {
       const TermConditionResult = await TermConditionModel.findOneAndUpdate(
         { _id: TermConditionInputs._id },
-        { $set: { images: TermConditionInputs.images } },
+        { $push: { images: TermConditionInputs.images } },
         { new: true }
       );
       if (TermConditionResult) {

@@ -9,6 +9,8 @@ import PrivacyPolicyModel from "./privacyPolicy";
 import AboutUSModel from "./aboutUs";
 import Notification from "./notification";
 import imageModel from './image';
+import adminADSModel from "./adminADS";
+import bannerModel from "./banner";
 // ... repeat for each model
 
 // Then, export them:
@@ -22,5 +24,7 @@ export {
   TermConditionModel,
   PrivacyPolicyModel,
   AboutUSModel,
-  imageModel
+  imageModel,
+  adminADSModel,
+  bannerModel,
 };

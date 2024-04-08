@@ -133,7 +133,7 @@ class AdsRepository {
     try {
       const adsResult = await adsModel.findOneAndUpdate(
         { _id: adsInputs._id, isDeleted: false },
-        { $set: { images: adsInputs.images } },
+        { $push: { images: adsInputs.images } },
         { new: true }
       );
       if (adsResult) {

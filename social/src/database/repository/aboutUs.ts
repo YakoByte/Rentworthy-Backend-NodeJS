@@ -92,7 +92,7 @@ class AboutUSRepository {
     try {
       const aboutUSResult = await AboutUSModel.findOneAndUpdate(
         { _id: aboutUSInputs._id, isDeleted: false },
-        { $set: { images: aboutUSInputs.images } },
+        { $push: { images: aboutUSInputs.images } },
         { new: true }
       );
       if (aboutUSResult) {

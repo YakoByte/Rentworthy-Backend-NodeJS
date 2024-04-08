@@ -13,6 +13,7 @@ export interface AuthenticatedRequest extends Request {
         title?: string;
         image?: string;
         description?: string;
+        category?: string;
     },
 }
 
@@ -22,37 +23,41 @@ export interface deleteAuthenticatedRequest extends Request {
     };
     headers: any;
     query: {
-        _id: string,
+        _id: string;
     }
 }
 
-export interface aboutUS extends Document {
+export interface banner extends Document {
     title: string;
     images?: [Types.ObjectId];
     description: string;
+    category?: string;
     isDeleted: boolean;
 }
 
-export interface aboutUSRequest {
+export interface bannerRequest {
     title: string;
     images: [Types.ObjectId];
     description: string;
+    category?: string;
 }
 
-export interface aboutUSUpdateRequest {
+export interface bannerUpdateRequest {
     _id: string;
     title?: string;
     images?: [Types.ObjectId];
     description?: string;
+    category?: string;
 }
 
-export interface aboutUSGetRequest {
+export interface bannerGetRequest {
     _id?: string
     title?: string;
     description?: string;
+    category?: string;
     images?: [string];
 }
 
-export interface aboutUSDeleteRequest {
+export interface bannerDeleteRequest {
     _id: string
 }

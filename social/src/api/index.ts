@@ -6,4 +6,6 @@ export = {
     privacyPolicy: require('./privacyPolicy'),
     AboutUs: require('./aboutUs'),
     Notification: require('./notification'),
+    AdminADS: require('./adminADS'),
+    banner: require('./banner'),
 };

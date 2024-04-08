@@ -51,7 +51,7 @@ class AboutUSService {
     }
 
     // update AboutUS by id
-    async updateById(AboutUSInputs: aboutUSUpdateRequest) {
+    async updateAboutUSById(AboutUSInputs: aboutUSUpdateRequest) {
         try {
             const existingAboutUS: any = await this.repository.updateAboutUSById(
                 AboutUSInputs
