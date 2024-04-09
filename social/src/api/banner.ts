@@ -38,7 +38,7 @@ export default (app: Express) => {
   );
 
   // API = get Banner by id and search and all Banner
-  app.get( "/get-banner", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get( "/get-banner", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         const data = await service.getBanner(req.query);
         return res.json(data);

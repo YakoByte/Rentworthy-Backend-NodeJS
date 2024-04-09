@@ -38,7 +38,7 @@ export default (app: Express) => {
   );
 
   // API = get adminADS by id and search and all adminADS
-  app.get( "/get-admin-ads", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get( "/get-admin-ads", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         const data = await service.getAdminADS(req.query);
         return res.json(data);

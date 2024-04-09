@@ -65,7 +65,12 @@ export interface AuthenticatedRequest extends Request {
     };
     query: {
         _id?: string;
-        user?: string;
+        userId?: string;
+        user?: {
+            _id?: string;
+            roleName?: string;
+            email?: string;
+        };
         page?: string;
         limit?: string;
         startDate?: string;
@@ -73,9 +78,9 @@ export interface AuthenticatedRequest extends Request {
         categoryId?: string;
         subCategoryId?: string;
         productId?: string;
-        long: string;
-        lat: string;
-        distance: string;
+        long?: string;
+        lat?: string;
+        distance?: string;
         city?: string;
         state?: string;
         country?: string;
@@ -178,10 +183,10 @@ export interface adsUpdateRequest {
 // for get ads
 export interface adsGetRequest {
     _id?: string
-    user: {
-        _id: string;
-        roleName: string;
-        email: string;
+    user?: {
+        _id?: string;
+        roleName?: string;
+        email?: string;
     };
     page?: string;
     limit?: string;

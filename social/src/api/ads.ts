@@ -83,21 +83,31 @@ export default (app: Express) => {
   );
 
   // API = get ads by id and search and all ads
-  app.get("/get-ads",UserAuth,async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-      try {
-        let authUser = req.user as {
-          _id: string;
-          roleName: string;
-          email: string;
-        };
-        
-        const data = await service.getAds({ ...req.query, user: authUser });
+  app.get("/get-ads-unauthorised", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      try {       
+        const data = await service.getAds(req.query);
         return res.json(data);
       } catch (err) {
         next(err);
       }
     }
   );
+
+  // API = get ads by id and search and all ads
+  app.get("/get-ads", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      let authUser = req.user as {
+        _id: string;
+        roleName: string;
+        email: string;
+      };
+      
+      const data = await service.getAds({ ...req.query, user: authUser });
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
 
   // API = add images to ads
   app.post("/add-images-to-ads", UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

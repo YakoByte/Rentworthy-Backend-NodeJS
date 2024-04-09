@@ -37,7 +37,7 @@ export default (app: Express) => {
   );
 
   // API = get AboutUS by id and search and all AboutUS
-  app.get( "/get-aboutUS", UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  app.get( "/get-aboutUS", async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       try {
         const data = await service.getAboutUS(req.query);
         return res.json(data);

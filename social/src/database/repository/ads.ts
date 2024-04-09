@@ -61,7 +61,7 @@ class AdsRepository {
                     $expr: {
                       $and: [
                         {
-                          $eq: ["$userId", new ObjectId(adsInputs.user._id)],
+                          $eq: ["$userId", new ObjectId(adsInputs?.user?._id)],
                         },
                         { $in: ["$$productId", "$productIds"] },
                       ],
