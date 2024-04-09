@@ -32,7 +32,7 @@ export default (app: Express) => {
     });
 
      // API = get business info
-     app.get('/get-business', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+     app.get('/get-business', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.getBusiness(req.query);
             return res.json(data);
