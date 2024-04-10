@@ -67,8 +67,11 @@ export default (app: Express) => {
     });
 
     // API = add card
-    app.post('/add-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/add-card', UserAuth, async (req: any, res: Response, next: NextFunction) => {
         try {
+            let userId:any = req.user?._id;
+            req.body.userId = userId;
+
             const data = await service.addNewCard(req.body);
             return res.json(data);
         } catch (err) {
@@ -77,8 +80,11 @@ export default (app: Express) => {
     });
 
     // API = update card
-    app.put('/update-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.put('/update-card', UserAuth, async (req: any, res: Response, next: NextFunction) => {
         try {
+            let userId:any = req.user?._id;
+            req.body.userId = userId;
+
             const data = await service.updateCard(req.body);
             return res.json(data);
         } catch (err) {
@@ -87,8 +93,11 @@ export default (app: Express) => {
     });
 
     // API = delete card
-    app.delete('/delete-card', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/delete-card', UserAuth, async (req: any, res: Response, next: NextFunction) => {
         try {
+            let userId:any = req.user?._id;
+            req.body.userId = userId;
+
             const data = await service.deleteCard(req.body);
             return res.json(data);
         } catch (err) {
@@ -162,18 +171,18 @@ export default (app: Express) => {
 
 
 
-    app.post('/create-plan-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-plan', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser:any = req.user?._id;
             req.body.userId = authUser;
-            const data = await service.CreatePlanProduct(req.body);
+            const data = await service.CreatePlan(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
         }
     });
 
-    app.get('/retrive-plan-product', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/retrive-plan', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
             let priceId = req.query.price as string || '';
             
@@ -181,7 +190,7 @@ export default (app: Express) => {
                 res.status(401).json({ error: 'Missing parameter' })
             }
 
-            const data = await service.retrivePlanProduct({priceId});
+            const data = await service.retrivePlan({priceId});
             return res.json(data);
         } catch (err) {
             next(err);
@@ -201,9 +210,7 @@ export default (app: Express) => {
 
     app.get('/get-payment-sum', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const productId = req.query.productId?.toString() || '';
-            const userId = req.query.userId?.toString() || '';
-            const data = await service.getPaymentSum({ productId: productId, userId: userId });
+            const data: any = await service.getPaymentSum();
             return res.json(data);
         } catch (err) {
             next(err);
@@ -211,7 +218,7 @@ export default (app: Express) => {
     });
 
     //API = count payment by every minutes   
-    app.get('/get-payment-booking/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/get-payment/statiscs', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             let criteria = req.query.criteria

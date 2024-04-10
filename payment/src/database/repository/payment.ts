@@ -1,22 +1,21 @@
-import { UserModel, bookingModel, paymentModel } from "../models";
+import { UserModel, paymentModel } from "../models";
 import moment from "moment";
-import { PaymentConfirmDetails, PaymentCount, UpdatePayment } from "../../interface/payment";
+import { PaymentConfirmDetails, UpdatePayment } from "../../interface/payment";
 
 class PaymentRepository {
-  async getBooking(bookingId: string) {
-    try {
-      const booking = await bookingModel.findById(bookingId);
-      if (!booking) throw new Error("No such booking found");
-      return booking;
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to Get Booking");
-    }
-  }
-
   async CreatePayment(PaymentInputs: PaymentConfirmDetails) {
     try {
       let response = await paymentModel.create(PaymentInputs);
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Create Payment");
+    }
+  }
+
+  async GetPaymentData(paymentId: string) {
+    try {
+      let response = await paymentModel.findOne({paymentId: paymentId});
       return response;
     } catch (err) {
       console.log("error", err);
@@ -51,77 +50,7 @@ class PaymentRepository {
       throw new Error("Unable to Verify StripeId");
     }
   }
-
-  async getSubscriptionPlanPaymentSum(paymentInput: PaymentCount) {
-    try {
-      const subscriptionPlan = paymentInput.subscriptionPlan;
-      const result = await paymentModel.aggregate([
-        { $match: { subscriptionPlan: subscriptionPlan } },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: "$price" },
-          },
-        },
-      ]);
-
-      // Extract the totalAmount from the result
-      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
-
-      return totalAmount;
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to fetch payment Sum of productId");
-    }
-  }
-
-  async getProductIdPaymentSum(paymentInput: PaymentCount) {
-    try {
-      const productId = paymentInput.productId;
-      const result = await paymentModel.aggregate([
-        { $match: { productId: productId } },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: "$price" },
-          },
-        },
-      ]);
-
-      // Extract the totalAmount from the result
-      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
-
-      return totalAmount;
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to fetch payment Sum of productId");
-    }
-  }
-
-  async getUserIdPaymentSum(paymentInput: PaymentCount) {
-    const userId = paymentInput.userId;
-
-    try {
-      const result = await paymentModel.aggregate([
-        { $match: { userId: userId } },
-        {
-          $group: {
-            _id: null,
-            totalAmount: { $sum: "$price" },
-          },
-        },
-      ]);
-
-      // Extract the totalAmount from the result
-      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
-
-      return totalAmount;
-    } catch (error) {
-      console.log("error", error);
-      throw new Error("Unable to fetch payment Sum of userId");
-    }
-  }
-
+  
   async getPaymentSum() {
     try {
       const result = await paymentModel.aggregate([
@@ -285,16 +214,6 @@ class PaymentRepository {
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to fetch Owner");
-    }
-  }
-
-  async GetPaymentData(userId: string, bookingId: string) {
-    try {
-      let response = await paymentModel.findOne({userId, bookingId, isDeleted: false});
-      return response;
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to fetch Payment");
     }
   }
 

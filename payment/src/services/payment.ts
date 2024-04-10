@@ -2,12 +2,11 @@ import { stripe } from "../utils/stripe";
 import {
   PaymentCancel,
   PaymentChargeDetails,
-  PaymentCount,
   PaymentDeleteMethodDetails,
   PaymentIntendDetail,
   PaymentMethodDetails,
   PaymentUpdateMethodDetails,
-  PlanProductPricedetail,
+  PlanPricedetail,
   SubscriptionPayment,
   UpdatePayment,
 } from "../interface/payment";
@@ -158,12 +157,20 @@ class PaymentService {
 
   async addNewCard(paymentDetails: PaymentMethodDetails) {
     try {
+      const owner = await this.repository.GetOwnerData(paymentDetails.userId);
+
+      let customer_Id = owner?.stripeCustomerId;
+
+      if(!customer_Id) {
+        return { message: "No Customer Found....."}
+      }
+
       // const token = await stripe.tokens.create({
       //   card: paymentDetails.card,
       // });
 
       const addedCard = await stripe.customers.createSource(
-        paymentDetails.customer_id,
+        customer_Id,
         {
           source: "tok_visa",
           // source: token.id,
@@ -179,8 +186,16 @@ class PaymentService {
 
   async updateCard(paymentDetails: PaymentUpdateMethodDetails) {
     try {
+      const owner = await this.repository.GetOwnerData(paymentDetails.userId);
+
+      let customer_Id = owner?.stripeCustomerId;
+
+      if(!customer_Id) {
+        return { message: "No Customer Found....."}
+      }
+
       const addedCard = await stripe.customers.updateSource(
-        paymentDetails.customer_id,
+        customer_Id,
         paymentDetails.card_Id,
         {
           name: paymentDetails.name,
@@ -198,8 +213,16 @@ class PaymentService {
 
   async deleteCard(paymentDetails: PaymentDeleteMethodDetails) {
     try {
+      const owner = await this.repository.GetOwnerData(paymentDetails.userId);
+
+      let customer_Id = owner?.stripeCustomerId;
+
+      if(!customer_Id) {
+        return { message: "No Customer Found....."}
+      }
+
       const deleteCard = await stripe.customers.deleteSource(
-        paymentDetails.customer_id,
+        customer_Id,
         paymentDetails.card_Id
       );
 
@@ -215,6 +238,10 @@ class PaymentService {
       const owner = await this.repository.GetOwnerData(userId);
 
       let customer_Id = owner?.stripeCustomerId;
+
+      if(!customer_Id) {
+        return { message: "No Customer Found....."}
+      }
 
       const Cards = await stripe.paymentMethods.list({
         customer: customer_Id,
@@ -233,11 +260,6 @@ class PaymentService {
   async createPayment(paymentDetails: PaymentIntendDetail) {
     try {
       let owner = await this.repository.GetOwnerData(paymentDetails.userId);
-      let booking;
-      if(paymentDetails.bookingId) {
-        booking = await this.repository.getBooking(paymentDetails.bookingId);  
-      }
-
       let paymentMethod;
       if(paymentDetails.card) {
         // const token = await stripe.tokens.create({
@@ -284,12 +306,9 @@ class PaymentService {
       if (payment.status === "succeeded") {
         const paymentData = {
           paymentId: payment.id,
-          bookingId: booking?._id,
-          productId: booking?.productId.toString(),
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
-          userId: paymentDetails.userId,
-          amount: paymentDetails.amount,
-          quantity: booking?.quantity || 1,
+          userId: paymentDetails?.userId,
+          amount: paymentDetails?.amount,
+          quantity: paymentDetails?.quantity || 1,
           currency: paymentDetails.currency,
           status: "succeeded",
         };
@@ -305,12 +324,9 @@ class PaymentService {
       } else if (payment.status === "requires_action") {
         const paymentData = {
           paymentId: payment.id,
-          bookingId: booking?._id,
-          productId: booking?.productId.toString(),
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
-          userId: paymentDetails.userId,
-          amount: paymentDetails.amount,
-          quantity: booking?.quantity || 1,
+          userId: paymentDetails?.userId,
+          amount: paymentDetails?.amount,
+          quantity: paymentDetails?.quantity || 1,
           currency: paymentDetails.currency,
           status: "Additional action required for payment!",
         };
@@ -351,10 +367,7 @@ class PaymentService {
 
   async CancelPayment(paymentDetails: PaymentCancel) {
     try {
-      const payment = await this.repository.GetPaymentData(
-        paymentDetails.userId,
-        paymentDetails.bookingId
-      );
+      const payment = await this.repository.GetPaymentData(paymentDetails.paymentId);
       if (!payment) {
         throw new Error("No such payment found");
       }      
@@ -385,7 +398,7 @@ class PaymentService {
 
 
 
-  async CreatePlanProduct(paymentDetails: PlanProductPricedetail) {
+  async CreatePlan(paymentDetails: PlanPricedetail) {
     try {
       const price = await stripe.prices.create({
         currency: paymentDetails.currency,
@@ -405,7 +418,7 @@ class PaymentService {
     }
   }
 
-  async retrivePlanProduct(paymentDetails: {priceId: string}) {
+  async retrivePlan(paymentDetails: {priceId: string}) {
     try {
       const price = await stripe.prices.retrieve(paymentDetails.priceId);
 
@@ -435,9 +448,6 @@ class PaymentService {
       if(subscription) {
         const paymentData = {
           paymentId: subscription.id,
-          bookingId: paymentDetails?.bookingId,
-          productId: paymentDetails?.productId,
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount:  price.unit_amount || 0,
           quantity: 1,
@@ -456,31 +466,11 @@ class PaymentService {
 
 
 
-  async getPaymentSum(payDetails: PaymentCount) {
+  async getPaymentSum() {
     try {
-      if (payDetails.productId) {
-        const payment = await this.repository.getProductIdPaymentSum({
-          productId: payDetails.productId,
-        });
+      const payment = await this.repository.getPaymentSum();
 
-        return FormateData({ payment });
-      } else if (payDetails.userId) {
-        const payment = await this.repository.getUserIdPaymentSum({
-          userId: payDetails.userId,
-        });
-
-        return FormateData({ payment });
-      } else if (payDetails.subscriptionPlan) {
-        const payment = await this.repository.getSubscriptionPlanPaymentSum({
-          subscriptionPlan: payDetails.subscriptionPlan,
-        });
-
-        return FormateData({ payment });
-      } else {
-        const payment = await this.repository.getPaymentSum();
-
-        return FormateData({ payment });
-      }
+      return FormateData({ payment });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to get payment sum" });
@@ -513,15 +503,17 @@ class PaymentService {
   async createChargesByCustomer(paymentDetails: PaymentChargeDetails) {
     try {
       const owner = await this.repository.GetOwnerData(paymentDetails.userId);
-      let booking;
-      if(paymentDetails.bookingId) {
-        booking = await this.repository.getBooking(paymentDetails?.bookingId);
-      } 
+
+      let customer_Id = owner?.stripeCustomerId;
+
+      if(!customer_Id) {
+        return { message: "No Customer Found....."}
+      }
 
       const createCharge = await stripe.charges.create({
         amount: Math.floor(paymentDetails.amount * 100),
         currency: paymentDetails.currency || "usd",
-        customer: paymentDetails.customer_id,
+        customer: customer_Id,
         receipt_email: owner?.email,
         description: `Stripe Charge Of Amount ${paymentDetails.amount}`,
       });
@@ -529,12 +521,9 @@ class PaymentService {
       if (createCharge.status === "succeeded") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking?._id,
-          productId: booking?.productId.toString(),
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking?.quantity || 1,
+          quantity: paymentDetails?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
@@ -570,10 +559,6 @@ class PaymentService {
   async createChargesByToken(paymentDetails: PaymentChargeDetails) {
     try {
       const owner = await this.repository.GetOwnerData(paymentDetails.userId);
-      let booking;
-      if(paymentDetails.bookingId) {
-        booking = await this.repository.getBooking(paymentDetails?.bookingId);
-      } 
 
       const createCharge = await stripe.charges.create({
         amount: Math.floor(paymentDetails.amount * 100),
@@ -586,12 +571,9 @@ class PaymentService {
       if (createCharge.status === "succeeded") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking?._id,
-          productId: booking?.productId.toString(),
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking?.quantity || 1,
+          quantity: paymentDetails?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
@@ -607,12 +589,9 @@ class PaymentService {
       } else if (createCharge.status === "pending") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking?._id,
-          productId: booking?.productId.toString(),
-          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking?.quantity || 1,
+          quantity: paymentDetails?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
@@ -631,8 +610,6 @@ class PaymentService {
           payStatus: createCharge.status,
         });
       }
-
-      return FormateData({ createCharge });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create charge" });

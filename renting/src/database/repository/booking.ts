@@ -1415,7 +1415,7 @@ class BookingRepository {
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
         { 
-          isAccepted: false, 
+          isAccepted: true, 
           acceptedBy: bookingInputs.acceptedBy, 
           status: "Confirmed", 
           $push: { statusHistory: "Confirmed" } 
@@ -2017,7 +2017,78 @@ class BookingRepository {
         console.log("error", err);
         throw new Error("Unable to Count Booking");
     }
-}
+  }
+
+  async getProductPaymentSum(paymentInput: { productId: string }) {
+    try {
+      const productId = paymentInput.productId;
+      const result = await bookingModel.aggregate([
+        { $match: { productId: productId, isDeleted: false, isBlocked: false, isAccepted: true } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$price" },
+          },
+        },
+      ]);
+
+      // Extract the totalAmount from the result
+      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+      return totalAmount;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to fetch payment Sum of productId");
+    }
+  }
+
+  async getUserIdPaymentSum(paymentInput: { userId: string }) {
+    const userId = paymentInput.userId;
+
+    try {
+      const result = await bookingModel.aggregate([
+        { $match: { userId: userId, isDeleted: false, isBlocked: false, isAccepted: true } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$price" },
+          },
+        },
+      ]);
+
+      // Extract the totalAmount from the result
+      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+      return totalAmount;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to fetch payment Sum of userId");
+    }
+  }
+
+  async getOwnerPaymentSum(paymentInput: { owner: string }) {
+    const acceptedBy = paymentInput.owner;
+
+    try {
+      const result = await bookingModel.aggregate([
+        { $match: { acceptedBy: acceptedBy, isDeleted: false, isBlocked: false, isAccepted: true } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$price" },
+          },
+        },
+      ]);
+
+      // Extract the totalAmount from the result
+      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+      return totalAmount;
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to fetch payment Sum of userId");
+    }
+  }
 
   async dummyAPI() {
     try {

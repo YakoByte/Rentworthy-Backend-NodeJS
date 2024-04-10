@@ -17,9 +17,6 @@ export interface getCountAuthenticatedRequest extends Request {
 }
 
 export interface Payment extends Document {
-  productId: Types.ObjectId;
-  bookingId: Types.ObjectId;
-  subscriptionPlan: Types.ObjectId;
   paymentId: string;
   userId: Types.ObjectId;
   quantity: number;
@@ -44,9 +41,6 @@ export interface confirmIntentRequest extends Request {
   };
   body: {
     paymentId: string;
-    BookingId: string;
-    subscriptionPlan: string;
-    productId: string;
     userId: string;
     amount: number;
     quantity: number;
@@ -62,9 +56,6 @@ export interface PaymentDetails {
 export interface PaymentConfirmDetails {
   paymentId: string;
   amount: number;
-  productId?: string;
-  bookingId?: string;
-  subscriptionPlan?: string;
   userId: string;
   quantity?: number;
   currency: string;
@@ -78,11 +69,11 @@ export interface PaymentMethodDetails {
     exp_year: string;
     cvc: string;
   };
-  customer_id: string;
+  userId: string;
 }
 
 export interface PaymentUpdateMethodDetails {
-  customer_id: string;
+  userId: string;
   card_Id: string;
   exp_month: string;
   exp_year: string;
@@ -90,41 +81,33 @@ export interface PaymentUpdateMethodDetails {
 }
 
 export interface PaymentDeleteMethodDetails {
-  customer_id: string;
+  userId: string;
   card_Id: string;
 }
 
 export interface PaymentChargeDetails {
-  customer_id?: string;
   token_id?: string;
   amount: number;
   currency?: string;
   userId: string;
-  bookingId?: string;
-  subscriptionPlan?: string;
-  productId?: string;
   quantity?: number;
 }
 
 export interface PaymentCancel {
-  bookingId: string;
-  userId: string;
+  paymentId: string;
 }
 
-export interface PlanProductPricedetail {
-    amount: number,
-    currency: string,
-    interval: string,
-    planType: string,
+export interface PlanPricedetail {
+  amount: number,
+  currency: string,
+  interval: string,
+  planType: string,
 }
 
 export interface SubscriptionPayment {
   userId: string;
   customerId: string;
   stripePriceId: string;
-  productId?: string;
-  bookingId?: string;
-  subscriptionPlan?: string;
 }
 
 export interface PaymentIntendDetail {
@@ -132,9 +115,6 @@ export interface PaymentIntendDetail {
   name?: string;
   email?: string;
   userId: string;
-  bookingId?: string;
-  subscriptionPlan?: string;
-  productId?: string;
   quantity?: number;
   card: {
     number: string;
@@ -146,17 +126,8 @@ export interface PaymentIntendDetail {
   currency: string;
 }
 
-export interface PaymentCount {
-  subscriptionPlan?: string;
-  productId?: string;
-  userId?: string;
-}
-
 export interface UpdatePayment {
   _id: Types.ObjectId;
-  productId?: string;
-  bookingId?: string;
-  subscriptionPlan?: string;
   paymentId?: string;
   userId?: string;
   quantity?: number;

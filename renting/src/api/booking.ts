@@ -297,6 +297,36 @@ export default (app: Express) => {
         }
     });
 
+    //API = payment sum Booking
+    app.get('/count-product-booking-sum', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.getProductPaymentSum({productId: req.query.productId || ''});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/count-user-booking-sum', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser = req.query._id || req.user?._id 
+            const data = await service.getUserIdPaymentSum({userId: authUser || ''});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.get('/count-user-product-sum', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser = req.query._id || req.user?._id 
+            const data = await service.getOwnerPaymentSum({owner: authUser || ''});
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     app.get('/dummy-booking', UserAuth, async (req: deleteAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             const data = await service.dummyAPI();

@@ -266,6 +266,42 @@ class bookingService {
         }
     }
 
+    async getProductPaymentSum(bookingInputs: { productId: string }) {
+        try {
+            const Booking: any = await this.repository.CountProductBooking(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
+    async getUserIdPaymentSum(bookingInputs: { userId: string }) {
+        try {
+            const Booking: any = await this.repository.getUserIdPaymentSum(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
+    async getOwnerPaymentSum(bookingInputs: { owner: string }) {
+        try {
+            const Booking: any = await this.repository.getOwnerPaymentSum(
+                bookingInputs
+            );
+
+            return FormateData(Booking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Delete Booking" });
+        }
+    }
+
     async dummyAPI() {
         try {
             const existingBooking: any = await this.repository.dummyAPI();
