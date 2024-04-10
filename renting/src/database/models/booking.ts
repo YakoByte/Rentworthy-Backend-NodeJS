@@ -55,6 +55,7 @@ const bookingSchema: Schema = new Schema<Booking>(
         price: {
             type: Number,
             required: true,
+            default: 0,
         },
         totalAmount: {
             type: Number,
