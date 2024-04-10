@@ -19,6 +19,7 @@ export interface getCountAuthenticatedRequest extends Request {
 export interface Payment extends Document {
   productId: Types.ObjectId;
   bookingId: Types.ObjectId;
+  subscriptionPlan: Types.ObjectId;
   paymentId: string;
   userId: Types.ObjectId;
   quantity: number;
@@ -44,6 +45,7 @@ export interface confirmIntentRequest extends Request {
   body: {
     paymentId: string;
     BookingId: string;
+    subscriptionPlan: string;
     productId: string;
     userId: string;
     amount: number;
@@ -61,7 +63,8 @@ export interface PaymentConfirmDetails {
   paymentId: string;
   amount: number;
   productId?: string;
-  bookingId: string;
+  bookingId?: string;
+  subscriptionPlan?: string;
   userId: string;
   quantity?: number;
   currency: string;
@@ -97,7 +100,8 @@ export interface PaymentChargeDetails {
   amount: number;
   currency?: string;
   userId: string;
-  bookingId: string;
+  bookingId?: string;
+  subscriptionPlan?: string;
   productId?: string;
   quantity?: number;
 }
@@ -118,8 +122,9 @@ export interface SubscriptionPayment {
   userId: string;
   customerId: string;
   stripePriceId: string;
-  productId: string;
-  bookingId: string;
+  productId?: string;
+  bookingId?: string;
+  subscriptionPlan?: string;
 }
 
 export interface PaymentIntendDetail {
@@ -127,7 +132,8 @@ export interface PaymentIntendDetail {
   name?: string;
   email?: string;
   userId: string;
-  bookingId: string;
+  bookingId?: string;
+  subscriptionPlan?: string;
   productId?: string;
   quantity?: number;
   card: {
@@ -141,6 +147,7 @@ export interface PaymentIntendDetail {
 }
 
 export interface PaymentCount {
+  subscriptionPlan?: string;
   productId?: string;
   userId?: string;
 }
@@ -149,6 +156,7 @@ export interface UpdatePayment {
   _id: Types.ObjectId;
   productId?: string;
   bookingId?: string;
+  subscriptionPlan?: string;
   paymentId?: string;
   userId?: string;
   quantity?: number;

@@ -112,16 +112,16 @@ class PaymentService {
       if (!stripeAccount) {
         const phoneNumber = `+${owner?.phoneCode || '91'}-${owner?.phoneNo}`;        
 
-        customer = await stripe.customers.create({
+        const stripeAccount = await stripe.customers.create({
           name: owner?.name,
           email: owner?.email,
           phone: phoneNumber,
           metadata: { user_id: userId },
         });
 
-        stripeAccount = customer.id;
+        customer = stripeAccount.id;
 
-        await this.repository.VerifyCustomerStripeId(stripeAccount, userId);
+        await this.repository.VerifyCustomerStripeId(customer, userId);
       } else {
         customer = stripeAccount;
       }
@@ -153,6 +153,8 @@ class PaymentService {
       return FormateError({ error: "Failed to add new Card" });
     }
   }
+
+
 
   async addNewCard(paymentDetails: PaymentMethodDetails) {
     try {
@@ -226,10 +228,15 @@ class PaymentService {
     }
   }
 
+
+
   async createPayment(paymentDetails: PaymentIntendDetail) {
     try {
-      let owner = await this.repository.GetOwnerData(paymentDetails.userId);    
-      let booking = await this.repository.getBooking(paymentDetails.bookingId);  
+      let owner = await this.repository.GetOwnerData(paymentDetails.userId);
+      let booking;
+      if(paymentDetails.bookingId) {
+        booking = await this.repository.getBooking(paymentDetails.bookingId);  
+      }
 
       let paymentMethod;
       if(paymentDetails.card) {
@@ -277,11 +284,12 @@ class PaymentService {
       if (payment.status === "succeeded") {
         const paymentData = {
           paymentId: payment.id,
-          bookingId: booking._id,
-          productId: booking.productId.toString(),
+          bookingId: booking?._id,
+          productId: booking?.productId.toString(),
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking.quantity || 1,
+          quantity: booking?.quantity || 1,
           currency: paymentDetails.currency,
           status: "succeeded",
         };
@@ -297,11 +305,12 @@ class PaymentService {
       } else if (payment.status === "requires_action") {
         const paymentData = {
           paymentId: payment.id,
-          bookingId: booking._id,
-          productId: booking.productId.toString(),
+          bookingId: booking?._id,
+          productId: booking?.productId.toString(),
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking.quantity || 1,
+          quantity: booking?.quantity || 1,
           currency: paymentDetails.currency,
           status: "Additional action required for payment!",
         };
@@ -321,7 +330,6 @@ class PaymentService {
         });
       }
 
-      return FormateData({ error: "Payment Failed" });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create Payment" });
@@ -375,6 +383,8 @@ class PaymentService {
     }
   }
 
+
+
   async CreatePlanProduct(paymentDetails: PlanProductPricedetail) {
     try {
       const price = await stripe.prices.create({
@@ -425,8 +435,9 @@ class PaymentService {
       if(subscription) {
         const paymentData = {
           paymentId: subscription.id,
-          bookingId: paymentDetails.bookingId,
-          productId: paymentDetails.productId,
+          bookingId: paymentDetails?.bookingId,
+          productId: paymentDetails?.productId,
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount:  price.unit_amount || 0,
           quantity: 1,
@@ -443,24 +454,32 @@ class PaymentService {
     }
   }
 
+
+
   async getPaymentSum(payDetails: PaymentCount) {
     try {
       if (payDetails.productId) {
-        const ProductPayment = await this.repository.getProductIdPaymentSum({
+        const payment = await this.repository.getProductIdPaymentSum({
           productId: payDetails.productId,
         });
 
-        return FormateData({ ProductPayment });
+        return FormateData({ payment });
       } else if (payDetails.userId) {
-        const ProductPayment = await this.repository.getUserIdPaymentSum({
-          userId: payDetails.productId,
+        const payment = await this.repository.getUserIdPaymentSum({
+          userId: payDetails.userId,
         });
 
-        return FormateData({ ProductPayment });
-      } else {
-        const ProductPayment = await this.repository.getPaymentSum();
+        return FormateData({ payment });
+      } else if (payDetails.subscriptionPlan) {
+        const payment = await this.repository.getSubscriptionPlanPaymentSum({
+          subscriptionPlan: payDetails.subscriptionPlan,
+        });
 
-        return FormateData({ ProductPayment });
+        return FormateData({ payment });
+      } else {
+        const payment = await this.repository.getPaymentSum();
+
+        return FormateData({ payment });
       }
     } catch (error) {
       console.log("error: ", error);
@@ -471,17 +490,17 @@ class PaymentService {
   async getCountOfPayment(criteria: string) {
     try {
       if (criteria === "month") {
-        const Payment: any = await this.repository.getCountOfPaymentPerMonth();
+        const payment: any = await this.repository.getCountOfPaymentPerMonth();
 
-        return FormateData({ Payment });
+        return FormateData({ payment });
       } else if (criteria === "week") {
-        const Payment: any = await this.repository.getCountOfPaymentPerWeek();
+        const payment: any = await this.repository.getCountOfPaymentPerWeek();
 
-        return FormateData({ Payment });
+        return FormateData({ payment });
       } else {
-        const Payment: any = await this.repository.getCountOfPaymentPerDay();
+        const payment: any = await this.repository.getCountOfPaymentPerDay();
 
-        return FormateData({ Payment });
+        return FormateData({ payment });
       }
     } catch (error: any) {
       console.log("error: ", error);
@@ -494,7 +513,10 @@ class PaymentService {
   async createChargesByCustomer(paymentDetails: PaymentChargeDetails) {
     try {
       const owner = await this.repository.GetOwnerData(paymentDetails.userId);
-      let booking = await this.repository.getBooking(paymentDetails.bookingId);  
+      let booking;
+      if(paymentDetails.bookingId) {
+        booking = await this.repository.getBooking(paymentDetails?.bookingId);
+      } 
 
       const createCharge = await stripe.charges.create({
         amount: Math.floor(paymentDetails.amount * 100),
@@ -507,11 +529,12 @@ class PaymentService {
       if (createCharge.status === "succeeded") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking._id,
-          productId: booking.productId.toString(),
+          bookingId: booking?._id,
+          productId: booking?.productId.toString(),
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking.quantity || 1,
+          quantity: booking?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
@@ -547,7 +570,10 @@ class PaymentService {
   async createChargesByToken(paymentDetails: PaymentChargeDetails) {
     try {
       const owner = await this.repository.GetOwnerData(paymentDetails.userId);
-      let booking = await this.repository.getBooking(paymentDetails.bookingId);  
+      let booking;
+      if(paymentDetails.bookingId) {
+        booking = await this.repository.getBooking(paymentDetails?.bookingId);
+      } 
 
       const createCharge = await stripe.charges.create({
         amount: Math.floor(paymentDetails.amount * 100),
@@ -560,11 +586,12 @@ class PaymentService {
       if (createCharge.status === "succeeded") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking._id,
-          productId: booking.productId.toString(),
+          bookingId: booking?._id,
+          productId: booking?.productId.toString(),
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking.quantity || 1,
+          quantity: booking?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
@@ -580,11 +607,12 @@ class PaymentService {
       } else if (createCharge.status === "pending") {
         const paymentData = {
           paymentId: createCharge.id,
-          bookingId: booking._id,
-          productId: booking.productId.toString(),
+          bookingId: booking?._id,
+          productId: booking?.productId.toString(),
+          subscriptionPlan: paymentDetails?.subscriptionPlan,
           userId: paymentDetails.userId,
           amount: paymentDetails.amount,
-          quantity: booking.quantity || 1,
+          quantity: booking?.quantity || 1,
           currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };

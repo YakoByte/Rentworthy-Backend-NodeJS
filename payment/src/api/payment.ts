@@ -31,6 +31,7 @@ export default (app: Express) => {
         }
     });
 
+
     // API = create account
     app.post('/create-account', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -52,6 +53,7 @@ export default (app: Express) => {
             next(err);
         }
     });
+
 
     // API = create Token
     app.post('/token', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -123,6 +125,8 @@ export default (app: Express) => {
         }
     });
 
+    
+
     app.post('/payment-intent-create', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser:any = req.user?._id;
@@ -155,6 +159,8 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+
 
     app.post('/create-plan-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

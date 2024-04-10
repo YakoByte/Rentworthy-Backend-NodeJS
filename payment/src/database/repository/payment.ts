@@ -52,6 +52,29 @@ class PaymentRepository {
     }
   }
 
+  async getSubscriptionPlanPaymentSum(paymentInput: PaymentCount) {
+    try {
+      const subscriptionPlan = paymentInput.subscriptionPlan;
+      const result = await paymentModel.aggregate([
+        { $match: { subscriptionPlan: subscriptionPlan } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$price" },
+          },
+        },
+      ]);
+
+      // Extract the totalAmount from the result
+      const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+      return totalAmount;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to fetch payment Sum of productId");
+    }
+  }
+
   async getProductIdPaymentSum(paymentInput: PaymentCount) {
     try {
       const productId = paymentInput.productId;

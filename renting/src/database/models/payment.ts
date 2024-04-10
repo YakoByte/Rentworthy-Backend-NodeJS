@@ -7,12 +7,14 @@ const PaymentSchema: Schema = new Schema<Payment>(
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",
-            required: true,
         },
         bookingId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "booking",
-            required: true,
+        },
+        subscriptionPlan: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Subscription",
         },
         paymentId: {
             type: String,
