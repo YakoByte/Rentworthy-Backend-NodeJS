@@ -55,18 +55,20 @@ const bookingSchema: Schema = new Schema<Booking>(
         price: {
             type: Number,
             required: true,
+            default: 0,
         },
         totalAmount: {
             type: Number,
             required: true,
+            default: 0,
         },
         expandId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "expand",
-            required: false,
         },
         isAccepted: {
             type: Boolean,
+            default: false,
         },
         preRentalScreening: [{
             question: {
