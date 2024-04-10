@@ -2035,7 +2035,7 @@ class BookingRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return totalAmount;
+      return {totalAmount};
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to fetch payment Sum of productId");
@@ -2059,7 +2059,7 @@ class BookingRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return totalAmount;
+      return {totalAmount};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to fetch payment Sum of userId");
@@ -2083,7 +2083,7 @@ class BookingRepository {
       // Extract the totalAmount from the result
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return totalAmount;
+      return {totalAmount};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to fetch payment Sum of userId");

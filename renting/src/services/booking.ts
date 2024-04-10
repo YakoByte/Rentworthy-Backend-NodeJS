@@ -268,7 +268,7 @@ class bookingService {
 
     async getProductPaymentSum(bookingInputs: { productId: string }) {
         try {
-            const Booking: any = await this.repository.CountProductBooking(
+            const Booking: any = await this.repository.getProductPaymentSum(
                 bookingInputs
             );
 
