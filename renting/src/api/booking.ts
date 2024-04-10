@@ -317,7 +317,7 @@ export default (app: Express) => {
         }
     });
 
-    app.get('/count-user-product-sum', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.get('/count-user-product-booking-sum', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let authUser = req.query._id || req.user?._id 
             const data = await service.getOwnerPaymentSum({owner: authUser || ''});
