@@ -2023,19 +2023,21 @@ class BookingRepository {
     try {
       const productId = paymentInput.productId;
       const result = await bookingModel.aggregate([
-        { $match: { productId: productId, isDeleted: false, isBlocked: false, isAccepted: true } },
+        { $match: { productId: new Types.ObjectId(productId), isDeleted: false, isBlocked: false, isAccepted: true } },
         {
           $group: {
             _id: null,
-            totalAmount: { $sum: "$price" },
+            totalPrice: { $sum: "$price" },
+            totalAmount: { $sum: "$totalAmount" }
           },
         },
       ]);
 
       // Extract the totalAmount from the result
+      const totalPrice = result.length > 0 ? result[0].totalPrice : 0;
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return {totalAmount};
+      return {totalPrice, totalAmount};
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to fetch payment Sum of productId");
@@ -2047,19 +2049,21 @@ class BookingRepository {
 
     try {
       const result = await bookingModel.aggregate([
-        { $match: { userId: userId, isDeleted: false, isBlocked: false, isAccepted: true } },
+        { $match: { userId: new Types.ObjectId(userId), isDeleted: false, isBlocked: false, isAccepted: true } },
         {
           $group: {
             _id: null,
-            totalAmount: { $sum: "$price" },
+            totalPrice: { $sum: "$price" },
+            totalAmount: { $sum: "$totalAmount" }
           },
         },
       ]);
 
       // Extract the totalAmount from the result
+      const totalPrice = result.length > 0 ? result[0].totalPrice : 0;
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return {totalAmount};
+      return {totalPrice, totalAmount};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to fetch payment Sum of userId");
@@ -2071,19 +2075,21 @@ class BookingRepository {
 
     try {
       const result = await bookingModel.aggregate([
-        { $match: { acceptedBy: acceptedBy, isDeleted: false, isBlocked: false, isAccepted: true } },
+        { $match: { acceptedBy: new Types.ObjectId(acceptedBy), isDeleted: false, isBlocked: false, isAccepted: true } },
         {
           $group: {
             _id: null,
-            totalAmount: { $sum: "$price" },
+            totalPrice: { $sum: "$price" },
+            totalAmount: { $sum: "$totalAmount" }
           },
         },
       ]);
 
       // Extract the totalAmount from the result
+      const totalPrice = result.length > 0 ? result[0].totalPrice : 0;
       const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
 
-      return {totalAmount};
+      return {totalPrice, totalAmount};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to fetch payment Sum of userId");
