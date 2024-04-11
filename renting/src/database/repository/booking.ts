@@ -339,6 +339,15 @@ class BookingRepository {
         { $unwind: "$productId" },
         {
           $lookup: {
+            from: "images",
+            localField: "productId.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productId.images",
+          },
+        },
+        {
+          $lookup: {
             from: "users",
             localField: "productId.userId",
             foreignField: "_id",
@@ -381,7 +390,7 @@ class BookingRepository {
         {
           $group: {
             _id: "$_id",
-            productId: { $first: "$productId" },
+            productId: { $push: "$productId" },
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
@@ -434,7 +443,7 @@ class BookingRepository {
         let profileData = await profileModel.aggregate([
           {
             $match: {
-              userId: element.productId.userId
+              userId: element.productId[0].userId
             },
           },
           {
@@ -451,8 +460,8 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.OwnerUserDetail[0].userName = profileData[0]?.userName;
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
         }
       }));
 
@@ -475,8 +484,8 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.rentalUserDetail[0].userName = profileData[0]?.userName;
+          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.rentalUserDetail[0].userName = profileData[0]?.userName || '';
         }
       }));
   
@@ -488,12 +497,21 @@ class BookingRepository {
       }));
 
       await Promise.all(findBooking.map(async (booking) => {        
-        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+        await Promise.all(booking?.productId.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
-          const newPath = await generatePresignedUrl(element.imageName);
-          element.path = newPath;
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
         }));
       }));
+      
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
       }));
 
       return findBooking;
@@ -611,6 +629,15 @@ class BookingRepository {
         { $unwind: "$productId" },
         {
           $lookup: {
+            from: "images",
+            localField: "productId.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productId.images",
+          },
+        },
+        {
+          $lookup: {
             from: "users",
             localField: "productId.userId",
             foreignField: "_id",
@@ -653,7 +680,7 @@ class BookingRepository {
         {
           $group: {
             _id: "$_id",
-            productId: { $first: "$productId" },
+            productId: { $push: "$productId" },
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
@@ -707,7 +734,7 @@ class BookingRepository {
         let profileData = await profileModel.aggregate([
           {
             $match: {
-              userId: element.productId.userId
+              userId: element.productId[0].userId
             },
           },
           {
@@ -724,8 +751,8 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.OwnerUserDetail[0].userName = profileData[0]?.userName;
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
         }
       }));
 
@@ -748,8 +775,8 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.rentalUserDetail[0].userName = profileData[0]?.userName;
+          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.rentalUserDetail[0].userName = profileData[0]?.userName || '';
         }
       }));
   
@@ -761,12 +788,21 @@ class BookingRepository {
       }));
 
       await Promise.all(findBooking.map(async (booking) => {        
-        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+        await Promise.all(booking?.productId.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
-          const newPath = await generatePresignedUrl(element.imageName);
-          element.path = newPath;
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
         }));
       }));
+      
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
       }));
 
       return findBooking;
@@ -844,6 +880,15 @@ class BookingRepository {
           { $unwind: "$productId" },
           {
             $lookup: {
+              from: "images",
+              localField: "productId.images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "productId.images",
+            },
+          },
+          {
+            $lookup: {
               from: "users",
               localField: "productId.userId",
               foreignField: "_id",
@@ -886,7 +931,7 @@ class BookingRepository {
           {
             $group: {
               _id: "$_id",
-              productId: { $first: "$productId" },
+              productId: { $push: "$productId" },
               startDate: { $first: "$startDate" },
               endDate: { $first: "$endDate" },
               userId: { $first: "$userId" },
@@ -939,7 +984,7 @@ class BookingRepository {
           let profileData = await profileModel.aggregate([
             {
               $match: {
-                userId: element.productId.userId
+                userId: element.productId[0].userId
               },
             },
             {
@@ -954,10 +999,10 @@ class BookingRepository {
               },
             },
           ]);        
-
+    
           if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-            element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-            element.OwnerUserDetail[0].userName = profileData[0]?.userName;
+            element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+            element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
           }
         }));
   
@@ -977,11 +1022,11 @@ class BookingRepository {
                   as: "images",
               },
             },
-          ]);              
+          ]);        
     
           if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-            element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-            element.rentalUserDetail[0].userName = profileData[0]?.userName;
+            element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+            element.rentalUserDetail[0].userName = profileData[0]?.userName || '';
           }
         }));
     
@@ -991,18 +1036,27 @@ class BookingRepository {
             element.path = newPath;
           }));
         }));
-
+  
         await Promise.all(findBooking.map(async (booking) => {        
-          await Promise.all(booking.preRentalScreening.map(async (screening: any) => {
-            await Promise.all(screening.images.map(async (element: { imageName: string; path: string; }) => {          
+          await Promise.all(booking?.productId.map(async (screening: any) => {
+            await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
               const newPath = await generatePresignedUrl(element.imageName);
               element.path = newPath;
             }));
           }));
         }));
-
+        
+        await Promise.all(findBooking.map(async (booking) => {        
+          await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+            await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
+          }));
+        }));
+      
         element.bookings = findBooking;
-      }));      
+      }));
 
       return findProduct;
     } catch (err) {
@@ -1121,6 +1175,15 @@ class BookingRepository {
         }},
         {
           $lookup: {
+            from: "images",
+            localField: "productId.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "productId.images",
+          },
+        },
+        {
+          $lookup: {
             from: "users",
             localField: "productId.userId",
             foreignField: "_id",
@@ -1163,7 +1226,7 @@ class BookingRepository {
         {
           $group: {
             _id: "$_id",
-            productId: { $first: "$productId" },
+            productId: { $push: "$productId" },
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
@@ -1216,7 +1279,7 @@ class BookingRepository {
         let profileData = await profileModel.aggregate([
           {
             $match: {
-              userId: element.productId.userId
+              userId: element.productId[0].userId
             },
           },
           {
@@ -1235,9 +1298,6 @@ class BookingRepository {
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
           element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
           element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
-        } else {
-          element.OwnerUserDetail[0].profileImage = '';
-          element.OwnerUserDetail[0].userName = '';
         }
       }));
 
@@ -1260,11 +1320,8 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
-          element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
-        } else {
-          element.OwnerUserDetail[0].profileImage = '';
-          element.OwnerUserDetail[0].userName = '';
+          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.rentalUserDetail[0].userName = profileData[0]?.userName || '';
         }
       }));
   
@@ -1276,12 +1333,21 @@ class BookingRepository {
       }));
 
       await Promise.all(findBooking.map(async (booking) => {        
-        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+        await Promise.all(booking?.productId.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
-          const newPath = await generatePresignedUrl(element.imageName);
-          element.path = newPath;
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
         }));
       }));
+      
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
       }));
 
       const countBooking = await bookingModel.countDocuments(criteria);
