@@ -111,7 +111,8 @@ export interface productGetRequest {
     _id?: string
     search?: string;
     page?: string;
-    limit?: string;
+    skip?: number;
+    limit?: number;
     categoryId?: string;
     subCategoryId?: string;
     userId?: string;

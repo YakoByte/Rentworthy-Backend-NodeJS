@@ -1233,8 +1233,11 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.OwnerUserDetail[0].userName = profileData[0]?.userName;
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
+        } else {
+          element.OwnerUserDetail[0].profileImage = '';
+          element.OwnerUserDetail[0].userName = '';
         }
       }));
 
@@ -1257,8 +1260,11 @@ class BookingRepository {
         ]);        
   
         if (profileData?.length > 0 && profileData[0]?.profileImage?.length > 0 && profileData[0]?.profileImage[0]?.imageName) {          
-          element.rentalUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName);
-          element.rentalUserDetail[0].userName = profileData[0]?.userName;
+          element.OwnerUserDetail[0].profileImage = await generatePresignedUrl(profileData[0]?.profileImage[0]?.imageName) || '';
+          element.OwnerUserDetail[0].userName = profileData[0]?.userName || '';
+        } else {
+          element.OwnerUserDetail[0].profileImage = '';
+          element.OwnerUserDetail[0].userName = '';
         }
       }));
   
@@ -1277,8 +1283,10 @@ class BookingRepository {
         }));
       }));
       }));
+
+      const countBooking = await bookingModel.countDocuments(criteria);
   
-      return findBooking;
+      return {findBooking, countBooking};
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get all Booking");

@@ -34,7 +34,10 @@ class AdsRepository {
 
   //get all ads
   async getAllAds(adsInputs: adsGetRequest) {
-    try {        
+    try {    
+      const skip = Number(adsInputs.page) * Number(adsInputs.limit) - Number(adsInputs.limit) || 0;
+      const limit = Number(adsInputs.limit) || 10;
+
       let criteria: any = { isDeleted: false };
       
       if (adsInputs._id) {
@@ -51,6 +54,8 @@ class AdsRepository {
           {
             $match: criteria,
           },
+          { $skip: skip },
+          { $limit: limit },
           {
             $lookup: {
               from: "wishlists",
@@ -108,20 +113,23 @@ class AdsRepository {
   
         let adsResult = await adsModel.aggregate(agg);
   
-          await Promise.all(
-            adsResult.map(async (ads) => {
-              if (ads.images.length > 0) {
-                await Promise.all(
-                  ads.images.map(async (element: any) => {
-                    const newPath = await generatePresignedUrl(element.imageName);
-                    element.path = newPath;
-                  })
-                );
-              }
-            })
-          );
-          
-      return adsResult;
+        await Promise.all(
+          adsResult.map(async (ads) => {
+            if (ads.images.length > 0) {
+              await Promise.all(
+                ads.images.map(async (element: any) => {
+                  const newPath = await generatePresignedUrl(element.imageName);
+                  element.path = newPath;
+                })
+              );
+            }
+          })
+        );
+
+        const countAds = await adsModel.countDocuments(criteria);
+  
+      return {adsResult, countAds};
+      return ;
     } catch (error) {
       console.error("Error in getAllAds:", error);
       throw new Error("Unable to Get Ads");

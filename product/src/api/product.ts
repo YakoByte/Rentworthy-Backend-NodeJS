@@ -111,7 +111,7 @@ export default (app: Express) => {
             req.query.token = req.headers.authorization || '';
             req.query.roleName = authUser.roleName;
 
-            const data = await service.getProduct(req.query);
+            const data = await service.getProduct({...req.query});
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went in',err)

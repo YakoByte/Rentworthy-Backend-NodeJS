@@ -90,7 +90,9 @@ class profileRepository {
         })
       );
 
-      return findProfile;
+      const countProfile = await profileModel.countDocuments();
+
+      return {findProfile, countProfile};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to get AllProfile");
@@ -141,7 +143,9 @@ class profileRepository {
         })
       );
 
-      return findProfile;
+      const countProfile = await profileModel.countDocuments({ isBlocked: true});
+
+      return {findProfile, countProfile};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to get AllProfile");
@@ -192,7 +196,9 @@ class profileRepository {
         })
       );
 
-      return findProfile;
+      const countProfile = await profileModel.countDocuments({ isDeleted: true });
+
+      return {findProfile, countProfile};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to get AllProfile");
@@ -243,7 +249,9 @@ class profileRepository {
         })
       );
 
-      return findProfile;
+      const countProfile = await profileModel.countDocuments({ isActive: true });
+
+      return {findProfile, countProfile};
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to get AllProfile");

@@ -31,6 +31,9 @@ class adminADSRepository {
   //get one adminADS
   async getAdminADS(adminADSInputs: adminADSGetRequest) {
     try {
+      const skip = Number(adminADSInputs.page) * Number(adminADSInputs.limit) - Number(adminADSInputs.limit) || 0;
+      const limit = Number(adminADSInputs.limit) || 10;
+
       let criteria: any = { isDeleted: false };
       
       if (adminADSInputs._id) {
@@ -50,6 +53,8 @@ class adminADSRepository {
         {
           $match: criteria,
         },
+        { $skip: skip },
+        { $limit: limit },
         {
           $lookup: {
             from: "images",
@@ -79,8 +84,10 @@ class adminADSRepository {
           } 
         })
       );
+
+      const countAds = await adminADSModel.countDocuments(criteria);
   
-      return adminADSResult;
+      return {adminADSResult, countAds};
     } catch (err) {
       console.error("Error:", err);
       throw new Error("Unable to Get About US");

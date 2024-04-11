@@ -30,6 +30,9 @@ class bannerRepository {
   //get banner
   async getBanner(bannerInputs: bannerGetRequest) {
     try {
+      const skip = Number(bannerInputs.page) * Number(bannerInputs.limit) - Number(bannerInputs.limit) || 0;
+      const limit = Number(bannerInputs.limit) || 10;
+
       let criteria: any = { isDeleted: false };
       
       if (bannerInputs._id) {
@@ -49,6 +52,8 @@ class bannerRepository {
         {
           $match: criteria,
         },
+        { $skip: skip },
+        { $limit: limit },
         {
           $lookup: {
             from: "images",
@@ -78,8 +83,10 @@ class bannerRepository {
           } 
         })
       );
+
+      const countBanner = await bannerModel.countDocuments(criteria);
   
-      return bannerResult;
+      return {bannerResult, countBanner};
     } catch (err) {
       console.error("Error:", err);
       throw new Error("Unable to Get About US");

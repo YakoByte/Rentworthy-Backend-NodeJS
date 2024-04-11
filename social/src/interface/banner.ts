@@ -14,6 +14,8 @@ export interface AuthenticatedRequest extends Request {
         image?: string;
         description?: string;
         category?: string;
+        page?: string;
+        limit?: string;
     },
 }
 
@@ -51,6 +53,8 @@ export interface bannerUpdateRequest {
 }
 
 export interface bannerGetRequest {
+    page?: string;
+    limit?: string;
     _id?: string
     title?: string;
     description?: string;

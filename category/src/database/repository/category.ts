@@ -77,6 +77,7 @@ class CategoryRepository {
             }));
           }
         }));
+ 
         return findCategory;
       }
 
@@ -114,7 +115,10 @@ class CategoryRepository {
             }));
           }
         }));
-        return findCategory;
+
+        const countCategory = await  categoryModel.countDocuments({isDeleted: false, isActive: true});
+
+        return {findCategory, countCategory};
       }
 
       return { message: "Data not found" };

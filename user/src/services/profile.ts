@@ -30,7 +30,7 @@ class ProfileService {
     // get all profile
     async getAllProfile(profileInputs: getProfileRequest) {
         try {                        
-            let existingProfile: any[];
+            let existingProfile: any;
 
             if(profileInputs._id) {
                 existingProfile = await this.repository.getProfileById(profileInputs);

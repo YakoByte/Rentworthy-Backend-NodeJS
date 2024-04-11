@@ -144,8 +144,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({isVerified: "pending", isDeleted: false, isActive: true});
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -250,8 +253,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({isVerified: "rejected", isDeleted: false, isActive: true});
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -333,7 +339,7 @@ class ProductRepository {
   }
 
   //get product by id
-  async getProductByUserId(productInputs: { userId: string }) {
+  async getProductByUserId(productInputs: { userId: string, skip: number; limit: number; }) {
     try {
         const findProduct = await productModel.aggregate([
             {
@@ -344,6 +350,8 @@ class ProductRepository {
                     isActive: true,
                 },
             },
+            { $skip: productInputs.skip },
+            { $limit: productInputs.limit },
             {
                 $lookup: {
                     from: "images",
@@ -469,9 +477,12 @@ class ProductRepository {
             })
         );
 
-        return {
-            data: wishlistPromises,
-        };
+        const countProduct = await productModel.countDocuments({userId: new Types.ObjectId(productInputs.userId), isVerified: "approved", isDeleted: false, isActive: true,});
+
+      return {
+        data: await Promise.all(wishlistPromises),
+        count: countProduct
+      };
     } catch (err) {
         console.error("Error:", err);
         throw new Error("Unable to Get Product");
@@ -619,6 +630,8 @@ class ProductRepository {
             isActive: true,
           },
         },
+        { $skip: productInputs.skip || 0 },
+        { $limit: productInputs.limit || 10 },
         {
           $lookup: {
             from: "images",
@@ -721,8 +734,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({categoryId: new Types.ObjectId(productInputs.categoryId), isVerified: "approved", isDeleted: false, isActive: true,});
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -742,6 +758,8 @@ class ProductRepository {
             isActive: true,
           },
         },
+        { $skip: productInputs.skip || 0 },
+        { $limit: productInputs.limit || 10 },
         {
           $lookup: {
             from: "images",
@@ -844,8 +862,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({subCategoryId: new Types.ObjectId(productInputs.subCategoryId), isVerified: "approved", isDeleted: false, isActive: true,});
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -959,8 +980,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({isVerified: "approved", isDeleted: false, isActive: true});
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -1107,10 +1131,13 @@ class ProductRepository {
             };
           }
         })
-      );      
+      );   
+      
+      const countProduct = await productModel.countDocuments(criteria);
 
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);
@@ -1119,10 +1146,12 @@ class ProductRepository {
   }
 
   // get product by location
-  async getProductByLocation(productInputs: { lat: number; long: number; userId: string }) {
+  async getProductByLocation(productInputs: { skip: number; limit: number; lat: number; long: number; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         { $match: { isVerified: "approved", isDeleted: false, isActive: true }},
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
         {
           $geoNear: {
             near: {
@@ -1237,6 +1266,13 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({ isVerified: "approved", isDeleted: false, isActive: true });
+
+      return {
+        data: await Promise.all(wishlistPromises),
+        count: countProduct
+      };
+
       return {
         data: await Promise.all(wishlistPromises),
       };
@@ -1247,7 +1283,7 @@ class ProductRepository {
   }
 
   // get product by name and search using regex
-  async getProductByName(productInputs: { name: string; userId: string }) {
+  async getProductByName(productInputs: { skip: number; limit: number; name: string; userId: string }) {
     try {
       const findProduct = await productModel.aggregate([
         {
@@ -1258,6 +1294,8 @@ class ProductRepository {
             isActive: true,
           },
         },
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
         {
           $lookup: {
             from: "images",
@@ -1360,8 +1398,11 @@ class ProductRepository {
         })
       );
 
+      const countProduct = await productModel.countDocuments({name: { $regex: productInputs.name, $options: "i" }, isVerified: "approved", isDeleted: false, isActive: true });
+
       return {
         data: await Promise.all(wishlistPromises),
+        count: countProduct
       };
     } catch (err) {
       console.log("error", err);

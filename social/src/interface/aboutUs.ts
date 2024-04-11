@@ -13,6 +13,8 @@ export interface AuthenticatedRequest extends Request {
         title?: string;
         image?: string;
         description?: string;
+        page?: string;
+        limit?: string;
     },
 }
 

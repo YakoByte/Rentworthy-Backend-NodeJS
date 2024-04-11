@@ -196,7 +196,10 @@ class SubCategoryRepository {
             }));
           }
         }));
-        return findSubCategory;
+
+        const countSubCategory = await  subCategoryModel.countDocuments({isDeleted: false, isActive: true});
+
+        return {findSubCategory, countSubCategory};
       }
 
       return { message: "Data not found" };

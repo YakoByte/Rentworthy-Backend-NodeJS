@@ -114,8 +114,10 @@ class SubscriptionRepository {
           }));
         }
       }));
+
+      const countSubscription = await SubscriptionModel.countDocuments({isActive: true, isDeleted: false})
       
-      return SubscriptionResult;
+      return {SubscriptionResult, countSubscription};
     } catch (err: any) {
       console.log("error", err);
       throw new Error("Unable to Get Subscription");

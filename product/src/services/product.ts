@@ -79,34 +79,42 @@ class productService {
         });
       } else if (productInputs.ownerId) {
         existingProduct = await this.repository.getProductByUserId({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           userId: productInputs.ownerId || '',
         });
       } else if (productInputs.search) {
         existingProduct = await this.repository.getProductByName({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           name: productInputs.search,
           userId: productInputs.userId || "",
         });
       } else if (productInputs.categoryId) {
         existingProduct = await this.repository.getProductByCategoryId({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           categoryId: productInputs.categoryId,
           userId: productInputs.userId || "",
         });
       } else if (productInputs.subCategoryId) {
         existingProduct = await this.repository.getProductBySubCategoryId({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           subCategoryId: productInputs.subCategoryId,
           userId: productInputs.userId || "",
         });
       } else if (productInputs.lat && productInputs.long) {
         existingProduct = await this.repository.getProductByLocation({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           lat: Number(productInputs.lat),
           long: Number(productInputs.long),
           userId: productInputs.userId || "",
         });
       } else {
         existingProduct = await this.repository.getAllProduct({
-          skip:
-            Number(productInputs.page) * Number(productInputs.limit) -
-              Number(productInputs.limit) || 0,
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
           limit: Number(productInputs.limit) || 10,
           userId: productInputs.userId || "",
         });
@@ -184,6 +192,8 @@ class productService {
   async getProductByUserId(productInputs: productGetRequest) {
     try {
       let existingProduct = await this.repository.getProductByUserId({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
           userId: productInputs.userId || '',
         });
 

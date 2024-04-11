@@ -51,6 +51,8 @@ export interface adminADSUpdateRequest {
 }
 
 export interface adminADSGetRequest {
+    page?: string;
+    limit?: string;
     _id?: string
     title?: string;
     description?: string;
