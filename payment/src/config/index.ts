@@ -22,6 +22,7 @@ export const AWS_BUCKET_REGION: string | undefined = process.env.AWS_BUCKET_REGI
 export const AWS_BUCKET_NAME: string | undefined = process.env.AWS_BUCKET_NAME || '';
 
 export const STRIPE_SECRET_KEY: string | undefined = process.env.STRIPE_SECRET_KEY || '';
-export const VENDOR_STRIPE_ACCOUNT_ID: string | undefined = process.env.VENDOR_STRIPE_ACCOUNT_ID || '';
+export const WEBHOOK_STRIPE_SECRET_KEY: string | undefined = process.env.WEBHOOK_STRIPE_SECRET_KEY || '';
+export const STRIPE_PUBLISHABLE_KEY: string | undefined = process.env.STRIPE_PUBLISHABLE_KEY || '';
 
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';

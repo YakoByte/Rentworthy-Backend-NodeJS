@@ -1,21 +1,9 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 import { Payment } from "../../interface/payment";
 
 const PaymentSchema: Schema = new Schema<Payment>(
     {
-        productId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "product",
-        },
-        bookingId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "booking",
-        },
-        subscriptionPlan: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Subscription",
-        },
         paymentId: {
             type: String,
         },
@@ -27,10 +15,16 @@ const PaymentSchema: Schema = new Schema<Payment>(
         quantity: {
             type: Number,
             required: true,
+            default: 1,
         },
         amount: {
             type: Number,
             required: true,
+        },
+        currency: {
+            type: String,
+            required: true,
+            default: 'usd'
         },
         isDeleted: {
             type: Boolean,

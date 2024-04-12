@@ -76,13 +76,7 @@ class SubscriptionRepository {
   }
 
   //get all Subscription
-  async getAllSubscription({
-    skip,
-    limit,
-  }: {
-    skip: number;
-    limit: number;
-  }) {
+  async getAllSubscription({skip, limit}: {skip: number; limit: number;}) {
     try {
       const SubscriptionResult = await SubscriptionModel.aggregate([
         { $match: { isActive: true, isDeleted: false } },

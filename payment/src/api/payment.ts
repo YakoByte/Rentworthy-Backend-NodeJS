@@ -2,6 +2,7 @@ import PaymentService from '../services/payment';
 import { Express, Request, Response, NextFunction } from 'express';
 import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest, getCountAuthenticatedRequest } from '../interface/payment';
+import bodyParser from 'body-parser';
 
 
 export default (app: Express) => {
@@ -32,6 +33,7 @@ export default (app: Express) => {
     });
 
 
+    
     // API = create account
     app.post('/create-account', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -48,6 +50,31 @@ export default (app: Express) => {
         try {
             let userId:any = req.user?._id
             const data = await service.createCustomer(userId);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+
+
+    app.post('/payment-transfer-owner', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+
+            const data = await service.TranserMoneyToOwner(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    app.post('/payment-transfer-renter', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser:any = req.user?._id;
+            req.body.userId = authUser;
+            const data = await service.TranserMoneyToRenter(req.body);
             return res.json(data);
         } catch (err) {
             next(err);
@@ -115,6 +142,8 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+
 
     app.post('/create-charge-customer', UserAuth, async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -223,6 +252,19 @@ export default (app: Express) => {
             let authUser: any = req.user
             let criteria = req.query.criteria
             const data = await service.getCountOfPayment(criteria);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+
+    //API = webhook api
+    app.get('/webhook', bodyParser.raw({ type: 'application/json' }), async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const payload = req.body;
+            const sig = req.headers['stripe-signature'];            
+            const data = await service.StripeWebhook(payload, sig);
             return res.json(data);
         } catch (err) {
             next(err);

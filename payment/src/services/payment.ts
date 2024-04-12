@@ -5,6 +5,7 @@ import {
   PaymentDeleteMethodDetails,
   PaymentIntendDetail,
   PaymentMethodDetails,
+  PaymentTransfer,
   PaymentUpdateMethodDetails,
   PlanPricedetail,
   SubscriptionPayment,
@@ -13,6 +14,7 @@ import {
 import paymentRepository from "../database/repository/payment";
 
 import { FormateData, FormateError } from "../utils";
+import { WEBHOOK_STRIPE_SECRET_KEY } from "../config";
 
 class PaymentService {
   private repository: paymentRepository;
@@ -56,32 +58,34 @@ class PaymentService {
       const owner = await this.repository.GetOwnerData(userId);
 
       let stripeAccount = owner?.stripAccountId;
-      let account;
+      let account;      
       
       if (!stripeAccount) {
         const phoneNumber = `+${owner?.phoneCode}-${owner?.phoneNo}`;
 
-        account = await stripe.accounts.create({
-          country: "US",
+        const stripeAccount = await stripe.accounts.create({
           type: "custom",
+          country: "US",
           email: owner?.email,
           capabilities: {
             card_payments: { requested: true },
             transfers: { requested: true },
           },
           business_type: "individual",
-          // business_profile: {
-          //   url: "https://rentworthy.us/",
-          //   mcc: "7394",
-          //   support_email: "support@rentworthy.us",
-          // },
-          company: { phone: phoneNumber },
-          metadata: { user_id: userId },
+          business_profile: {
+            mcc: "1234",
+            name: owner?.name,
+            url: "https://rentworthy.us/",
+            support_email: "support@rentworthy.us",
+            support_phone: phoneNumber,
+            support_url: "https://rentworthy.us/",
+          },
+          // metadata: { user_id: userId },
         });
 
-        stripeAccount = account.id;
+        account = stripeAccount.id;
 
-        await this.repository.VerifyAccountStripeId(stripeAccount, userId);
+        await this.repository.VerifyAccountStripeId(account, userId);
       } else {
         account = stripeAccount;
       }
@@ -125,20 +129,93 @@ class PaymentService {
         customer = stripeAccount;
       }
 
-      // const accountLinksResult = await stripe.accountLinks.create({
-      //   account: stripeAccount,
-      //   refresh_url: "https://rentworthy.us/account",
-      //   return_url: `https://rentworthy.us/account/verify/account/${stripeAccount}`,
-      //   type: "account_update",
-      //   collect: "currently_due",
-      // });
-
       return FormateData({ customer });
     } catch (error: any) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create Customer" });
     }
   }
+
+
+
+  async TranserMoneyToOwner(paymentDetails: PaymentTransfer) {
+    try {
+      const payment = await this.repository.GetPaymentData(paymentDetails.paymentId);
+      if (!payment) {
+        return FormateError({ error: "No such payment found" });
+      }
+
+      if (payment.status !== 'succeeded') {
+        return FormateError({ error: "You can't cancel the payment, it not yet Completed" });
+      }
+
+      const owner = await this.repository.GetOwnerData(paymentDetails.ownerId);
+      if(!owner || !owner.stripAccountId) {
+        return FormateError({ error: "Owner id not found" });
+      }
+
+      const cancelPayment = await stripe.paymentIntents.cancel(payment.paymentId);
+      if(cancelPayment.status === 'canceled') {
+        return FormateError({ error: "Payment is already Cancelled" });
+      } 
+
+      const updatePayment: UpdatePayment = {
+        _id: payment._id,
+        status: "Transfered To Owner",
+        isDeleted: true,
+      };
+      await this.repository.UpdatePaymentData(updatePayment);
+
+      await stripe.transfers.create({
+        amount: payment.amount,
+        currency: payment.currency || 'usd',
+        destination: owner.stripAccountId,
+      });
+
+      return FormateData({ message: "Successfully Transfer Money to Owner" });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Transfer Money" });
+    }
+  }
+
+  async TranserMoneyToRenter(paymentDetails: PaymentTransfer) {
+    try {
+      const payment = await this.repository.GetPaymentData(paymentDetails.paymentId);
+      if (!payment) {
+        return FormateError({ error: "No such payment found" });
+      }
+
+      if (payment.status !== 'succeeded') {
+        return FormateError({ error: "You can't cancel the payment, it not yet Completed" });
+      }
+
+      const cancelPayment = await stripe.paymentIntents.cancel(payment.paymentId);
+      if(cancelPayment.status === 'canceled') {
+        return FormateError({ error: "Payment is already Cancelled" });
+      }
+
+      const updatePayment: UpdatePayment = {
+        _id: payment._id,
+        status: "Transfered To Renter",
+        isDeleted: true,
+      };
+      await this.repository.UpdatePaymentData(updatePayment);
+
+      await stripe.refunds.create({
+        payment_intent: payment.paymentId || '',
+        refund_application_fee: true,
+        reverse_transfer: true,
+      });
+
+      return FormateData({ message: "Successfully Transfer Money to Renter" });
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Transfer Money" });
+    }
+  }
+
+
 
   async CreateToken(paymentDetails: PaymentMethodDetails) {
     try {
@@ -271,7 +348,11 @@ class PaymentService {
           { source: "tok_visa"} // source: token.id 
         );
       } else {
-        let customer_Id = owner?.stripeCustomerId;        
+        let customer_Id = owner?.stripeCustomerId;  
+        
+        if(!customer_Id) {
+          return FormateData({ message: "Payment failed or requires a payment method!" });
+        }
 
         const Cards = await stripe.paymentMethods.list({
           customer: customer_Id,
@@ -309,7 +390,7 @@ class PaymentService {
           userId: paymentDetails?.userId,
           amount: paymentDetails?.amount,
           quantity: paymentDetails?.quantity || 1,
-          currency: paymentDetails.currency,
+          currency: paymentDetails.currency || "usd",
           status: "succeeded",
         };
 
@@ -327,14 +408,14 @@ class PaymentService {
           userId: paymentDetails?.userId,
           amount: paymentDetails?.amount,
           quantity: paymentDetails?.quantity || 1,
-          currency: paymentDetails.currency,
+          currency: paymentDetails.currency || "usd",
           status: "Additional action required for payment!",
         };
 
         // Payment succeeded
         let payDetails: any = await this.repository.CreatePayment(paymentData);
         return FormateData({
-          message: "Payment succeeded!",
+          message: "Payment requires_action!",
           payStatus: payment.status,
           paymentData: payDetails,
           stripeData: payment,
@@ -369,12 +450,17 @@ class PaymentService {
     try {
       const payment = await this.repository.GetPaymentData(paymentDetails.paymentId);
       if (!payment) {
-        throw new Error("No such payment found");
-      }      
+        return FormateError({ error: "No such payment found" });
+      }
 
-      const createCancel = await stripe.paymentIntents.cancel(
-        payment?.paymentId
-      );
+      if (payment.status !== 'succeeded') {
+        return FormateError({ error: "You can't cancel the payment, it not yet Completed" });
+      }
+
+      const cancelPayment = await stripe.paymentIntents.cancel(payment.paymentId);
+      if(cancelPayment.status === 'canceled') {
+        return FormateError({ error: "Payment is already Cancelled" });
+      }
 
       const updatePayment: UpdatePayment = {
         _id: payment._id,
@@ -383,13 +469,13 @@ class PaymentService {
       };
       await this.repository.UpdatePaymentData(updatePayment);
 
-      const refundResult = await stripe.refunds.create({
+      await stripe.refunds.create({
         payment_intent: payment.paymentId || '',
         refund_application_fee: true,
         reverse_transfer: true,
       });
 
-      return FormateData({ createCancel, refundResult });
+      return FormateData({ message: "Successfully Cancelled Payment" });
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to Cancle Payment" });
@@ -610,6 +696,52 @@ class PaymentService {
           payStatus: createCharge.status,
         });
       }
+    } catch (error) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to create charge" });
+    }
+  }
+
+
+
+  async StripeWebhook(payload: any, sig: any) {
+    try {
+      let event;
+      if (!sig) {
+        return FormateError({ error: 'Stripe Webhook Error: stripe-signature was found to be empty' });
+      }
+  
+      if (!WEBHOOK_STRIPE_SECRET_KEY) {
+        return FormateError({ error: 'Stripe Webhook Error: WEBHOOK_STRIPE_SECRET_KEY was found to be empty' });
+      }
+  
+      try {
+        event = stripe.webhooks.constructEvent(payload, sig, WEBHOOK_STRIPE_SECRET_KEY);
+      } catch (err: any) {
+        return FormateError({ error: `Stripe Webhook Error in constructEvent: ${err.message}` });
+      }
+  
+      if (event.type === 'checkout.session.completed' || event.type === 'payment_intent.succeeded') {
+        const stripeData: any = event.data.object;
+        try {
+          const userDetail = await this.repository.getAccountDetail(stripeData.customer);
+          const paymentData = {
+            paymentId: stripeData.id,
+            userId: userDetail?._id,
+            amount: stripeData?.amount,
+            quantity: 1,
+            currency: stripeData.currency || "usd",
+            status: "succeeded",
+          };
+  
+          // Payment succeeded
+          await this.repository.CreatePayment(paymentData);
+        } catch (err: any) {
+          return FormateError({ error: `Stripe Webhook Order Completion error: ${err.message}` });
+        }
+      }
+  
+      return true;
     } catch (error) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to create charge" });

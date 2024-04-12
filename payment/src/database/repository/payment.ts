@@ -37,6 +37,16 @@ class PaymentRepository {
     }
   }
 
+  async getAccountDetail(customer_Id: string) {
+    try {
+      const response = await UserModel.findOne({stripeCustomerId: customer_Id});
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Verify StripeId");
+    }
+  }
+
   async VerifyCustomerStripeId(customer_Id: string, userId: string) {
     try {
       let response = await UserModel.findOneAndUpdate(

@@ -1765,7 +1765,7 @@ class BookingRepository {
       const bookingResult = await bookingModel.findOne({ _id: bookingInputs._id });
 
       if (bookingResult) {
-        const payment = await PaymentModel.findById(bookingResult?.productId);
+        const payment = await PaymentModel.findById(bookingResult?.paymentId);
         const address = await AddressModel.findById(bookingResult?.addressId);
         const product: any = await productModel.aggregate([
           {

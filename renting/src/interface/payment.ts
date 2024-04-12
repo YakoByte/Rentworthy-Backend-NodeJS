@@ -1,14 +1,11 @@
-import { Request } from "express";
-import mongoose, { Schema, Document, Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface Payment extends Document {
-  productId: Types.ObjectId;
-  bookingId: Types.ObjectId;
-  subscriptionPlan: Types.ObjectId;
   paymentId: string;
   userId: Types.ObjectId;
   quantity: number;
   amount: number;
+  currency: string;
   isDeleted: boolean;
   status: string;
 }

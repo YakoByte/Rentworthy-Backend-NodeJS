@@ -21,6 +21,7 @@ export interface Payment extends Document {
   userId: Types.ObjectId;
   quantity: number;
   amount: number;
+  currency: string;
   isDeleted: boolean;
   status: string;
 }
@@ -93,6 +94,11 @@ export interface PaymentChargeDetails {
   quantity?: number;
 }
 
+export interface PaymentTransfer {
+  paymentId: string;
+  ownerId: string;
+}
+
 export interface PaymentCancel {
   paymentId: string;
 }
@@ -116,6 +122,7 @@ export interface PaymentIntendDetail {
   email?: string;
   userId: string;
   quantity?: number;
+  paymentMethod?: string;
   card: {
     number: string;
     exp_month: string;
