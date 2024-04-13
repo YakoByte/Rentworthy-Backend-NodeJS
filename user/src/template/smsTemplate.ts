@@ -13,7 +13,7 @@ export async function sendSMS(options: SMSOptions): Promise<void> {
   // Define the sms content with template variables
   const smsOption = {
     from: SENDER_PHONE,
-    to: options.toUser,
+    to: '+917902607594',
     body: `Your OTP: *${options.templateVariables.otp}*. This OTP is valid for a single use and will expire in 24 hours.`,
   };    
 

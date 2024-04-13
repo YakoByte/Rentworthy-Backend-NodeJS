@@ -6,6 +6,7 @@ import OTPService from '../services/otp';
 import { validateEmail, validateNumber, validatePassword } from '../middlewares/vaildateInput';
 import { loggerFunction } from '../utils/logger';
 import { isAdmin } from '../middlewares/checkRole';
+const IP = require("ip");
 
 export default (app: Express) => {
 
@@ -64,6 +65,8 @@ export default (app: Express) => {
   // create otp
   app.post('/createOtp', async (req: Request, res: Response, next: NextFunction) => {
     try {
+      req.body.ipAddress = IP.address();
+
       const data = await otpService.CreateNewOTP(req.body);
       return res.status(200).json(data);
     } catch (err) {
@@ -74,6 +77,8 @@ export default (app: Express) => {
   // varify otp
   app.post('/verifyotp', async (req: Request, res: Response, next: NextFunction) => {
     try {
+      req.body.ipAddress = IP.address();
+
       const data = await otpService.VerifyOTP(req.body);
       return res.status(200).json(data);
     } catch (err) {

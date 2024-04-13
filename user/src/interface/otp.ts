@@ -15,5 +15,6 @@ export interface otpRequest {
     otp?: number;
     email: any;
     phoneNo: any;
+    phoneCode?: any;
     ipAddress?: string;
 }
