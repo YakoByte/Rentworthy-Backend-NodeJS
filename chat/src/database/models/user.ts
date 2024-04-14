@@ -73,7 +73,6 @@ const userSchema: Schema = new Schema<User>(
     },
     stripAccountId: {
       type: String,
-      unique: true
     },
     isStripeAccountVerified: {
       type: Boolean,
@@ -81,7 +80,6 @@ const userSchema: Schema = new Schema<User>(
     },
     stripeCustomerId: {
       type: String,
-      unique: true
     },
     isStripeCustomerVerified: {
       type: Boolean,

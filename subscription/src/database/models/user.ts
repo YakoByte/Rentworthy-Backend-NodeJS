@@ -1,11 +1,15 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 import { User } from "../../interface/user";
 
 const userSchema: Schema = new Schema<User>(
   {
+    name: {
+      type: String,
+    },
     phoneNo: {
       type: Number,
+      default: null,
     },
     phoneCode: {
       type: String,
@@ -14,6 +18,7 @@ const userSchema: Schema = new Schema<User>(
       type: String,
       unique: true,
       lowercase: true,
+      default: null,
     },
     password: {
       type: String,
@@ -38,10 +43,6 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false,
     },
-    isAuthenticated: {
-      type: Boolean,
-      default: false,
-    },
     isActive: {
       type: Boolean,
       default: true,
@@ -50,9 +51,13 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
     loginType: {
       type: String,
-      enum: ["google", "fb", "apple", "regular"],
+      enum: ["google", "facebook", "apple", "regular"],
       default: "regular"
     },
     os: {
@@ -66,15 +71,17 @@ const userSchema: Schema = new Schema<User>(
       type: Boolean,
       default: false
     },
-    stripeId: {
+    stripAccountId: {
       type: String,
-      unique: true
     },
-    isStripIdVerified: {
+    isStripeAccountVerified: {
       type: Boolean,
       default: false
     },
-    isSubscribed: {
+    stripeCustomerId: {
+      type: String,
+    },
+    isStripeCustomerVerified: {
       type: Boolean,
       default: false
     }
