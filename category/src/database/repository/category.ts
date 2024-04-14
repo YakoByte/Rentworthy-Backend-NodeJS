@@ -13,7 +13,7 @@ class CategoryRepository {
   async CreateCategory(categoryInputs: categoryRequest) {
     try {
       const findCategory = await categoryModel.findOne({
-        name: categoryInputs.name,
+        name: categoryInputs.name, isDeleted: false, isActive: true
       });
 
       if (findCategory) {

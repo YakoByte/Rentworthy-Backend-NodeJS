@@ -12,7 +12,7 @@ class SubCategoryRepository {
   async CreateSubCategory(subCategoryInputs: subCategoryRequest) {
     try {
       const findSubCategory = await subCategoryModel.findOne({
-        name: subCategoryInputs.name,
+        name: subCategoryInputs.name, isDeleted: false, isActive: true
       });
 
       if (findSubCategory) {
