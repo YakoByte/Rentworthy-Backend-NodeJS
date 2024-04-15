@@ -821,9 +821,14 @@ class BookingRepository {
   // get booking, Requested, Confirmed, Rejected, Shipped, Delivered, Returned, Cancelled
   async getUsersProductBooking(bookingInputs: bookingGetRequest) {
     try {
-      const productCriteria: any = { userId: new Types.ObjectId(bookingInputs.user._id), isVerified: "approved", isDeleted: false, isActive: true };
+      const productCriteria: any = { isVerified: "approved", isDeleted: false, isActive: true };
+      if(bookingInputs.userId) {
+        productCriteria.userId = new Types.ObjectId(bookingInputs.userId)
+      } else if(bookingInputs.user._id) {
+        productCriteria.userId = new Types.ObjectId(bookingInputs.user._id)
+      }
       if(bookingInputs.productId) {
-        productCriteria._id = bookingInputs.productId
+        productCriteria._id = new Types.ObjectId(bookingInputs.productId)
       }
       const findProduct: any = await productModel.aggregate([
         {
