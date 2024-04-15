@@ -130,8 +130,8 @@ class AdminRepository {
   }
 
   async UpdateUserCredentials(userInputs: findMe) {
-    try {
-      const userResult = await userModel.findById(userInputs._id);
+    try {      
+      let userResult = await userModel.findById(userInputs._id);
 
       if(!userResult) {
         return {message: "No user Found"};
@@ -155,17 +155,17 @@ class AdminRepository {
       }
 
       if (userInputs.email) {
-        await userModel.findOneAndUpdate({_id: userInputs._id}, {email: userInputs.email}, {new: true});
+        userResult = await userModel.findOneAndUpdate({_id: userInputs._id}, {email: userInputs.email}, {new: true});
       } else if (userInputs.phoneNo) {
-        await userModel.findOneAndUpdate({_id: userInputs._id}, {phoneNo: userInputs.phoneNo, isPhoneNoVerified: true}, {new: true});
+        userResult = await userModel.findOneAndUpdate({_id: userInputs._id}, {phoneNo: userInputs.phoneNo, isPhoneNoVerified: true}, {new: true});
       }
 
       // create history
       const history = new historyModel({
-        userId: userResult._id,
+        userId: userResult?._id,
         log: [
           {
-            objectId: userResult._id,
+            objectId: userResult?._id,
             action: `email = ${userInputs.email} created`,
             date: new Date().toISOString(),
             time: Date.now(),
