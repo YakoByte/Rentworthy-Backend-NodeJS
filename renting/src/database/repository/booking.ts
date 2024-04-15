@@ -330,13 +330,29 @@ class BookingRepository {
         },
         {
           $lookup: {
+            from: "payments",
+            localField: "paymentId",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, amount: 1, userId: 1, paymentId: 1, status: 1 } }],
+            as: "paymentId",
+          },
+        },
+        {
+          $lookup: {
             from: "products",
             localField: "productId",
             foreignField: "_id",
             as: "productId",
           },
         },
-        { $unwind: "$productId" },
+        { $unwind: {
+          path: "$productId",
+          preserveNullAndEmptyArrays: true
+        }},
+        { $unwind: {
+          path: "$paymentId",
+          preserveNullAndEmptyArrays: true
+        }},
         {
           $lookup: {
             from: "images",
@@ -394,7 +410,7 @@ class BookingRepository {
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
-            paymentId: { $first: "$paymentId" },
+            paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
             isDeleted: { $first: "$isDeleted" },
             expandId: { $first: "$expandId" },
@@ -623,13 +639,29 @@ class BookingRepository {
         },
         {
           $lookup: {
+            from: "payments",
+            localField: "paymentId",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, amount: 1, userId: 1, paymentId: 1, status: 1 } }],
+            as: "paymentId",
+          },
+        },
+        {
+          $lookup: {
             from: "products",
             localField: "productId",
             foreignField: "_id",
             as: "productId",
           },
         },
-        { $unwind: "$productId" },
+        { $unwind: {
+          path: "$productId",
+          preserveNullAndEmptyArrays: true
+        }},
+        { $unwind: {
+          path: "$paymentId",
+          preserveNullAndEmptyArrays: true
+        }},
         {
           $lookup: {
             from: "images",
@@ -687,7 +719,7 @@ class BookingRepository {
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
-            paymentId: { $first: "$paymentId" },
+            paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
             isDeleted: { $first: "$isDeleted" },
             expandId: { $first: "$expandId" },
@@ -824,8 +856,9 @@ class BookingRepository {
       const productCriteria: any = { isVerified: "approved", isDeleted: false, isActive: true };
       if(bookingInputs.userId) {
         productCriteria.userId = new Types.ObjectId(bookingInputs.userId)
-      } else if(bookingInputs.user._id) {
-        productCriteria.userId = new Types.ObjectId(bookingInputs.user._id)
+      }
+      if (bookingInputs.user.roleName === "user") {
+        productCriteria.userId = new Types.ObjectId(bookingInputs.user._id);
       }
       if(bookingInputs.productId) {
         productCriteria._id = new Types.ObjectId(bookingInputs.productId)
@@ -882,13 +915,29 @@ class BookingRepository {
           },
           {
             $lookup: {
+              from: "payments",
+              localField: "paymentId",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, amount: 1, userId: 1, paymentId: 1, status: 1 } }],
+              as: "paymentId",
+            },
+          },
+          {
+            $lookup: {
               from: "products",
               localField: "productId",
               foreignField: "_id",
               as: "productId",
             },
           },
-          { $unwind: "$productId" },
+          { $unwind: {
+            path: "$productId",
+            preserveNullAndEmptyArrays: true
+          }},
+          { $unwind: {
+            path: "$paymentId",
+            preserveNullAndEmptyArrays: true
+          }},
           {
             $lookup: {
               from: "images",
@@ -946,7 +995,7 @@ class BookingRepository {
               startDate: { $first: "$startDate" },
               endDate: { $first: "$endDate" },
               userId: { $first: "$userId" },
-              paymentId: { $first: "$paymentId" },
+              paymentId: { $push: "$paymentId" },
               quantity: { $first: "$quantity" },
               isDeleted: { $first: "$isDeleted" },
               expandId: { $first: "$expandId" },
@@ -1086,6 +1135,9 @@ class BookingRepository {
       if (bookingInputs._id) {
         criteria._id = new Types.ObjectId(bookingInputs._id);
       }
+      if(bookingInputs.userId) {
+        criteria.userId = new Types.ObjectId(bookingInputs.userId);
+      }
       if (bookingInputs.user.roleName === "user") {
         criteria.userId = new Types.ObjectId(bookingInputs.user._id);
       }
@@ -1183,8 +1235,21 @@ class BookingRepository {
             as: "productId",
           },
         },
+        {
+          $lookup: {
+            from: "payments",
+            localField: "paymentId",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, amount: 1, userId: 1, paymentId: 1, status: 1 } }],
+            as: "paymentId",
+          },
+        },
         { $unwind: {
           path: "$productId",
+          preserveNullAndEmptyArrays: true
+        }},
+        { $unwind: {
+          path: "$paymentId",
           preserveNullAndEmptyArrays: true
         }},
         {
@@ -1244,7 +1309,7 @@ class BookingRepository {
             startDate: { $first: "$startDate" },
             endDate: { $first: "$endDate" },
             userId: { $first: "$userId" },
-            paymentId: { $first: "$paymentId" },
+            paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
             isDeleted: { $first: "$isDeleted" },
             expandId: { $first: "$expandId" },
