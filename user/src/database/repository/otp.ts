@@ -8,8 +8,11 @@ class OTPRepository {
   //create otp
   async CreateOTP(otpInputs: otpRequest) {
     try {            
+      console.log(otpInputs);
+
       // Check 5 times to get OTP from the same IP and (email or phoneNo)
       const findOTP = await otpModel.find({
+        ipAddress: otpInputs.ipAddress,
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
         isUsed: false,
       });
@@ -98,8 +101,11 @@ class OTPRepository {
 
   //verify otp
   async VerifyOTP(otpInputs: otpRequest) {
-    try {      
+    try {
+      console.log(otpInputs);
+       
       const existingOTP: any = await otpModel.findOne({
+        ipAddress: otpInputs.ipAddress,
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
         otp: otpInputs.otp,
         isUsed: false,
@@ -116,13 +122,13 @@ class OTPRepository {
         if (otpInputs.email) {
           await userModel.updateOne(
             { email: existingOTP.email },
-            { isEmailVerified: true },
+            { $set: { isEmailVerified: true } },
             { new: true }
           );
         } else if (otpInputs.phoneNo) {
           await userModel.updateOne(
             { phoneNo: existingOTP.phoneNo },
-            { isPhoneNoVerified: true },
+            { $set: { isPhoneNoVerified: true } },
             { new: true }
           );
         }
