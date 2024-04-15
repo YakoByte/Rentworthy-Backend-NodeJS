@@ -61,6 +61,7 @@ export interface userSignRequest {
 }
 
 export interface userLoginRequest {
+    _id?: string;
     email?: string;
     phoneNo?: string;
     password: string;
@@ -76,6 +77,7 @@ export interface userSetPasswordRequest {
 }
 
 export interface findMe {
+    _id?: string;
     email?: string;
     phoneNo?: string;
 }

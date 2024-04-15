@@ -86,6 +86,15 @@ class AdminService {
         }
     }
 
+    async UpdateUserCredentials(userInputs: userLoginRequest) {
+        try {
+            const existingUser = await this.repository.UpdateUserCredentials(userInputs);
+            return (existingUser);
+        } catch (err: any) {
+            return FormateError({ error: "Data Not found" });
+        }
+    }
+
     async BlockedUser(userId: string, reason: string) {
         try {
             const existingAdmin = await this.repository.BlockedUser(userId, reason);

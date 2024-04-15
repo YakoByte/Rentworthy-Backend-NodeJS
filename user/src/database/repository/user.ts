@@ -72,6 +72,116 @@ class AdminRepository {
     }
   }
 
+  async SocialCreateUser(userInputs: socialUserSignRequest) {
+    try {
+      // check signup role
+      let roleId = await roleModel.findOne({ name: userInputs.roleName });
+      if (!roleId) {
+        throw new Error(`Role with name '${userInputs.roleName}' not found.`);
+      } else {
+        roleId = roleId._id;
+      }
+
+      // check if user already exist
+      let findUser;
+      if (userInputs.email) {
+        findUser = await userModel.findOne({
+         email: userInputs.email 
+        });
+      } else if (userInputs.phoneNo) {
+        findUser = await userModel.findOne({
+         phoneNo: userInputs.phoneNo
+        });
+      }
+
+      if (findUser) {
+        return true;
+      }
+
+      // create user
+      const user = new userModel({ ...userInputs, roleId: roleId });
+      if(userInputs.email) {
+        user.isEmailVerified = true;
+      } else if(userInputs.phoneNo) {
+        user.isPhoneNoVerified = true;
+      }
+      const userResult = await user.save();
+
+      // create history
+      const history = new historyModel({
+        userId: userResult._id,
+        log: [
+          {
+            objectId: userResult._id,
+            action: `email = ${userInputs.email} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
+          },
+        ],
+      });
+      await history.save();
+
+      // return userResult;
+      return userResult;
+    } catch (err) {
+      console.log("err", err);
+      throw new Error(" Unable to Social Create User");
+    }
+  }
+
+  async UpdateUserCredentials(userInputs: findMe) {
+    try {
+      const userResult = await userModel.findById(userInputs._id);
+
+      if(!userResult) {
+        return {message: "No user Found"};
+      }
+
+
+      // check if user already exist
+      let findUser;
+      if (userInputs.email) {
+        findUser = await userModel.findOne({
+         email: userInputs.email 
+        });
+      } else if (userInputs.phoneNo) {
+        findUser = await userModel.findOne({
+         phoneNo: userInputs.phoneNo
+        });
+      }
+
+      if (findUser) {
+        return {message: "User already exist with these credential...."};
+      }
+
+      if (userInputs.email) {
+        await userModel.findOneAndUpdate({_id: userInputs._id}, {email: userInputs.email}, {new: true});
+      } else if (userInputs.phoneNo) {
+        await userModel.findOneAndUpdate({_id: userInputs._id}, {phoneNo: userInputs.phoneNo, isPhoneNoVerified: true}, {new: true});
+      }
+
+      // create history
+      const history = new historyModel({
+        userId: userResult._id,
+        log: [
+          {
+            objectId: userResult._id,
+            action: `email = ${userInputs.email} created`,
+            date: new Date().toISOString(),
+            time: Date.now(),
+          },
+        ],
+      });
+      await history.save();
+
+      // return userResult;
+      return userResult;
+    } catch (err) {
+      console.log("err", err);
+      throw new Error(" Unable to Social Create User");
+    }
+  }
+
   async FindMe(userInputs: findMe) {
     try {
       let query = {};
@@ -176,63 +286,6 @@ class AdminRepository {
     } catch (error) {
       console.log("err", error);
       throw new Error("Error on Update User");
-    }
-  }
-
-  async SocialCreateUser(userInputs: socialUserSignRequest) {
-    try {
-      // check signup role
-      let roleId = await roleModel.findOne({ name: userInputs.roleName });
-      if (!roleId) {
-        throw new Error(`Role with name '${userInputs.roleName}' not found.`);
-      } else {
-        roleId = roleId._id;
-      }
-
-      // check if user already exist
-      let findUser;
-      if (userInputs.email) {
-        findUser = await userModel.findOne({
-         email: userInputs.email 
-        });
-      } else if (userInputs.phoneNo) {
-        findUser = await userModel.findOne({
-         phoneNo: userInputs.phoneNo
-        });
-      }
-
-      if (findUser) {
-        return true;
-      }
-
-      // create user
-      const user = new userModel({ ...userInputs, roleId: roleId });
-      if(userInputs.email) {
-        user.isEmailVerified = true;
-      } else if(userInputs.phoneNo) {
-        user.isPhoneNoVerified = true;
-      }
-      const userResult = await user.save();
-
-      // create history
-      const history = new historyModel({
-        userId: userResult._id,
-        log: [
-          {
-            objectId: userResult._id,
-            action: `email = ${userInputs.email} created`,
-            date: new Date().toISOString(),
-            time: Date.now(),
-          },
-        ],
-      });
-      await history.save();
-
-      // return userResult;
-      return userResult;
-    } catch (err) {
-      console.log("err", err);
-      throw new Error(" Unable to Social Create User");
     }
   }
 

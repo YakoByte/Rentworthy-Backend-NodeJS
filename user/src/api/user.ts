@@ -62,6 +62,18 @@ export default (app: Express) => {
     }
   });
 
+  //API = update user
+  app.patch('/update/user', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+    try {
+      let authUser = req.user;
+      req.body._id = authUser._id;
+      const data = await adminService.UpdateUserCredentials(req.body);
+      return res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  })
+
   // create otp
   app.post('/createOtp', async (req: Request, res: Response, next: NextFunction) => {
     try {
