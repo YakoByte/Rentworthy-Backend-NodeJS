@@ -104,10 +104,10 @@ export interface PaymentCancel {
 }
 
 export interface PlanPricedetail {
-  amount: number,
-  currency: string,
-  interval: string,
-  planType: string,
+  amount: number;
+  currency: string;
+  interval: string;
+  planType: string;
 }
 
 export interface SubscriptionPayment {
@@ -141,4 +141,11 @@ export interface UpdatePayment {
   amount?: number;
   isDeleted?: boolean;
   status?: string;
+}
+
+export interface GetAllPayment {
+  _id?: string;
+  userId?: string;
+  user: { _id: string; roleName: string; email: string };
+  paymentId?: string;
 }

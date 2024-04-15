@@ -1,5 +1,6 @@
 import { stripe } from "../utils/stripe";
 import {
+  GetAllPayment,
   PaymentCancel,
   PaymentChargeDetails,
   PaymentDeleteMethodDetails,
@@ -747,6 +748,16 @@ class PaymentService {
       return FormateError({ error: "Failed to create charge" });
     }
   }
+
+  async GetAllPayment(bookingInputs: GetAllPayment) {
+    try {
+        let payments: any = await this.repository.GetAllPayment(bookingInputs);
+
+        return FormateData(payments);
+    } catch (err: any) {
+        return FormateError({ error: "Failed to Get Booking" });
+    }
+}
 }
 
 export = PaymentService;

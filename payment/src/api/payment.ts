@@ -270,4 +270,16 @@ export default (app: Express) => {
             next(err);
         }
     });
+
+    //API = webhook api
+    app.get('/get-all-payment', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user;
+
+            const data = await service.GetAllPayment({ ...req.query, user: authUser });
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
 };

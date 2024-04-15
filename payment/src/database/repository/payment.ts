@@ -1,6 +1,7 @@
 import { UserModel, paymentModel } from "../models";
 import moment from "moment";
-import { PaymentConfirmDetails, UpdatePayment } from "../../interface/payment";
+import { GetAllPayment, PaymentConfirmDetails, UpdatePayment } from "../../interface/payment";
+import { Types } from "mongoose";
 
 class PaymentRepository {
   async CreatePayment(PaymentInputs: PaymentConfirmDetails) {
@@ -236,6 +237,30 @@ class PaymentRepository {
       throw new Error("Unable to update Payment");
     }
   }  
+
+  async GetAllPayment(paymentDetail: GetAllPayment) {
+    try {
+      let criteria: any = { isDeleted: false }
+      if(paymentDetail?.userId){
+        criteria.userId = new Types.ObjectId(paymentDetail.userId)
+      }
+      if (paymentDetail.user.roleName === "user") {
+        criteria.userId = new Types.ObjectId(paymentDetail.user._id);
+      }
+      if (paymentDetail?._id) {
+        criteria._id = new Types.ObjectId(paymentDetail._id);
+      }
+      if (paymentDetail?.paymentId) {
+        criteria.paymentId = new Types.ObjectId(paymentDetail.paymentId);
+      }
+
+      let response = await paymentModel.find(criteria);
+      return response;
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Fetch Payment");
+    }
+  }
 }
 
 export default PaymentRepository;
