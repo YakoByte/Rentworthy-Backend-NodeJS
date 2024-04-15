@@ -10,7 +10,6 @@ class OTPRepository {
     try {            
       // Check 5 times to get OTP from the same IP and (email or phoneNo)
       const findOTP = await otpModel.find({
-        ipAddress: otpInputs.ipAddress,
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
         isUsed: false,
       });
@@ -101,7 +100,6 @@ class OTPRepository {
   async VerifyOTP(otpInputs: otpRequest) {
     try {      
       const existingOTP: any = await otpModel.findOne({
-        ipAddress: otpInputs.ipAddress,
         $or: [{ email: otpInputs.email }, { phoneNo: otpInputs.phoneNo }],
         otp: otpInputs.otp,
         isUsed: false,
