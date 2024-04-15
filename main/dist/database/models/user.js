@@ -94,7 +94,6 @@ const userSchema = new mongoose_1.Schema({
     },
     stripAccountId: {
         type: String,
-        unique: true
     },
     isStripeAccountVerified: {
         type: Boolean,
@@ -102,7 +101,6 @@ const userSchema = new mongoose_1.Schema({
     },
     stripeCustomerId: {
         type: String,
-        unique: true
     },
     isStripeCustomerVerified: {
         type: Boolean,

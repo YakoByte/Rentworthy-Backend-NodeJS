@@ -57,7 +57,7 @@ const userSchema: Schema = new Schema<User>(
     },
     loginType: {
       type: String,
-      enum: ["google", "facebook", "apple", "regular"],
+      enum: ["google", "facebook", "apple", "regular", "phone"],
       default: "regular"
     },
     os: {
