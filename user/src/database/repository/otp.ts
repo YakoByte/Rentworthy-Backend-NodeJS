@@ -117,12 +117,14 @@ class OTPRepository {
 
         if (otpInputs.email) {
           await userModel.updateOne(
-            { email: existingOTP.email, isEmailVerified: true },
+            { email: existingOTP.email },
+            { isEmailVerified: true },
             { new: true }
           );
         } else if (otpInputs.phoneNo) {
           await userModel.updateOne(
-            { phoneNo: existingOTP.phoneNo, isPhoneNoVerified: true },
+            { phoneNo: existingOTP.phoneNo },
+            { isPhoneNoVerified: true },
             { new: true }
           );
         }
