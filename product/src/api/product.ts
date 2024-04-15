@@ -187,9 +187,14 @@ export default (app: Express) => {
     // API = get userData
     app.get('/get-user-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
-            let authUser: any = req.user
+            let userId;
+            if(req.query.userId) {
+                userId =  req.query.userId;
+            } else {
+                userId = req.user._id
+            }
 
-            const data = await service.getProductByUserId({ userId: authUser._id });
+            const data = await service.getProductByUserId({ userId });
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went in',err)
