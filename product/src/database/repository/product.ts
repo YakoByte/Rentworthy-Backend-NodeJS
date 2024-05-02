@@ -1480,6 +1480,90 @@ class ProductRepository {
       throw new Error("Unable to Update Product");
     }
   }
+
+  async MaximumCountProduct() {
+    try {
+      const findProduct = await productModel.aggregate([
+        {
+          $match: { isVerified: "approved", isDeleted: false, isActive: true },
+        },
+        { $limit: 10 },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
+        },
+        { $sort: { viewCount: -1 } }
+      ]);
+  
+      const wishlistPromises = findProduct.map(async (element) => {
+        if (element.userId.length > 0) {
+          const profileData = await ProfileModel.aggregate([
+            {
+              $match: { userId: element.userId[0]._id },
+            },
+            {
+              $lookup: {
+                from: "images",
+                localField: "profileImage",
+                foreignField: "_id",
+                pipeline: [
+                  { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                ],
+                as: "profileImage",
+              },
+            },
+          ]);          
+  
+          if (profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+            element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+          }
+  
+          if (profileData.length > 0) {
+            element.userId[0].userName = profileData[0].userName;
+          }
+        }
+  
+        const productLike = await productLikeModel.countDocuments({
+          productId: element._id,
+          isFav: true,
+          isDeleted: false,
+        });
+        element.productLike = productLike;            
+  
+        if(element.images.length > 0) {
+          await Promise.all(element.images.map(async (image: any) => {
+            const newPath = await generatePresignedUrl(image.imageName);
+            image.path = newPath;
+          }));
+        }
+
+        return element
+      });      
+      
+      // Return the aggregated data
+      return await Promise.all(wishlistPromises);
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Update Product");
+    }
+  }
+  
 }
 
 export default ProductRepository;

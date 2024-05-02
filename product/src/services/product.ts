@@ -203,6 +203,18 @@ class productService {
       return FormateError({ error: "Data not Found" });
     }
   }
+
+  // get product by MaximumCount
+  async MaximumCountProduct() {
+    try {
+      let existingProduct = await this.repository.MaximumCountProduct();
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log("err", err.message);
+      return FormateError({ error: "Data not Found" });
+    }
+  }
 }
 
 export = productService;

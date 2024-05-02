@@ -201,4 +201,15 @@ export default (app: Express) => {
             return res.status(500).json(err);
         }
     });
+
+    // API = get userData
+    app.get('/get-maximum-count-product', async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.MaximumCountProduct();
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went in',err)
+            return res.status(500).json(err);
+        }
+    });
 };
