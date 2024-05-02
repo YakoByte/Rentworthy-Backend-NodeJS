@@ -5,34 +5,6 @@ import UserAuth from '../middlewares/auth';
 import upload from '../middlewares/imageStorage';
 import { AuthenticatedRequest, getProfileRequest } from '../interface/profile';
 import { isAdmin } from '../middlewares/checkRole';
-// import axios from 'axios';
-// import fs from 'fs';
-// import FormData from 'form-data';
-
-// async function uploadImageWithToken(imagePath: string, token: string): Promise<string> {
-//     const formData = new FormData();
-//     formData.append('image', fs.createReadStream(imagePath));
-
-//     try {
-//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-//             headers: {
-//                 ...formData.getHeaders(),
-//                 Authorization: token,
-//             },
-//         });
-
-//         if (fs.existsSync(imagePath)) {
-//             fs.unlinkSync(imagePath);
-//           }
-
-//         return response.data._id;
-//     } catch (error: any) {
-//         if (fs.existsSync(imagePath)) {
-//             fs.unlinkSync(imagePath);
-//           }
-//         return error.message;
-//     }
-// }
     
 export default (app: Express) => {
     const service = new ProfileService();
