@@ -4,43 +4,6 @@ import UserAuth from '../middlewares/auth';
 import { AuthenticatedRequest } from '../interface/complain';
 import upload from '../middlewares/imageStorage';
 import imageService from '../services/imageUpload';
-// import axios from 'axios';
-// import fs from 'fs';
-// import FormData from 'form-data';
-
-// async function uploadMultipleImagesWithToken(imagePaths: string[], token: string): Promise<string[]> {
-//     const formData = new FormData();
-
-//     for (const imagePath of imagePaths) {
-//         formData.append('image', fs.createReadStream(imagePath));
-//     }
-
-//     try {
-//         const response = await axios.post("https://backend.rentworthy.us/web/api/v1/upload/image-uploads", formData, {
-//             headers: {
-//                 ...formData.getHeaders(),
-//                 Authorization: token,
-//             },
-//         });
-    
-//         const paths: string[] = response.data.map((element: any) => element._id);
-
-//         imagePaths.forEach(async (element: any) => {
-//             if (fs.existsSync(element)) {
-//               fs.unlinkSync(element);
-//             }
-//         });
-
-//         return paths;
-//     } catch (error: any) {
-//         imagePaths.forEach(async (element: any) => {
-//             if (fs.existsSync(element)) {
-//               fs.unlinkSync(element);
-//             }
-//         });
-//         return [error.message];
-//     }
-// }
 
 export default (app: Express) => {
     const service = new ComplainService();
