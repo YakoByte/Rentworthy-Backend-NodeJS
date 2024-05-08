@@ -9,6 +9,16 @@ export default (app: Express) => {
     const service = new PaymentService();
 
     // API = verify account stripe Id
+    app.get('/stripe-key', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = await service.StripeKey();
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = verify account stripe Id
     app.get('/verify-account-stripe-id', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             let userId:any = req.user?._id

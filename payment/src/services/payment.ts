@@ -24,6 +24,15 @@ class PaymentService {
     this.repository = new paymentRepository();
   }
 
+  async StripeKey() {
+    try {
+      return FormateData({ WEBHOOK_STRIPE_SECRET_KEY });
+    } catch (error: any) {
+      console.log("error: ", error);
+      return FormateError({ error: "Failed to Verify the striprID" });
+    }
+  }
+
   async VerifyAccountStripeId(stripeId: string, userId: string) {
     try {
       const account = await stripe.accounts.retrieve(stripeId);

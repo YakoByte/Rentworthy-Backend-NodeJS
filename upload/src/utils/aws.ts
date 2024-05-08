@@ -5,7 +5,6 @@ import fs from "fs";
 import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET_REGION, AWS_BUCKET_NAME } from '../config';
 
 
-
 const s3Client = new S3Client({
   credentials: {
     accessKeyId: AWS_ACCESS_KEY_ID || '',
