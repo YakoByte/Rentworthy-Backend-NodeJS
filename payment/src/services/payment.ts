@@ -15,7 +15,7 @@ import {
 import paymentRepository from "../database/repository/payment";
 
 import { FormateData, FormateError } from "../utils";
-import { WEBHOOK_STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY } from "../config";
+import { WEBHOOK_STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY } from "../config";
 
 class PaymentService {
   private repository: paymentRepository;
@@ -26,7 +26,7 @@ class PaymentService {
 
   async StripeKey() {
     try {
-      return FormateData({ STRIPE_PUBLISHABLE_KEY });
+      return FormateData({ STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY });
     } catch (error: any) {
       console.log("error: ", error);
       return FormateError({ error: "Failed to Verify the striprID" });
