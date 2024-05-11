@@ -41,7 +41,8 @@ export default (app: Express) => {
             if (authUser.roleName === "admin") {
                 data = await service.getAllProfile(body);
             }
-            else if (req.body.userId) {
+            else if (req.query.userId) {
+                req.body.userId = req.query.userId
                 data = await service.getProfileByUserId(req.body);
             } else {
                 req.body.userId = authUser._id
