@@ -346,9 +346,11 @@ class PaymentService {
 
   async createPayment(paymentDetails: PaymentIntendDetail) {
     try {
-      let owner = await this.repository.GetOwnerData(paymentDetails.userId);
+      let owner: any = await this.repository.GetOwnerData(paymentDetails.userId);
       let paymentMethod;
-      if(paymentDetails.card) {
+      let customer = owner?.stripeCustomerId;
+
+      if(paymentDetails?.card && owner?.stripeCustomerId) {
         // const token = await stripe.tokens.create({
         //   card: paymentDetails.card,
         // });
@@ -357,27 +359,36 @@ class PaymentService {
           owner?.stripeCustomerId || '',
           { source: "tok_visa"} // source: token.id 
         );
-      } else {
-        let customer_Id = owner?.stripeCustomerId;  
-        
-        if(!customer_Id) {
-          return FormateData({ message: "Payment failed or requires a payment method!" });
+
+        customer = owner?.stripeCustomerId;
+      } else if (paymentDetails?.card) {
+        if (owner?.stripeCustomerId === null || owner?.stripeCustomerId === undefined) {
+          const stripeAccount = await stripe.customers.create({
+            name: owner?.name,
+            email: owner?.email,
+            phone: owner?.phoneNo,
+            metadata: { user_id: owner?._id },
+          });
+  
+          customer = stripeAccount.id;
+
+          await this.repository.VerifyCustomerStripeId(customer, owner?._id);
         }
 
-        const Cards = await stripe.paymentMethods.list({
-          customer: customer_Id,
-          type: "card",
-        });
+      // const token = await stripe.tokens.create({
+        //   card: paymentDetails.card,
+        // });
 
-        paymentMethod = Cards?.data[0]
-      }      
+        paymentMethod = await stripe.customers.createSource(
+          owner?.stripeCustomerId || '',
+          { source: "tok_visa"} // source: token.id 
+        );
+      } else {
+        return FormateError({ error: "Payment failed or requires a different payment Detail!" });
+      }
 
-      let customer;
-      if (owner?.stripeCustomerId === null || owner?.stripeCustomerId === undefined) {
-        customer = await stripe.customers.create({
-          name: paymentDetails.name,
-          email: paymentDetails.email,
-        });
+      if(!paymentMethod) {
+        return FormateError({ error: "Payment failed or requires a different payment Detail!" });
       }
 
       const payment = await stripe.paymentIntents.create({
@@ -392,7 +403,7 @@ class PaymentService {
         capture_method: "manual",
         payment_method_types: ["card"],
         confirm: true,
-      });
+      });      
 
       if (payment.status === "succeeded") {
         const paymentData = {
@@ -408,6 +419,15 @@ class PaymentService {
         let payDetails: any = await this.repository.CreatePayment(paymentData);
         return FormateData({
           message: "Payment succeeded!",
+          client_seceret: payment.client_secret,
+          paymentId: payment.id,
+          paymentObject: payment.object,
+          amount: payment.amount,
+          currency: payment.currency,
+          customerId: payment.customer,
+          paymentMethod: payment.payment_method,
+          email: payment.receipt_email,
+          methdType: payment.payment_method_types,
           payStatus: payment.status,
           paymentData: payDetails,
           stripeData: payment,
@@ -426,6 +446,15 @@ class PaymentService {
         let payDetails: any = await this.repository.CreatePayment(paymentData);
         return FormateData({
           message: "Payment requires_action!",
+          client_seceret: payment.client_secret,
+          paymentId: payment.id,
+          paymentObject: payment.object,
+          amount: payment.amount,
+          currency: payment.currency,
+          customerId: payment.customer,
+          paymentMethod: payment.payment_method,
+          email: payment.receipt_email,
+          methdType: payment.payment_method_types,
           payStatus: payment.status,
           paymentData: payDetails,
           stripeData: payment,

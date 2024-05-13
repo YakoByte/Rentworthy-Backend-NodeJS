@@ -123,6 +123,7 @@ export interface PaymentIntendDetail {
   userId: string;
   quantity?: number;
   paymentMethod?: string;
+  cardId?: string;
   card: {
     number: string;
     exp_month: string;
