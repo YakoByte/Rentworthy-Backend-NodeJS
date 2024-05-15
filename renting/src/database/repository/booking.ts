@@ -55,7 +55,7 @@ class BookingRepository {
       const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
-          BookingDate: { $in: date },
+          BookingDate: { $elemMatch: date },
           productId: bookingInputs.productId,
         });
   
@@ -151,7 +151,7 @@ class BookingRepository {
       const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
-          BookingDate: { $in: date },
+          BookingDate: { $elemMatch: date },
           productId: bookingInputs.productId,
         });
   
@@ -449,14 +449,14 @@ class BookingRepository {
         criteria.productId = new Types.ObjectId(bookingInputs.productId);
       }
       if (bookingInputs.BookingDate) {
-        criteria.BookingDate = { $in: bookingInputs.BookingDate };
+        criteria.BookingDate = { $elemMatch: bookingInputs.BookingDate };
       }
       if (bookingInputs.status) {
           if (bookingInputs.status == "Confirmed") {
             criteria = {
               $and: [
                 { status: "Confirmed" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -464,7 +464,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Requested" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -472,7 +472,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Returned" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -480,7 +480,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Rejected" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -488,7 +488,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Shipped" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -496,7 +496,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Delivered" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -504,7 +504,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Canceled" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1031,14 +1031,14 @@ class BookingRepository {
         criteria.productId = new Types.ObjectId(bookingInputs.productId);
       }
       if (bookingInputs.BookingDate) {
-        criteria.BookingDate = { $in: bookingInputs.BookingDate };
+        criteria.BookingDate = { $elemMatch: bookingInputs.BookingDate };
       }
       if (bookingInputs.status) {
           if (bookingInputs.status == "Confirmed") {
             criteria = {
               $and: [
                 { status: "Confirmed" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1046,7 +1046,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Requested" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1054,7 +1054,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Returned" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1062,7 +1062,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Rejected" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1070,7 +1070,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Shipped" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1078,7 +1078,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Delivered" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1086,7 +1086,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Canceled" },
-                { BookingDate: { $in: { $gte: new Date() }} },
+                { BookingDate: { $elemMatch: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };

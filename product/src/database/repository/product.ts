@@ -112,7 +112,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -219,7 +219,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -387,7 +387,7 @@ class ProductRepository {
                 today.setHours(0, 0, 0, 0);
                 let productBooking = await Bookings.find({
                   productId: element._id,
-                  BookingDate: {$in: { $gte: today }},
+                  BookingDate: {$elemMatch: { $gte: today }},
                 }).select({
                   _id: 1,
                   BookingDate: 1,
@@ -397,7 +397,7 @@ class ProductRepository {
 
                 const wishlistData = await Wishlists.aggregate([
                     {
-                        $match: { productIds: { $in: [element._id] } }
+                        $match: { productIds: { $elemMatch: [element._id] } }
                     },
                     {
                         $lookup: {
@@ -538,7 +538,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -660,7 +660,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -785,7 +785,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -903,7 +903,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1018,7 +1018,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1133,7 +1133,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1280,7 +1280,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1410,7 +1410,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1539,7 +1539,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
@@ -1751,7 +1751,7 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$in: { $gte: today }},
+              BookingDate: {$elemMatch: { $gte: today }},
             }).select({
               _id: 1,
               BookingDate: 1,
