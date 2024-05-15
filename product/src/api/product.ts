@@ -192,34 +192,34 @@ export default (app: Express) => {
     });
 
     //API = count views and interection   
-  app.get('/get/user/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
-    try {
-      let authUser: any = req.user;
-
-      let data;
-      if(req.query.userId) {
-        data = await service.UserProductView(req.query.userId);
-      } else {
-        req.body.userId = authUser._id;
-        data = await service.UserProductView(req.body.userId);
+    app.get('/get/user/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+      try {
+        let authUser: any = req.user;
+  
+        let data;
+        if(req.query.userId) {
+          data = await service.UserProductView(req.query.userId);
+        } else {
+          req.body.userId = authUser._id;
+          data = await service.UserProductView(req.body.userId);
+        }
+  
+        return res.json(data);
+      } catch (err) {
+        next(err);
       }
-
-      return res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
-
-  app.get('/get/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
-    try {
-      if(req.query.productId) {
-        return res.status(404).json({error: "productId is required"})
+    });
+  
+    app.get('/get/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
+      try {
+        if(req.query.productId) {
+          return res.status(404).json({error: "productId is required"})
+        }
+        let data = await service.ProductView(req.query.productId);
+  
+        return res.json(data);
+      } catch (err) {
+        next(err);
       }
-      let data = await service.ProductView(req.query.productId);
-
-      return res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  });
+    });
 };
