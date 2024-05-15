@@ -5,7 +5,6 @@ import productModel from './product';
 import productLikeModel from './productlike';
 import productRatingModel from './productrating';
 import productReviewModel from './productreview';
-import productReservationModel from './productreservation';
 import ComplainModel from './complain';
 import Bookings from './booking';
 import Wishlists from './wishlist';
@@ -22,7 +21,6 @@ export {
     productLikeModel,
     productRatingModel,
     productReviewModel,
-    productReservationModel,
     ComplainModel,
     Bookings,
     Wishlists,

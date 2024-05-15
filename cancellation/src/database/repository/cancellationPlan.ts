@@ -1,4 +1,4 @@
-import { cancellationPlanModel, productModel, historyModel } from "../models";
+import { cancellationPlanModel } from "../models";
 import moment from "moment";
 import {
   cancellationPlanRequest,

@@ -9,14 +9,10 @@ const bookingSchema: Schema = new Schema<Booking>(
             ref: "product",
             required: true,
         },
-        startDate: {
+        BookingDate: [{
             type: Date,
             required: true,
-        },
-        endDate: {
-            type: Date,
-            required: true,
-        },
+        }],
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",

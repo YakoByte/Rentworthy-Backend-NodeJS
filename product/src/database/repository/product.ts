@@ -7,9 +7,7 @@ import {
   productSorting,
   productGetRequest,
 } from "../../interface/product";
-import productReservationService from "../../services/productreservation";
 import { generatePresignedUrl } from "../../utils/aws";
-const ResRepo = new productReservationService();
 
 class ProductRepository {
   //create product
@@ -17,12 +15,6 @@ class ProductRepository {
     try {
       const product = new productModel(productInputs);
       const productResult = await product.save();
-      let resObj = {
-        productId: productResult._id.toString(),
-        startDate: productInputs.rentingDate.startDate,
-        endDate: productInputs.rentingDate.endDate,
-      };
-      ResRepo.CreateProductReservation(resObj);
       const history = new historyModel({
         productId: productResult._id,
         log: [
@@ -120,13 +112,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -230,13 +219,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -309,29 +295,7 @@ class ProductRepository {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
 
-      let productBooking = await Bookings.find({
-        productId: productInputs._id,
-        endDate: {
-          $gte: today,
-        },
-      }).select({
-        _id: 1,
-        startDate: 1,
-        endDate: 1,
-        quantity: 1,
-        status: 1,
-      });
-
-      let productData = [];
-      let bookingData = [];
-
-      productData.push(...findProduct);
-
-      if (productBooking.length > 0) {
-        bookingData.push(...productBooking);
-      }
-
-      return productData;
+      return findProduct;
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Get Product");
@@ -421,14 +385,14 @@ class ProductRepository {
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                const productBooking = await Bookings.find({
-                    productId: element._id,
+                let productBooking = await Bookings.find({
+                  productId: element._id,
+                  BookingDate: {$in: { $gte: today }},
                 }).select({
-                    _id: 1,
-                    startDate: 1,
-                    endDate: 1,
-                    quantity: 1,
-                    status: 1,
+                  _id: 1,
+                  BookingDate: 1,
+                  quantity: 1,
+                  status: 1,
                 });
 
                 const wishlistData = await Wishlists.aggregate([
@@ -574,13 +538,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -697,15 +658,12 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking: any = await Bookings.find({
+            let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -825,15 +783,12 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking: any = await Bookings.find({
+            let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -948,13 +903,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1066,13 +1018,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1184,13 +1133,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1334,13 +1280,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1467,13 +1410,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1599,13 +1539,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1814,13 +1751,10 @@ class ProductRepository {
             today.setHours(0, 0, 0, 0);
             let productBooking = await Bookings.find({
               productId: element._id,
-              endDate: {
-                $gte: today,
-              },
+              BookingDate: {$in: { $gte: today }},
             }).select({
               _id: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               quantity: 1,
               status: 1,
             });
@@ -1992,7 +1926,7 @@ class ProductRepository {
       const findProduct = await productModel.findOne({_id: new Types.ObjectId(productInputs._id)});
       const ActiveRenting = await Bookings.countDocuments({productId: new Types.ObjectId(productInputs._id), status: { $in: ["Delivered", "Confirmed", "Shipped"] } });
 
-      return { view: findProduct?.viewCount || 0 }
+      return { view: findProduct?.viewCount || 0, ActiveRenting: ActiveRenting || 0 }
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to Get Product View");

@@ -32,6 +32,19 @@ export default (app: Express) => {
         }
     });
 
+    // API = create new expandDate
+    app.post('/create-expand-date', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
+      
+            const data = await service.CreateExpandDate(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
     //API = get recent booking
     app.get('/get-recent-booking', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {

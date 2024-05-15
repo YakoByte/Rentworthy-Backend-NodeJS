@@ -1,7 +1,7 @@
 import bookingRepository from '../database/repository/booking';
 import { FormateData, FormateError } from '../utils';
 
-import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest } from '../interface/booking';
+import { bookingRequest, bookingUpdateRequest, bookingGetRequest, bookingDeleteRequest, postAuthenticatedRequest, approveAuthenticatedRequest, expendDate } from '../interface/booking';
 
 // All Business logic will be here
 class bookingService {
@@ -23,6 +23,17 @@ class bookingService {
             console.log(err);
             
             return FormateError({ error: "Failed to Create Booking" });
+        }
+    }
+
+    // create expandDate
+    async CreateExpandDate(bookingInputs: expendDate) {
+        try {
+            const existingExpandDate: any = await this.repository.CreateExpandDate(bookingInputs);
+            
+            return FormateData(existingExpandDate);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to Create Expand Date" });
         }
     }
     

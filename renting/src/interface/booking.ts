@@ -17,8 +17,7 @@ export interface postAuthenticatedRequest extends Request {
             ansBoolean: boolean;
             images: string[];
         }[];
-        startDate: Date;
-        endDate: Date;
+        BookingDate: string[];
         userId: string;
         quantity: string;
         images: string[];
@@ -72,8 +71,7 @@ export interface AuthenticatedRequest extends Request {
         page?: string;
         limit?: string;
         productId?: string;
-        startDate?: string;
-        endDate?: string;
+        BookingDate?: string;
         status?: string;
     },
 }
@@ -86,8 +84,7 @@ export interface Booking extends Document {
         ansBoolean: boolean;
         image: string;
     }[];
-    startDate: Date;
-    endDate: Date;
+    BookingDate: Date;
     userId: Types.ObjectId;
     paymentId?: Types.ObjectId;
     quantity: number;
@@ -113,8 +110,7 @@ export interface bookingRequest {
     productId: string;
     statusHistory?: string[];
     status?: string;
-    startDate: Date;
-    endDate: Date;
+    BookingDate: string[];
     preRentalScreening: {
         question: string;
         answer: string;
@@ -135,13 +131,20 @@ export interface bookingRequest {
     limit?: string;
 }
 
+export interface expendDate {
+    _id?: string;
+    productId?: string;
+    BookingDate: string[];
+    userId?: string;
+    quantity?: string;
+}
+
 export interface bookingRequestWithPayment {
     _id?: string;
     productId: string;
     statusHistory?: string[];
     status?: string;
-    startDate: Date;
-    endDate: Date;
+    BookingDate: string[];
     userId: string;
     quantity: string;
     images: string[];
@@ -171,8 +174,7 @@ export interface bookingGetRequest {
     page?: string;
     limit?: string;
     productId?: string;
-    startDate?: string; 
-    endDate?: string;
+    BookingDate?: string; 
     statusHistory?: string[];
     status?: string;     
     rentalReview?: string;

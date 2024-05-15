@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 import { Product } from "../../interface/product";
 
-const categorySchema: Schema = new Schema<Product>(
+const productSchema: Schema = new Schema<Product>(
   {
     name: {
       type: String,
@@ -92,10 +92,6 @@ const categorySchema: Schema = new Schema<Product>(
       enum: ["hour", "day", "week", "month"],
       default: "day",
     },
-    rentingDate: {
-      startDate: Date,
-      endDate: Date,
-    },
     thumbnail: {
       type: Schema.Types.ObjectId,
       ref: "image",
@@ -126,21 +122,21 @@ const categorySchema: Schema = new Schema<Product>(
       type: Number,
       default: 0,
     },
-    interactionCount: {
-      type: Number,
-      default: 0,
-    },
     cancellationTimeLimit: {
       type: Number,
       default: 0,
     },
     rejectionReason: {
       type: String,
+    },
+    numberOfBooking: {
+      type: Number,
+      default: 0,
     }
   },
   { timestamps: true }
 );
 
-const Products = mongoose.model<Product>("Product", categorySchema);
+const Products = mongoose.model<Product>("Product", productSchema);
 
 export default Products;

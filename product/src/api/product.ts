@@ -24,11 +24,6 @@ export default (app: Express) => {
                     coordinates: coordinate
                 }
             }
-
-            req.body.rentingDate = {
-                startDate: req.body.startDate,
-                endDate: req.body.endDate
-            }
             
             if (!req.body.isDeliverable || req.body.isDeliverable === "false") {
                 delete req.body.Distance;

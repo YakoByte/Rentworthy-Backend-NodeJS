@@ -1,4 +1,4 @@
-import { bookingModel, productModel, productReservationModel, profileModel, PaymentModel, AddressModel } from "../models";
+import { bookingModel, productModel, profileModel, PaymentModel, AddressModel } from "../models";
 import { ObjectId } from "mongodb";
 import { Types } from "mongoose";
 import {
@@ -8,14 +8,13 @@ import {
   postAuthenticatedRequest,
   approveAuthenticatedRequest,
   bookingRequestWithPayment,
+  expendDate,
 } from "../../interface/booking";
 import { sendEmail } from "../../template/emailTemplate";
 import { generatePresignedUrl } from "../../utils/aws";
-import fetch from "node-fetch";
 
 class BookingRepository {
-  //create booking
-  async CreateBookingPrevious(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
+  async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
     let bookingResult;
     try {      
       //check product's date already booked or product is exist in booking
@@ -23,13 +22,9 @@ class BookingRepository {
         {
           _id: bookingInputs.productId,
           quantity: { $gte: bookingInputs.quantity },
-          $and: [
-            { "rentingDate.startDate": { $lte: bookingInputs.startDate } },
-            { "rentingDate.endDate": { $gte: bookingInputs.endDate } },
-          ],
           isDeleted: false,
         },
-        { $inc: { interactionCount: 1 } },
+        { $inc: { numberOfBooking: 1 } },
         { new: true }
       );
       
@@ -38,27 +33,50 @@ class BookingRepository {
       }
 
       // call updateLevel api
-      await fetch('https://backend.rentworthy.us/app/api/v1/user/update-level', {
-        method: 'PUT',
-        headers: {
-            Authorization: req.headers.authorization,
-            IDENTIFIER: 'A2hG9tE4rB6kY1sN',
-            'Content-Type': 'application/json'
+      const profile: any = await profileModel.findOneAndUpdate(
+        {
+          userId: product.userId,
+          isDeleted: false,
+          isBlocked: false,
         },
-        body: JSON.stringify({ userId: product.userId })
-      });
-      
-      //already booked
-      let findSameBooking = await bookingModel.find({
-        $and: [
-          { startDate: { $gte: bookingInputs.startDate } },
-          { endDate: { $lte: bookingInputs.endDate } },
-          { productId: bookingInputs.productId },
-        ],
-      });
-      if (findSameBooking && findSameBooking.length > 0) {
-        return { message: "Product already booked" };
+        { $inc: { points: 1 } },
+        { new: true }
+      );      
+
+      if (profile?.points >= 3000 && profile?.level < 2) {
+        profile.level = 2;
       }
+      if (profile?.points >= 6000 && profile?.level < 3) {
+        profile.level = 3;
+      }
+      await profile?.save();
+      
+      // Map over the BookingDate array to create an array of Promises
+      const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
+        // Find bookings that match the given date and productId
+        const findSameBooking = await bookingModel.find({
+          BookingDate: { $in: date },
+          productId: bookingInputs.productId,
+        });
+  
+        // If a booking is found, return a message indicating the product is already booked
+        if (findSameBooking && findSameBooking.length > 0) {
+          return { message: `Product already booked on ${date}` };
+        }
+  
+        // Return null if no booking is found for the given date
+        return null;
+      });
+  
+      // Wait for all booking promises to resolve
+      const bookingResults = await Promise.all(bookingPromises);
+  
+      // Check if any of the booking promises returned a booked message
+      const bookedMessage = bookingResults.find(result => result !== null);
+      if (bookedMessage) {
+        return bookedMessage;
+      }
+      
       // check quantity is available or not
       let findAllBooking = await bookingModel.find({
         productId: bookingInputs.productId,
@@ -85,26 +103,6 @@ class BookingRepository {
           { new: true }
         );
       }
-
-      if (bookingResult) {
-        let tempBody = {
-          productId: bookingInputs.productId,
-          startDate: bookingInputs.startDate,
-          endDate: bookingInputs.endDate,
-        };
-        await fetch("https://backend.rentworthy.us/app/api/v1/product/update-productreservation", {
-          method: 'POST',
-          headers: {
-              Authorization: req.headers.authorization,
-              IDENTIFIER: 'A2hG9tE4rB6kY1sN',
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify(tempBody)
-        });
-      }
-
-      console.log("Update product reservation");
-
 
       const findUser = await bookingModel.aggregate([
         { $match: { _id: new ObjectId(bookingResult._id), isDeleted: false } },
@@ -135,175 +133,74 @@ class BookingRepository {
     }
   }
 
-  async CreateBooking(bookingInputs: bookingRequest, req: postAuthenticatedRequest) {
-    let bookingResult;
-    try {      
-      //check product's date already booked or product is exist in booking
-      let product: any = await productModel.findOneAndUpdate(
-        {
-          _id: bookingInputs.productId,
-          quantity: { $gte: bookingInputs.quantity },
-          $and: [
-            { "rentingDate.startDate": { $lte: bookingInputs.startDate } },
-            { "rentingDate.endDate": { $gte: bookingInputs.endDate } },
-          ],
-          isDeleted: false,
-        },
-        { $inc: { interactionCount: 1 } },
-        { new: true }
-      );
-      
-      if(!product){
-        return { message: "Product not available in this Date" }
-      }
-
-      // call updateLevel api
-      const profile: any = await profileModel.findOneAndUpdate(
-        {
-          userId: product.userId,
-          isDeleted: false,
-          isBlocked: false,
-        },
-        { $inc: { points: 1 } },
-        { new: true }
-      );      
-
-      if (profile?.points >= 3000 && profile?.level < 2) {
-        profile.level = 2;
-      }
-      if (profile?.points >= 6000 && profile?.level < 3) {
-        profile.level = 3;
-      }
-      await profile?.save();
-      
-      //already booked
-      let findSameBooking = await bookingModel.find({
-        $and: [
-          { startDate: { $gte: bookingInputs.startDate } },
-          { endDate: { $lte: bookingInputs.endDate } },
-          { productId: bookingInputs.productId },
-        ],
+  async CreateExpandDate(bookingInputs: expendDate) {
+    let expandDateResult;
+    try {
+      // Check if product exists and has enough quantity available
+      const product = await productModel.findOne({
+        _id: bookingInputs.productId,
+        quantity: { $gte: bookingInputs.quantity },
+        isDeleted: false,
       });
-      if (findSameBooking && findSameBooking.length > 0) {
-        return { message: "Product already booked" };
+  
+      if (!product) {
+        return { message: "Product not available in this Date" };
       }
-      // check quantity is available or not
-      let findAllBooking = await bookingModel.find({
+  
+      // Map over the BookingDate array to create an array of Promises
+      const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
+        // Find bookings that match the given date and productId
+        const findSameBooking = await bookingModel.find({
+          BookingDate: { $in: date },
+          productId: bookingInputs.productId,
+        });
+  
+        // If a booking is found, return a message indicating the product is already booked
+        if (findSameBooking && findSameBooking.length > 0) {
+          return { message: `Product already booked on ${date}` };
+        }
+  
+        // Return null if no booking is found for the given date
+        return null;
+      });
+  
+      // Wait for all booking promises to resolve
+      const bookingResults = await Promise.all(bookingPromises);
+  
+      // Check if any of the booking promises returned a booked message
+      const bookedMessage = bookingResults.find(result => result !== null);
+      if (bookedMessage) {
+        return bookedMessage;
+      }
+  
+      // Check quantity available in existing bookings
+      const findAllBooking = await bookingModel.find({
         productId: bookingInputs.productId,
         isDeleted: false,
       });
-
+  
+      // Calculate total quantity booked
       let totalQuantity = 0;
       findAllBooking.forEach((element: any) => {
         totalQuantity += element.quantity;
       });
-
-      if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {        
+  
+      if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {
         return { message: "All the Products Are Booked" };
       }
-
-      let tempObj: bookingRequestWithPayment = { ...bookingInputs };
-      const booking = new bookingModel(tempObj);
-      bookingResult = await booking.save();
-
-      if(bookingInputs.status) {
-        await bookingModel.findByIdAndUpdate(
-          bookingResult._id, 
-          { $push: { statusHistory: bookingInputs.status } }, 
-          { new: true }
-        );
-      }
-      
-      if (bookingResult) {
-        let tempBody = {
-          productId: bookingInputs.productId,
-          startDate: bookingInputs.startDate,
-          endDate: bookingInputs.endDate,
-        };
-        let tpStart = new Date(tempBody.startDate);
-        let tpEnd = new Date(tempBody.endDate);
-        let resp: any = [];
-        while (tpStart <= tpEnd) {
-          let tempObj = {
-            productId: tempBody.productId,
-            available: tpStart.getDate(),
-            month: tpStart.getMonth() + 1,
-            year: tpStart.getFullYear(),
-          };
-          resp.push(tempObj);
-          tpStart = new Date(tpStart.setDate(tpStart.getDate() + 1));
-        }
-        let temp: any = [];
-        resp = resp.reduce((acc: any, one: any, i: any) => {
-          if (
-            resp[i + 1] &&
-            resp[i + 1] &&
-            resp[i + 1].month == one.month &&
-            resp[i + 1].year == one.year
-          ) {
-            temp.push(one.available);
-          } else {
-            temp.push(one.available);
-            acc.push({
-              productId: one.productId,
-              reserved: [...temp],
-              month: one.month,
-              year: one.year,
-            });
-            temp = [];
-          }
-          return acc;
-        }, []);
-        for (let oneObj of resp) {
-          await productReservationModel.findOneAndUpdate(
-            {
-              productId: oneObj.productId,
-              month: oneObj.month,
-              year: oneObj.year,
-            },
-            {
-              $push: {
-                customerRes: oneObj.reserved,
-              },
-              $pull: {
-                availableDates: {
-                  $in: oneObj.reserved,
-                },
-              },
-            }
-          );
-        }
-      }
-
-      console.log("Update product reservation");
-
-
-      const findUser = await bookingModel.aggregate([
-        { $match: { _id: new ObjectId(bookingResult._id), isDeleted: false } },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "userId",
-          },
-        },
-      ]);      
-
-      if (findUser[0].userId.email) {
-        const emailOptions = {
-          toUser: findUser[0].userId.email,
-          subject: "Booking Initiated",
-          templateVariables: { action: "Booking Initiated" },
-        };
-
-        sendEmail(emailOptions);
-      }
-
-      return bookingResult;
+  
+      // Assuming that we would be creating a booking record here
+      expandDateResult = await bookingModel.create({
+        productId: bookingInputs.productId,
+        BookingDate: bookingInputs.BookingDate,
+        quantity: bookingInputs.quantity,
+        // Other necessary fields from bookingInputs
+      });
+  
+      return expandDateResult;
     } catch (err) {
       console.log("error", err);
-      throw new Error("Unable to Create Booking");
+      throw new Error("Unable to Create Expand Date");
     }
   }
 
@@ -407,8 +304,7 @@ class BookingRepository {
           $group: {
             _id: "$_id",
             productId: { $push: "$productId" },
-            startDate: { $first: "$startDate" },
-            endDate: { $first: "$endDate" },
+            BookingDate: { $first: "$BookingDate" },
             userId: { $first: "$userId" },
             paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
@@ -432,8 +328,7 @@ class BookingRepository {
           $project: {
             _id: 1,
             productId: 1,
-            startDate: 1,
-            endDate: 1,
+            BookingDate: 1,
             userId: 1,
             paymentId: 1,
             quantity: 1,
@@ -553,19 +448,15 @@ class BookingRepository {
       if (bookingInputs.productId) {
         criteria.productId = new Types.ObjectId(bookingInputs.productId);
       }
-      if (bookingInputs.startDate && bookingInputs.endDate) {
-        criteria.$and = [
-          { startDate: { $gte: bookingInputs.startDate } },
-          { endDate: { $lte: bookingInputs.endDate } },
-        ];
+      if (bookingInputs.BookingDate) {
+        criteria.BookingDate = { $in: bookingInputs.BookingDate };
       }
       if (bookingInputs.status) {
           if (bookingInputs.status == "Confirmed") {
             criteria = {
               $and: [
                 { status: "Confirmed" },
-                { startDate: { $lte: new Date() } },
-                { endDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -573,16 +464,15 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Requested" },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
-                { startDate: { $gte: new Date() } },
               ],
             };
           } else if (bookingInputs.status == "Returned") {
             criteria = {
               $and: [
                 { status: "Returned" },
-                { startDate: { $lte: new Date() } },
-                { endDate: { $lte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -590,7 +480,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Rejected" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -598,7 +488,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Shipped" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -606,7 +496,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Delivered" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -614,7 +504,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Canceled" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -716,8 +606,7 @@ class BookingRepository {
           $group: {
             _id: "$_id",
             productId: { $push: "$productId" },
-            startDate: { $first: "$startDate" },
-            endDate: { $first: "$endDate" },
+            BookingDate: { $first: "$BookingDate" },
             userId: { $first: "$userId" },
             paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
@@ -741,8 +630,7 @@ class BookingRepository {
           $project: {
             _id: 1,
             productId: 1,
-            startDate: 1,
-            endDate: 1,
+            BookingDate: 1,
             userId: 1,
             paymentId: 1,
             quantity: 1,
@@ -992,8 +880,7 @@ class BookingRepository {
             $group: {
               _id: "$_id",
               productId: { $push: "$productId" },
-              startDate: { $first: "$startDate" },
-              endDate: { $first: "$endDate" },
+              BookingDate: { $first: "$BookingDate" },
               userId: { $first: "$userId" },
               paymentId: { $push: "$paymentId" },
               quantity: { $first: "$quantity" },
@@ -1017,8 +904,7 @@ class BookingRepository {
             $project: {
               _id: 1,
               productId: 1,
-              startDate: 1,
-              endDate: 1,
+              BookingDate: 1,
               userId: 1,
               paymentId: 1,
               quantity: 1,
@@ -1144,19 +1030,15 @@ class BookingRepository {
       if (bookingInputs.productId) {
         criteria.productId = new Types.ObjectId(bookingInputs.productId);
       }
-      if (bookingInputs.startDate && bookingInputs.endDate) {
-        criteria.$and = [
-          { startDate: { $gte: bookingInputs.startDate } },
-          { endDate: { $lte: bookingInputs.endDate } },
-        ];
+      if (bookingInputs.BookingDate) {
+        criteria.BookingDate = { $in: bookingInputs.BookingDate };
       }
       if (bookingInputs.status) {
           if (bookingInputs.status == "Confirmed") {
             criteria = {
               $and: [
                 { status: "Confirmed" },
-                { startDate: { $lte: new Date() } },
-                { endDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1164,16 +1046,15 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Requested" },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
-                { startDate: { $gte: new Date() } },
               ],
             };
           } else if (bookingInputs.status == "Returned") {
             criteria = {
               $and: [
                 { status: "Returned" },
-                { startDate: { $lte: new Date() } },
-                { endDate: { $lte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1181,7 +1062,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Rejected" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1189,7 +1070,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Shipped" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1197,7 +1078,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Delivered" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1205,7 +1086,7 @@ class BookingRepository {
             criteria = {
               $and: [
                 { status: "Canceled" },
-                { startDate: { $gte: new Date() } },
+                { BookingDate: { $in: { $gte: new Date() }} },
                 { isDeleted: false },
               ],
             };
@@ -1306,8 +1187,7 @@ class BookingRepository {
           $group: {
             _id: "$_id",
             productId: { $push: "$productId" },
-            startDate: { $first: "$startDate" },
-            endDate: { $first: "$endDate" },
+            BookingDate: { $first: "$BookingDate" },
             userId: { $first: "$userId" },
             paymentId: { $push: "$paymentId" },
             quantity: { $first: "$quantity" },
@@ -1331,8 +1211,7 @@ class BookingRepository {
           $project: {
             _id: 1,
             productId: 1,
-            startDate: 1,
-            endDate: 1,
+            BookingDate: 1,
             userId: 1,
             paymentId: 1,
             quantity: 1,
@@ -1613,88 +1492,6 @@ class BookingRepository {
   }
 
   // reject booking by product owner
-  async rejectBookingPrevious(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
-    try {
-      //check booking is exist or not
-      let booking = await bookingModel.findOne({
-        _id: bookingInputs._id,
-        isDeleted: false,
-      });
-      if (!booking) {
-        return { message: "Booking not found" };
-      }
-      //check product owner
-      let product = await productModel.findOne({
-        _id: booking.productId,
-        userId: bookingInputs.acceptedBy,
-        isDeleted: false,
-      });
-      if (!product) {
-        return { message: "unauthorized user for this product" };
-      }
-
-      const bookingResult = await bookingModel.findOneAndUpdate(
-        { _id: bookingInputs._id, isDeleted: false },
-        { 
-          isAccepted: false, 
-          acceptedBy: bookingInputs.acceptedBy, 
-          status: "Rejected", 
-          $push: { statusHistory: "Rejected" } 
-        },
-        { new: true }
-      );
-
-      if (bookingResult) {
-        // Prepare data for updating product reservation status
-      let tempBody = {
-        productId: bookingResult.productId,
-        startDate: bookingResult.startDate.toISOString().split("T")[0],
-        endDate: bookingResult.endDate.toISOString().split("T")[0],
-      };
-
-      // Call external API to update product reservation status
-      await fetch("https://backend.rentworthy.us/app/api/v1/product/update-relieveproductreservation", {
-        method: 'POST',
-        headers: {
-          Authorization: req.headers.authorization,
-          IDENTIFIER: 'A2hG9tE4rB6kY1sN',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(tempBody)
-      });
-
-        const findUser = await bookingModel.aggregate([
-          {
-            $match: { _id: new ObjectId(bookingResult._id), isDeleted: false },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userId",
-            },
-          },
-        ]);
-
-        if (findUser[0].userId.email) {
-          const emailOptions = {
-            toUser: findUser[0].userId.email,
-            subject: "Booking Rejected",
-            templateVariables: { action: "Booking Rejected" },
-          };
-
-          sendEmail(emailOptions);
-        }
-
-        return bookingResult;
-      }
-    } catch (err) {
-      console.log("error", err);
-      throw new Error("Unable to reject Booking");
-    }
-  }
-
   async rejectBooking(bookingInputs: bookingUpdateRequest, req: approveAuthenticatedRequest) {
     try {
       //check booking is exist or not
@@ -1726,96 +1523,6 @@ class BookingRepository {
         },
         { new: true }
       );
-
-      if (bookingResult) {        
-        // Prepare data for updating product reservation status
-      let tempBody = {
-        productId: bookingResult.productId,
-        startDate: bookingResult.startDate.toISOString().split("T")[0],
-        endDate: bookingResult.endDate.toISOString().split("T")[0],
-      };
-
-      // Call external API to update product reservation status
-      let tpStart = new Date(tempBody.startDate);
-      let tpEnd = new Date(tempBody.endDate);
-      let resp: any = [];
-        while (tpStart <= tpEnd) {
-          let tempObj = {
-            productId: tempBody.productId,
-            available: tpStart.getDate(),
-            month: tpStart.getMonth() + 1,
-            year: tpStart.getFullYear(),
-          };
-          resp.push(tempObj);
-          tpStart = new Date(tpStart.setDate(tpStart.getDate() + 1));
-        }
-        let temp: any = [];
-        resp = resp.reduce((acc: any, one: any, i: any) => {
-          if (
-            resp[i + 1] &&
-            resp[i + 1] &&
-            resp[i + 1].month == one.month &&
-            resp[i + 1].year == one.year
-          ) {
-            temp.push(one.available);
-          } else {
-            temp.push(one.available);
-            acc.push({
-              productId: one.productId,
-              reserved: [...temp],
-              month: one.month,
-              year: one.year,
-            });
-            temp = [];
-          }
-          return acc;
-        }, []);
-        for (let oneObj of resp) {
-          await productReservationModel.findOneAndUpdate(
-            {
-              productId: oneObj.productId,
-              month: oneObj.month,
-              year: oneObj.year,
-            },
-            {
-              $push: {
-                availableDates: oneObj.reserved,
-              },
-              $pull: {
-                customerRes: {
-                  $in: oneObj.reserved,
-                },
-              },
-            }
-          );
-        }
-  
-        const findUser = await bookingModel.aggregate([
-          {
-            $match: { _id: new ObjectId(bookingResult._id), isDeleted: false },
-          },
-          {
-            $lookup: {
-              from: "users",
-              localField: "userId",
-              foreignField: "_id",
-              as: "userId",
-            },
-          },
-        ]);
-
-        if (findUser[0].userId.email) {
-          const emailOptions = {
-            toUser: findUser[0].userId.email,
-            subject: "Booking Rejected",
-            templateVariables: { action: "Booking Rejected" },
-          };
-
-          sendEmail(emailOptions);
-        }
-
-        return bookingResult;
-      }
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to reject Booking");

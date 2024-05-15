@@ -20,7 +20,6 @@ export interface Product extends Document {
     max_price: number;
     userId: Types.ObjectId;
     isDeleted?: boolean;
-    interactionCount?: number;
     viewCount?: number;
     isVerified?: string;
     approvedBy?: Types.ObjectId;
@@ -40,12 +39,9 @@ export interface Product extends Document {
     Distance?: number; 
     link: string
     cancellationPolicyIds: Types.ObjectId[];
-    rentingDate: {
-        startDate: Date;
-        endDate: Date;
-    };
     cancellationTimeLimit?: number;
     rejectionReason? :string;
+    numberOfBooking?: number;
 }
 
 export interface productRequest {
@@ -65,10 +61,6 @@ export interface productRequest {
     }
     isDeliverable?: boolean;
     Distance?: number; 
-    rentingDate: {
-        startDate: string;
-        endDate: string;
-    };
     link: string;
     cancellationTimeLimit?: number;
     rejectionReason? :string;

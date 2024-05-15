@@ -21,12 +21,6 @@ export default (app: Express) => {
                 type: "Point",
                 coordinates: coordinate
             }
-            req.body.rentingDate = {
-                startDate: req.body.startDate,
-                endDate: req.body.endDate
-            }
-            delete req.body.startDate
-            delete req.body.endDate
 
             const imageData = {
                 userId: req.user._id,
