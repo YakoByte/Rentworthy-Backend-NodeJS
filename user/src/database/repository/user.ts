@@ -64,6 +64,11 @@ class AdminRepository {
       });
       await history.save();
 
+      await userModel.updateOne(
+        { _id: userResult._id },
+        { $inc: { interection: 1 } }
+      );
+
       // return userResult;
       return userResult;
     } catch (err) {
@@ -120,6 +125,11 @@ class AdminRepository {
         ],
       });
       await history.save();
+
+      await userModel.updateOne(
+        { _id: userResult._id },
+        { $inc: { interection: 1 } }
+      );
 
       // return userResult;
       return userResult;
@@ -192,6 +202,11 @@ class AdminRepository {
       }
 
       const userResult: any = await userModel.findOne(query).populate("roleId");
+
+      await userModel.updateOne(
+        { _id: userResult._id },
+        { $inc: { interection: 1 } }
+      );
 
       return userResult;
     } catch (error) {
@@ -580,6 +595,16 @@ class AdminRepository {
     } catch (error) {
       console.log("Error in getting count of previous years weeks : ", error);
       return [];
+    }
+  }
+
+  async getUserVIN(userInput: {_id: string}) {
+    try {
+        const user = await userModel.findOne({ _id: userInput._id });
+
+        return {view: user?.views || 0, interection: user?.interection || 0};
+    } catch (error) {
+      console.log("Error: ", error);
     }
   }
 }

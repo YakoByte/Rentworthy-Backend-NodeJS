@@ -22,4 +22,6 @@ export interface User extends Document {
     isStripeAccountVerified?: boolean;
     stripeCustomerId?: string;
     isStripeCustomerVerified?: boolean;
+    views?: number;
+    interection?: number;
 }

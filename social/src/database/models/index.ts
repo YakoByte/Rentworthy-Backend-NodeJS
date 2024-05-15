@@ -11,6 +11,7 @@ import Notification from "./notification";
 import imageModel from './image';
 import adminADSModel from "./adminADS";
 import bannerModel from "./banner";
+import UsersModel from './user';
 // ... repeat for each model
 
 // Then, export them:
@@ -27,4 +28,5 @@ export {
   imageModel,
   adminADSModel,
   bannerModel,
+  UsersModel
 };

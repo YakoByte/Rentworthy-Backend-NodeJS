@@ -8,7 +8,6 @@ export async function isAdmin(
 ) {
   // check req.user.roleName
   let authUser: any = req.user;
-  console.log("authUser", authUser);
   if (authUser.roleName === "admin") {
     next();
   } else {

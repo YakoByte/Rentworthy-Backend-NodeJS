@@ -31,7 +31,7 @@ class productService {
   }
 
   // get product by id , search or all product
-  async getProduct(productInputs: productGetRequest) {
+  async getAdminProduct(productInputs: productGetRequest) {
     try {            
       let existingProduct: any;
       if (productInputs.price) {
@@ -112,11 +112,66 @@ class productService {
           long: Number(productInputs.long),
           userId: productInputs.userId || "",
         });
+      } else if (productInputs.isDeliverable) {
+        existingProduct = await this.repository.getDelivereableProduct({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          userId: productInputs.userId || "",
+        });
+      } else if (productInputs.isPickUp) {
+        existingProduct = await this.repository.getPickUpProduct({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          userId: productInputs.userId || "",
+        });
       } else {
         existingProduct = await this.repository.getAllProduct({
           skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
           limit: Number(productInputs.limit) || 10,
           userId: productInputs.userId || "",
+        });
+      }
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log("err", err.message);
+      return FormateError({ error: "Data not Found" });
+    }
+  }
+
+  // get all product
+  async getProduct(productInputs: productGetRequest) {
+    try {            
+      let existingProduct: any;
+      if (productInputs.price) {
+        existingProduct = await this.repository.getProductPriceSortingWise({
+          price: productInputs.price,
+          skip:
+            Number(productInputs.page) * Number(productInputs.limit) -
+              Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          _id: productInputs?._id,
+          userId: productInputs?.userId,
+          ownerId: productInputs?.ownerId,
+          search: productInputs?.search,
+          categoryId: productInputs?.categoryId,
+          subCategoryId: productInputs?.subCategoryId,
+          lat: productInputs?.lat,
+          long: productInputs?.long,
+        });
+      } else if (productInputs.lat && productInputs.long) {
+        existingProduct = await this.repository.getProductByLocation({
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
+          lat: Number(productInputs.lat),
+          long: Number(productInputs.long),
+          userId: productInputs.userId || "",
+        });
+      } else {
+        existingProduct = await this.repository.getProduct({
+          ...productInputs,
+          skip: Number(productInputs.page) * Number(productInputs.limit) - Number(productInputs.limit) || 0,
+          limit: Number(productInputs.limit) || 10,
         });
       }
 
@@ -209,6 +264,26 @@ class productService {
     try {
       let existingProduct = await this.repository.MaximumCountProduct();
 
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log("err", err.message);
+      return FormateError({ error: "Data not Found" });
+    }
+  }
+
+  async UserProductView(userId: string) {
+    try {
+      let existingProduct = await this.repository.UserProductView({userId});
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log("err", err.message);
+      return FormateError({ error: "Data not Found" });
+    }
+  }
+
+  async ProductView(_id: string) {
+    try {
+      let existingProduct = await this.repository.ProductView({_id});
       return FormateData(existingProduct);
     } catch (err: any) {
       console.log("err", err.message);

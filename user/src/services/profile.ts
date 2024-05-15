@@ -136,19 +136,13 @@ class ProfileService {
         }
     }
 
-
-    // async profileValidation(profileName: string, profileId: string) {
-    //     try {
-    //         const existingProfile: any = await this.repository.checkProfile(
-    //             profileName,
-    //             profileId
-    //         );
-
-    //         return FormateData(existingProfile);
-    //     } catch (err: any) {
-    //         throw new Error("Data Not found", err);
-    //     }
-    // }
+    async updateUserView(userId: string) {
+        try {
+            return await this.repository.updateUserView({_id: userId});
+        } catch (error) {
+          console.log("Error: ", error);
+        }
+    }
 
 }
 

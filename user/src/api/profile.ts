@@ -42,7 +42,8 @@ export default (app: Express) => {
                 data = await service.getAllProfile(body);
             }
             else if (req.query.userId) {
-                req.body.userId = req.query.userId
+                req.body.userId = req.query.userId;
+                await service.updateUserView(req.body.userId);
                 data = await service.getProfileByUserId(req.body);
             } else {
                 req.body.userId = authUser._id
@@ -56,12 +57,15 @@ export default (app: Express) => {
 
     // API = get profile by id
     app.get('/get-profile-admin', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        let authUser: any = req.user
-        req.body.userId = authUser._id
-
         try {
+            if(!req.query.userId) {
+                return res.json({message: "userId is required!"})
+            }
+
+            req.body = {...req.query}
+
+            await service.updateUserView(req.body.userId);
             let data = await service.getProfileByUserId(req.body);
-            
             return res.json(data);
         } catch (err) {
             next(err);

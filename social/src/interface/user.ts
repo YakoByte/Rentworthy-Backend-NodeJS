@@ -1,6 +1,4 @@
-import { Request } from 'express';
 import mongoose, { Schema, Document, Types } from "mongoose";
-
 
 export interface User extends Document {
     name: string;
@@ -24,11 +22,6 @@ export interface User extends Document {
     isStripeAccountVerified?: boolean;
     stripeCustomerId?: string;
     isStripeCustomerVerified?: boolean;
-}
-
-export interface AuthenticatedRequest extends Request {
-    // Additional properties or methods specific to AuthenticatedRequest
-    user?: {
-        _id: string;
-    };
+    views?: number;
+    interection?: number;
 }

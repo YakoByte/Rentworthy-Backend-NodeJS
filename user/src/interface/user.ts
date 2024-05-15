@@ -3,9 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
-    user?: {
-        _id: string;
-    };
+    user?: any;
 }
 
 export interface getCountAuthenticatedRequest extends Request {
@@ -13,6 +11,7 @@ export interface getCountAuthenticatedRequest extends Request {
         _id: string;
     };
     query: {
+        userId: string;
         criteria: string,
     }
 }
@@ -39,6 +38,8 @@ export interface User extends Document {
     isStripeAccountVerified?: boolean;
     stripeCustomerId?: string;
     isStripeCustomerVerified?: boolean;
+    views?: number;
+    interection?: number;
 }
 
 export interface userSignRequest {

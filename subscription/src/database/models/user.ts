@@ -84,7 +84,13 @@ const userSchema: Schema = new Schema<User>(
     isStripeCustomerVerified: {
       type: Boolean,
       default: false
-    }
+    },
+    views: {
+      type: Number
+    },
+    interection: {
+      type: Number
+    },
   },
   { timestamps: true }
 );

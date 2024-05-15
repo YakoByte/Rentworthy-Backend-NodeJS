@@ -992,6 +992,242 @@ class ProductRepository {
     }
   }
 
+  //get all pickup product
+  async getPickUpProduct(productInputs: { skip: number; limit: number; userId: string}) {    
+    try {
+      const findProduct = await productModel.aggregate([
+        { $match: { isVerified: "approved", isDeleted: false, isActive: true, isDeliverable: false } },
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
+        },
+      ]);      
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {          
+          if(element.userId.length > 0) {
+            let profileData = await ProfileModel.aggregate([
+              {
+                $match: {
+                  userId: element.userId[0]._id
+                },
+              },
+              {
+                $lookup: {
+                  from: "images",
+                  localField: "profileImage",
+                  foreignField: "_id",
+                  pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                  ],
+                  as: "profileImage",
+                },
+              },
+            ]);                       
+            if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+              element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+            } 
+            if(profileData.length > 0){
+              element.userId[0].userName = profileData[0].userName
+            }
+          }
+          
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
+          });
+          element.productLike = productLike;          
+
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.find({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(`Error processing wishlist for product ${element._id}: ${error}`);
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: [],
+            };
+          }
+        })
+      );
+
+      const countProduct = await productModel.countDocuments({isVerified: "approved", isDeleted: false, isActive: true});
+
+      return {
+        data: await Promise.all(wishlistPromises),
+        count: countProduct
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
+    }
+  }
+
+  //get all deliverable product
+  async getDelivereableProduct(productInputs: { skip: number; limit: number; userId: string}) {    
+    try {
+      const findProduct = await productModel.aggregate([
+        { $match: { isVerified: "approved", isDeleted: false, isActive: true, isDeliverable: true } },
+        { $skip: productInputs.skip },
+        { $limit: productInputs.limit },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
+        },
+      ]);      
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {          
+          if(element.userId.length > 0) {
+            let profileData = await ProfileModel.aggregate([
+              {
+                $match: {
+                  userId: element.userId[0]._id
+                },
+              },
+              {
+                $lookup: {
+                  from: "images",
+                  localField: "profileImage",
+                  foreignField: "_id",
+                  pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                  ],
+                  as: "profileImage",
+                },
+              },
+            ]);                       
+            if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+              element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+            } 
+            if(profileData.length > 0){
+              element.userId[0].userName = profileData[0].userName
+            }
+          }
+          
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
+          });
+          element.productLike = productLike;          
+
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.find({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(`Error processing wishlist for product ${element._id}: ${error}`);
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: [],
+            };
+          }
+        })
+      );
+
+      const countProduct = await productModel.countDocuments({isVerified: "approved", isDeleted: false, isActive: true});
+
+      return {
+        data: await Promise.all(wishlistPromises),
+        count: countProduct
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
+    }
+  }
+
   // get product sorting wise
   async getProductPriceSortingWise(productInputs: productSorting) {
     try {      
@@ -1481,6 +1717,154 @@ class ProductRepository {
     }
   }
 
+  //get all product
+  async getProduct(productInputs: productGetRequest) {    
+    try {      
+      let criteria: any = { isVerified: "approved", isDeleted: false, isActive: true };
+      if(productInputs.isDeliverable) {
+        criteria.isDeliverable = true
+      }
+      if(productInputs.isPickUp) {
+        criteria.isDeliverable = false
+      }
+      if (productInputs._id) {
+        criteria._id = new Types.ObjectId(productInputs._id);
+      }
+      if (productInputs.ownerId) {
+        criteria.userId = new Types.ObjectId(productInputs.ownerId)
+      }
+      if(productInputs.search) {
+        criteria.name = { $regex: productInputs.search, $options: "i" }
+      }
+      if (productInputs.categoryId) {
+        criteria.categoryId = productInputs.categoryId
+      }
+      if (productInputs.subCategoryId) {
+        criteria.subCategoryId = productInputs.subCategoryId
+      }
+
+      const findProduct = await productModel.aggregate([
+        { $match: criteria },
+        { $skip: productInputs.skip || 0 },
+        { $limit: productInputs.limit || 10 },
+        {
+          $lookup: {
+            from: "images",
+            localField: "images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "images",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            pipeline: [
+              { $project: { _id: 1, email: 1, phoneNo: 1, roleId: 1, bussinessType: 1, loginType: 1 } },
+            ],
+            as: "userId",
+          },
+        },
+      ]);      
+
+      const wishlistPromises = await Promise.all(
+        findProduct.map(async (element) => {          
+          if(element.userId.length > 0) {
+            let profileData = await ProfileModel.aggregate([
+              {
+                $match: {
+                  userId: element.userId[0]._id
+                },
+              },
+              {
+                $lookup: {
+                  from: "images",
+                  localField: "profileImage",
+                  foreignField: "_id",
+                  pipeline: [
+                    { $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }
+                  ],
+                  as: "profileImage",
+                },
+              },
+            ]);                       
+            if(profileData.length > 0 && profileData[0].profileImage.length > 0 && profileData[0].profileImage[0].imageName) {
+              element.userId[0].profile = await generatePresignedUrl(profileData[0].profileImage[0].imageName);
+            } 
+            if(profileData.length > 0){
+              element.userId[0].userName = profileData[0].userName
+            }
+          }
+          
+          const productLike = await productLikeModel.countDocuments({
+            productId: element._id,
+            isFav: true,
+            isDeleted: false,
+          });
+          element.productLike = productLike;          
+
+          element.images.forEach(async(element: any) => {
+            let newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          });
+          try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let productBooking = await Bookings.find({
+              productId: element._id,
+              endDate: {
+                $gte: today,
+              },
+            }).select({
+              _id: 1,
+              startDate: 1,
+              endDate: 1,
+              quantity: 1,
+              status: 1,
+            });
+
+            let wishlistData = null;
+
+            if (productInputs.userId) {
+              wishlistData = await Wishlists.findOne({
+                userId: productInputs.userId,
+                productIds: element._id,
+              });
+            }
+
+            return { product: element, wishlistData, productBooking };
+          } catch (error) {
+            console.error(`Error processing wishlist for product ${element._id}: ${error}`);
+            return {
+              product: element,
+              wishlistData: null,
+              productBooking: [],
+            };
+          }
+        })
+      );
+
+      const countProduct = await productModel.countDocuments({criteria});
+
+      if(productInputs._id) {
+        await productModel.updateOne(
+          { _id: productInputs._id },
+          { $inc: { viewCount: 1 } }
+        );
+      }
+
+      return {
+        data: await Promise.all(wishlistPromises),
+        count: countProduct
+      };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to Get Product");
+    }
+  }
+
   async MaximumCountProduct() {
     try {
       const findProduct = await productModel.aggregate([
@@ -1563,7 +1947,57 @@ class ProductRepository {
       throw new Error("Unable to Update Product");
     }
   }
-  
+
+  async UserProductView(productInputs: {userId: string}) {
+    try {
+      const findProduct = await productModel.find({userId: new Types.ObjectId(productInputs.userId)});
+      const Booking = await Bookings.aggregate([
+        {
+            $match: { isDeleted: false }
+        },
+        {
+            $lookup: {
+                from: "products",
+                localField: "productId",
+                foreignField: "_id",
+                as: "product",
+            },
+        },
+        { $unwind: "$product" },
+      ]);
+
+      let ActiveRenting = 0;
+      Booking.forEach(element => {          
+        if(element.product.userId ===  new Types.ObjectId(productInputs.userId)){
+          if (element.status === "Delivered" || element.status === "Confirmed" || element.status === "Shipped") {
+            ActiveRenting++;
+          }
+        }
+      });
+
+      let view = 0
+      findProduct.forEach(async (element) => {
+        view += element?.viewCount || 0;
+      });
+
+      return { view: view || 0, ActiveRenting: ActiveRenting || 0 }
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to Get Product View");
+    }
+  }
+
+  async ProductView(productInputs: {_id: string}) {
+    try {
+      const findProduct = await productModel.findOne({_id: new Types.ObjectId(productInputs._id)});
+      const ActiveRenting = await Bookings.countDocuments({productId: new Types.ObjectId(productInputs._id), status: { $in: ["Delivered", "Confirmed", "Shipped"] } });
+
+      return { view: findProduct?.viewCount || 0 }
+    } catch (error) {
+      console.log("error", error);
+      throw new Error("Unable to Get Product View");
+    }
+  }
 }
 
 export default ProductRepository;

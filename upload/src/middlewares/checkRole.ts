@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthenticatedRequest } from "../interface/user";
+import { AuthenticatedRequest } from "../interface/imageUpload";
 
 export async function isAdmin(
   req: AuthenticatedRequest,
@@ -8,7 +8,6 @@ export async function isAdmin(
 ) {
   // check req.user.roleName
   let authUser: any = req.user;
-  console.log("authUser", authUser);
   if (authUser.roleName === "admin") {
     next();
   } else {

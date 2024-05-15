@@ -2,9 +2,7 @@ import { Request } from "express";
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
-  user?: {
-    _id: string;
-  };
+  user?: any;
 }
 
 export interface getCountAuthenticatedRequest extends Request {

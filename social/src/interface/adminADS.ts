@@ -4,9 +4,7 @@ import { Document, Types } from "mongoose";
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
     files?: any;
-    user?: {
-        _id: string;
-    };
+    user?: any;
     headers: any;
     query: {
         _id?: string;

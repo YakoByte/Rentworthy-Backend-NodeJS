@@ -200,7 +200,7 @@ export default (app: Express) => {
     try {
       const clientPlatform = req.clientPlatform;
       const data = await adminService.GetCount();
-      console.log("data", data)
+
       return res.json(data);
     } catch (err) {
       next(err);
@@ -213,6 +213,25 @@ export default (app: Express) => {
       let authUser: any = req.user
       let criteria = req.query.criteria
       const data = await adminService.getCountOfPayment(criteria);
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  //API = count views and interection   
+  app.get('/get/view/interection', UserAuth, async (req: getCountAuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+      let authUser: any = req.user;
+
+      let data;
+      if(req.query.userId) {
+        data = await adminService.getUserVIN(req.query.userId);
+      } else {
+        req.body.userId = authUser._id;
+        data = await adminService.getUserVIN(req.body.userId);
+      }
+
       return res.json(data);
     } catch (err) {
       next(err);

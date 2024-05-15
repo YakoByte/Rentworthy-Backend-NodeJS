@@ -410,7 +410,17 @@ class AdminService {
           console.log("error", err);
           throw err;
         }
-      }
+    }
+
+    async getUserVIN(userId: string) {
+        try {
+            const UserCount: any = await this.repository.getUserVIN({_id: userId});
+            return FormateData(UserCount);
+        } catch (err: any) {
+          console.log("error", err);
+          throw err;
+        }
+    }
 }
 
 export = AdminService;

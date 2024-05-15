@@ -5,6 +5,8 @@ import categoryModel from './category';
 import subCategoryModel from './subCategory';
 import imageModel from './image';
 import ProductModel from './product';
+import UsersModel from './user';
+
 // ... repeat for each model
 
 // Then, export them:
@@ -13,5 +15,6 @@ export {
     categoryModel,
     subCategoryModel,
     imageModel,
-    ProductModel
+    ProductModel,
+    UsersModel
 };

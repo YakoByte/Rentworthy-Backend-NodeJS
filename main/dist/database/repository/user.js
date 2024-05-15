@@ -78,7 +78,7 @@ const userSchema = new mongoose_1.Schema({
     },
     loginType: {
         type: String,
-        enum: ["google", "facebook", "apple", "regular"],
+        enum: ["google", "facebook", "apple", "regular", "phone"],
         default: "regular"
     },
     os: {

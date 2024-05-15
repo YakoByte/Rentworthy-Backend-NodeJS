@@ -4,9 +4,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
-    user?: {
-        _id: string;
-    };
+    user?: any;
 }
 
 export interface Room extends Document {

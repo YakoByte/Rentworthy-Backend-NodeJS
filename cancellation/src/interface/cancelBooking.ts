@@ -55,9 +55,7 @@ export interface getCountAuthenticatedRequest extends Request {
 
 export interface AuthenticatedRequest extends Request {
     // Additional properties or methods specific to AuthenticatedRequest
-    user?: {
-        _id: string;
-    };
+    user?: any;
     query: {
         _id?: string;
         userId?: string;

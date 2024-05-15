@@ -238,7 +238,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 
@@ -250,7 +250,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 
@@ -262,7 +262,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 
@@ -274,7 +274,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 
@@ -286,7 +286,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 
@@ -298,7 +298,7 @@ class bookingService {
 
             return FormateData(Booking);
         } catch (err: any) {
-            return FormateError({ error: "Failed to Delete Booking" });
+            return FormateError({ error: "Failed to Count Booking" });
         }
     }
 

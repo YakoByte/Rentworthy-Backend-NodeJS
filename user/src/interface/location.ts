@@ -3,9 +3,7 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 // interface for req.user, req.query, req.file
 
 export interface AuthenticatedRequest extends Request {
-    user?: {
-        _id: string;
-    };
+    user?: any;
     query: {
         _id?: string;
         userId?: string;

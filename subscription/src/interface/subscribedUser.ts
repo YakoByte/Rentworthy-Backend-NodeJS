@@ -2,11 +2,7 @@ import { Request } from 'express';
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
-    user?: {
-        _id: string;
-        userName: string;
-        roleName: string;
-    };
+  user?: any;
     headers: any;
     file?: any;
 }

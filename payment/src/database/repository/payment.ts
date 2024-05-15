@@ -1,4 +1,4 @@
-import { UserModel, paymentModel } from "../models";
+import { UsersModel, paymentModel } from "../models";
 import moment from "moment";
 import { GetAllPayment, PaymentConfirmDetails, UpdatePayment } from "../../interface/payment";
 import { Types } from "mongoose";
@@ -26,7 +26,7 @@ class PaymentRepository {
 
   async VerifyAccountStripeId(account_Id: string, userId: string) {
     try {
-      let response = await UserModel.findOneAndUpdate(
+      let response = await UsersModel.findOneAndUpdate(
         { _id: userId },
         { isStripeAccountVerified: true, stripAccountId: account_Id },
         { new: true }
@@ -40,7 +40,7 @@ class PaymentRepository {
 
   async getAccountDetail(customer_Id: string) {
     try {
-      const response = await UserModel.findOne({stripeCustomerId: customer_Id});
+      const response = await UsersModel.findOne({stripeCustomerId: customer_Id});
       return response;
     } catch (err) {
       console.log("error", err);
@@ -50,7 +50,7 @@ class PaymentRepository {
 
   async VerifyCustomerStripeId(customer_Id: string, userId: string) {
     try {
-      let response = await UserModel.findOneAndUpdate(
+      let response = await UsersModel.findOneAndUpdate(
         { _id: userId },
         { isStripeCustomerVerified: true, stripeCustomerId: customer_Id },
         { new: true }
@@ -220,7 +220,7 @@ class PaymentRepository {
 
   async GetOwnerData(_id: string) {
     try {
-      let response = await UserModel.findById(_id);
+      let response = await UsersModel.findById(_id);
       return response;
     } catch (err) {
       console.log("error", err);

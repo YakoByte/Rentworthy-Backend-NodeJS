@@ -10,6 +10,7 @@ import profileModel from './profile';
 import productReservationModel from './productreservation';
 import PaymentModel from './payment';
 import AddressModel from './address';
+import UsersModel from './user';
 
 // ... repeat for each model
 
@@ -25,4 +26,5 @@ export {
     productReservationModel,
     PaymentModel,
     AddressModel,
+    UsersModel
 };

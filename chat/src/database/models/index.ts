@@ -6,6 +6,8 @@ import messageModel from './messages';
 import ProfileModel from './profile';
 import BookingModel from './booking';
 import ProductModel from './product';
+import UsersModel from './user';
+
 // ... repeat for each model
 
 // Then, export them:
@@ -15,5 +17,6 @@ export {
     messageModel,
     ProfileModel,
     BookingModel,
-    ProductModel
+    ProductModel,
+    UsersModel
 };

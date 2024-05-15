@@ -2106,10 +2106,10 @@ class BookingRepository {
   //count booking
   async CountProductBooking(bookingInputs: { productId: string }) {
     try {
-      const ActiveRenting = await bookingModel.countDocuments({productId: bookingInputs.productId, status: { $in: ["Delivered", "Confirmed", "Shipped"] } });
-      const Requests = await bookingModel.countDocuments({productId: bookingInputs.productId,  status:"Requested"});
-      const Rented = await bookingModel.countDocuments({productId: bookingInputs.productId,  status: "Returned"});
-      const Requested = await bookingModel.countDocuments({ productId: bookingInputs.productId, status: { $in: ["Requested", "Delivered", "Confirmed", "Shipped", "Canceled", "Returned"] } });
+      const ActiveRenting = await bookingModel.countDocuments({productId: new Types.ObjectId(bookingInputs.productId), status: { $in: ["Delivered", "Confirmed", "Shipped"] } });
+      const Requests = await bookingModel.countDocuments({productId: new Types.ObjectId(bookingInputs.productId),  status:"Requested"});
+      const Rented = await bookingModel.countDocuments({productId: new Types.ObjectId(bookingInputs.productId),  status: "Returned"});
+      const Requested = await bookingModel.countDocuments({ productId: new Types.ObjectId(bookingInputs.productId), status: { $in: ["Requested", "Delivered", "Confirmed", "Shipped", "Canceled", "Returned"] } });
 
       return {ActiveRenting, Requests, Rented, Requested};
     } catch (err) {

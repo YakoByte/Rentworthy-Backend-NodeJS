@@ -1,4 +1,4 @@
-import { profileModel, historyModel } from "../models";
+import { profileModel, historyModel, userModel } from "../models";
 import { profileRequest, getProfileRequest } from "../../interface/profile";
 import { Types } from "mongoose";
 import { generatePresignedUrl } from "../../utils/aws";
@@ -502,6 +502,19 @@ class profileRepository {
     } catch (error) {
       console.log("error", error);
       throw new Error("Unable to delete Profile By ID");
+    }
+  }
+
+  async updateUserView(userInput: {_id: string}) {
+    try {
+        await userModel.updateOne(
+          { _id: userInput._id },
+          { $inc: { views: 1 } }
+        );
+
+        return true;
+    } catch (error) {
+      console.log("Error: ", error);
     }
   }
 }

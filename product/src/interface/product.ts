@@ -127,6 +127,8 @@ export interface productGetRequest {
     isVerified?: boolean;
     isRejected?: boolean;
     isPending?: boolean;
+    isDeliverable?: boolean;
+    isPickUp?: boolean;
 }
 
 export interface productSorting {

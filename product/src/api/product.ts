@@ -119,6 +119,41 @@ export default (app: Express) => {
         }
     });
 
+    // API = get product by id and search and all product
+    app.get('/get-admin-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            req.query = {...req.query}
+            let authUser: any = req.user
+            req.query.userId = authUser._id;
+            req.query.token = req.headers.authorization || '';
+            req.query.roleName = authUser.roleName;
+
+            const data = await service.getAdminProduct({...req.query});
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went in',err)
+            return res.status(500).json(err);
+        }
+    });
+
+    // API = get userData
+    app.get('/get-user-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let userId;
+            if(req.query.userId) {
+                userId =  req.query.userId;
+            } else {
+                userId = req.user._id
+            }
+
+            const data = await service.getProductByUserId({ userId });
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went in',err)
+            return res.status(500).json(err);
+        }
+    });
+
     // // API = update product
     app.put('/update-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
@@ -185,24 +220,6 @@ export default (app: Express) => {
     });
 
     // API = get userData
-    app.get('/get-user-product', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        try {
-            let userId;
-            if(req.query.userId) {
-                userId =  req.query.userId;
-            } else {
-                userId = req.user._id
-            }
-
-            const data = await service.getProductByUserId({ userId });
-            return res.status(200).json(data);
-        } catch (err: any) {
-            console.log('went in',err)
-            return res.status(500).json(err);
-        }
-    });
-
-    // API = get userData
     app.get('/get-maximum-count-product', async (req: Request, res: Response, next: NextFunction) => {
         try {
             const data = await service.MaximumCountProduct();
@@ -212,4 +229,36 @@ export default (app: Express) => {
             return res.status(500).json(err);
         }
     });
+
+    //API = count views and interection   
+  app.get('/get/user/product/view', async (req: any, res: Response, next: NextFunction) => {
+    try {
+      let authUser: any = req.user;
+
+      let data;
+      if(req.query.userId) {
+        data = await service.UserProductView(req.query.userId);
+      } else {
+        req.body.userId = authUser._id;
+        data = await service.UserProductView(req.body.userId);
+      }
+
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.get('/get/product/view', async (req: any, res: Response, next: NextFunction) => {
+    try {
+      if(req.query.productId) {
+        return res.status(404).json({error: "productId is required"})
+      }
+      let data = await service.ProductView(req.query.productId);
+
+      return res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  });
 };

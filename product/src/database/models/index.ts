@@ -11,6 +11,7 @@ import Bookings from './booking';
 import Wishlists from './wishlist';
 import imageModel from './image';
 import ProfileModel from './profile';
+import UsersModel from './user';
 
 // ... repeat for each model
 
@@ -26,5 +27,6 @@ export {
     Bookings,
     Wishlists,
     imageModel,
-    ProfileModel
+    ProfileModel,
+    UsersModel,
 };
