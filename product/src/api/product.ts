@@ -192,7 +192,7 @@ export default (app: Express) => {
     });
 
     //API = count views and interection   
-  app.get('/get/user/product/view', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/get/user/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
       let authUser: any = req.user;
 
@@ -210,7 +210,7 @@ export default (app: Express) => {
     }
   });
 
-  app.get('/get/product/view', async (req: any, res: Response, next: NextFunction) => {
+  app.get('/get/product/view', UserAuth, async (req: any, res: Response, next: NextFunction) => {
     try {
       if(req.query.productId) {
         return res.status(404).json({error: "productId is required"})
