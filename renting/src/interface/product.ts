@@ -14,10 +14,6 @@ export interface Product extends Document {
     description: string;
     isActive?: boolean;
     brand: string;
-    min_qty: number;
-    max_qty: number;
-    min_price: number;
-    max_price: number;
     userId: Types.ObjectId;
     isDeleted?: boolean;
     viewCount?: number;

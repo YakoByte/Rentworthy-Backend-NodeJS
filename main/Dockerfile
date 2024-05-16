@@ -17,7 +17,7 @@ COPY . .
 # Make port available to the world outside this container
 EXPOSE 5000
 
-# RUN npm run build
+RUN npm run build
 
 # Run the app when the container launches
 CMD ["npm", "start"]

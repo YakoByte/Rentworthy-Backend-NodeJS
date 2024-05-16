@@ -12,14 +12,20 @@ export default (app: Express) => {
     const image = new imageService();
 
     // API = create new booking
-    app.post('/create-booking', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-booking', UserAuth, upload.array("images", 10), async (req: any, res: Response, next: NextFunction) => {
         try {
-
             if(!req.body.productId) {
                 return res.status(400).json({ message: "Product ID is required" });
             }
-            if(!req.body.BookingDate && !Array.isArray(req.body.BookingDate)) {
+
+            if(!req.body.BookingDate) {
                 return res.status(400).json({ message: "Booking Date is required" });
+            }
+
+            req.body.BookingDate = JSON.parse(req.body.BookingDate)
+            
+            if(!Array.isArray(req.body.BookingDate)) {
+                return res.status(400).json({ message: "Booking Date is not Array" });
             }
 
             let authUser: any = req.user
@@ -33,6 +39,7 @@ export default (app: Express) => {
         
                   req.body.images = await image.CreateImages(imageData) as unknown as string[];;            
             }
+
             const data = await service.CreateBooking(req.body, req);
             return res.json(data);
         } catch (err) {
@@ -41,10 +48,28 @@ export default (app: Express) => {
     });
 
     // API = create new expandDate
-    app.post('/create-expand-date', UserAuth, async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+    app.post('/create-expand-date', UserAuth, async (req: any, res: Response, next: NextFunction) => {
         try {
             let authUser: any = req.user
             req.body.userId = authUser._id;
+
+            if(!req.body._id) {
+                return res.status(400).json({ message: "_id is required" });
+            }
+
+            if(!req.body.productId) {
+                return res.status(400).json({ message: "Product ID is required" });
+            }
+
+            if(!req.body.BookingDate) {
+                return res.status(400).json({ message: "Booking Date is required" });
+            }
+
+            req.body.BookingDate = JSON.parse(req.body.BookingDate)
+            
+            if(!Array.isArray(req.body.BookingDate)) {
+                return res.status(400).json({ message: "Booking Date is not Array" });
+            }
       
             const data = await service.CreateExpandDate(req.body);
             return res.json(data);

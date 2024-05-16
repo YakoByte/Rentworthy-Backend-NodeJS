@@ -8,7 +8,9 @@ export interface Booking extends Document {
         ansBoolean: boolean;
         image: string;
     }[];
-    BookingDate: Date;
+    BookingDate: {
+        Date: Date,
+    }[];
     userId: Types.ObjectId;
     paymentId?: Types.ObjectId;
     quantity: number;

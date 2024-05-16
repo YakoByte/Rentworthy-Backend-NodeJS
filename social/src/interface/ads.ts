@@ -91,10 +91,6 @@ export interface Ads extends Document {
     userId: Types.ObjectId;
     title: string;
     brand: string;
-    min_qty: number;
-    max_qty: number;
-    min_price: number;
-    max_price: number;
     description: string;
     productId: Types.ObjectId;
     isDeleted: boolean;

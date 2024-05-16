@@ -25,24 +25,6 @@ const productSchema: Schema = new Schema<Product>(
       ref: "user",
       required: true,
     },
-    min_qty: {
-      type: Number,
-      // required: true,
-    },
-    max_qty: {
-      type: Number,
-      // required: true,
-    },
-    min_price: {
-      type: Number,
-      default: 0,
-      // required: true,
-    },
-    max_price: {
-      type: Number,
-      default: 0,
-      // required: true,
-    },
     quantity: {
       type: Number,
       required: true,
