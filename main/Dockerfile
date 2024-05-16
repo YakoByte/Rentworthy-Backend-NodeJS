@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install any needed packages
+# RUN npm install --only=production
 RUN npm install --only=production
 RUN npm install -g typescript
 
