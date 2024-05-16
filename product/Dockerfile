@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install any needed packages
-# RUN npm install
+RUN npm install
 
 # Bundle app source inside the Docker image
 COPY . .
@@ -25,7 +25,6 @@ WORKDIR /app
 
 # Install nodemon globally
 RUN npm install -g nodemon ts-node
-RUN npm install 
 
 # Copy the built application from the previous stage
 COPY --from=builder /app .
