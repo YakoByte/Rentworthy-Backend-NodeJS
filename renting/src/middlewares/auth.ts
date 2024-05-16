@@ -6,7 +6,7 @@ export default async (req: any, res: Response, next: NextFunction) => {
   const isAuthorized: boolean = await ValidateSignature(req);
 
   await UsersModel.updateOne(
-    { _id: req.user._id },
+    { _id: req?.user?._id },
     { $inc: { interection: 1 } }
   );
 

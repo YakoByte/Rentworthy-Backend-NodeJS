@@ -4,9 +4,9 @@ import { Request, Response, NextFunction } from 'express';
 
 export default async (req: any, res: Response, next: NextFunction) => {
   const isAuthorized: boolean = await ValidateSignature(req);
-
+  
   await userModel.updateOne(
-    { _id: req.user._id },
+    { _id: req?.user?._id },
     { $inc: { interection: 1 } }
   );
 

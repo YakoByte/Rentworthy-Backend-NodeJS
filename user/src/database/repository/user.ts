@@ -65,7 +65,7 @@ class AdminRepository {
       await history.save();
 
       await userModel.updateOne(
-        { _id: userResult._id },
+        { _id: userResult?._id },
         { $inc: { interection: 1 } }
       );
 
@@ -127,7 +127,7 @@ class AdminRepository {
       await history.save();
 
       await userModel.updateOne(
-        { _id: userResult._id },
+        { _id: userResult?._id },
         { $inc: { interection: 1 } }
       );
 
@@ -204,7 +204,7 @@ class AdminRepository {
       const userResult: any = await userModel.findOne(query).populate("roleId");
 
       await userModel.updateOne(
-        { _id: userResult._id },
+        { _id: userResult?._id },
         { $inc: { interection: 1 } }
       );
 

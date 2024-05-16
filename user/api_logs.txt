@@ -33,3 +33,20 @@ API Data:
   "email": "test@gmail.com",
   "password": "user@123"
 }
+API Headers:
+identifier: A2hG9tE4rB6kY1sN
+content-type: application/json
+user-agent: PostmanRuntime/7.39.0
+accept: */*
+cache-control: no-cache
+postman-token: a753d3ed-13a7-42e3-8dbe-5220e1653bbc
+host: localhost:5001
+accept-encoding: gzip, deflate, br
+connection: keep-alive
+content-length: 69
+
+API Data:
+{
+  "email": "user@gmail.com",
+  "password": "User@123"
+}
