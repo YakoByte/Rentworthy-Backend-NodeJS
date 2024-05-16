@@ -7,7 +7,6 @@ import {
   bookingUpdateRequest,
   postAuthenticatedRequest,
   approveAuthenticatedRequest,
-  bookingRequestWithPayment,
   expendDate,
 } from "../../interface/booking";
 import { sendEmail } from "../../template/emailTemplate";
@@ -52,12 +51,21 @@ class BookingRepository {
       await profile?.save();
       
       // Map over the BookingDate array to create an array of Promises
-      const bookingPromises = bookingInputs.BookingDate?.map(async (date: any) => {
+      const bookingPromises = bookingInputs?.BookingDate.map(async (date: any) => {        
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
-          BookingDate: { $elementMatch: new Date(date) },
+          BookingDate: { $elemMatch: { date: new Date(date) } },
           productId: bookingInputs.productId,
+        }); 
+
+        let totalQuantity = 0;
+        findSameBooking.forEach((element: any) => {
+          totalQuantity += element.quantity;
         });
+
+        if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {        
+          return { message: "All the Products Are Booked for entered Date" };
+        }
   
         // If a booking is found, return a message indicating the product is already booked
         if (findSameBooking && findSameBooking.length > 0) {
@@ -69,30 +77,19 @@ class BookingRepository {
       });
   
       // Wait for all booking promises to resolve
-      const bookingResults = await Promise.all(bookingPromises);
+      const bookingResults = await Promise.all(bookingPromises);      
   
       // Check if any of the booking promises returned a booked message
       const bookedMessage = bookingResults.find(result => result !== null);
       if (bookedMessage) {
         return bookedMessage;
       }
-  
-      // check quantity is available or not
-      let findAllBooking = await bookingModel.find({
-        productId: bookingInputs.productId,
-        isDeleted: false,
-      });
-
-      let totalQuantity = 0;
-      findAllBooking.forEach((element: any) => {
-        totalQuantity += element.quantity;
-      });
-
-      if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {        
-        return { message: "All the Products Are Booked" };
-      }
-
-      let tempObj: bookingRequestWithPayment = { ...bookingInputs };
+      
+      const dates = bookingInputs?.BookingDate.map((element: any) => {
+        return { date: new Date(element) };
+      }); 
+         
+      let tempObj = { ...bookingInputs, BookingDate: dates }      
       const booking = new bookingModel(tempObj);
       bookingResult = await booking.save();
 
@@ -137,6 +134,16 @@ class BookingRepository {
     let expandDateResult;
     try {
       // Check if product exists and has enough quantity available
+      const booking = await bookingModel.findOne({
+        _id: bookingInputs._id,
+        isDeleted: false,
+      });
+  
+      if (!booking) {
+        return { message: "Booking not Found with given id" };
+      }
+
+      // Check if product exists and has enough quantity available
       const product = await productModel.findOne({
         _id: bookingInputs.productId,
         quantity: { $gte: bookingInputs.quantity },
@@ -148,12 +155,21 @@ class BookingRepository {
       }
   
       // Map over the BookingDate array to create an array of Promises
-      const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
+      const bookingPromises = bookingInputs?.BookingDate.map(async (date: any) => {
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
-          BookingDate: { $elemMatch: date },
+          BookingDate: { $elemMatch: { date: new Date(date) } },
           productId: bookingInputs.productId,
         });
+
+        let totalQuantity = 0;
+        findSameBooking.forEach((element: any) => {
+          totalQuantity += element.quantity;
+        });
+
+        if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {        
+          return { message: "All the Products Are Booked for entered Date" };
+        }
   
         // If a booking is found, return a message indicating the product is already booked
         if (findSameBooking && findSameBooking.length > 0) {
@@ -188,15 +204,19 @@ class BookingRepository {
       if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {
         return { message: "All the Products Are Booked" };
       }
-  
-      // Assuming that we would be creating a booking record here
-      expandDateResult = await bookingModel.create({
-        productId: bookingInputs.productId,
-        BookingDate: bookingInputs.BookingDate,
-        quantity: bookingInputs.quantity,
-        // Other necessary fields from bookingInputs
+      
+      let dates: any[] = bookingInputs?.BookingDate.map(element => {
+        return { date: new Date(element) };
       });
-  
+
+      booking.BookingDate.forEach(element => {
+        dates.push(element)
+      });
+
+      const price = booking.price + (Number(bookingInputs?.price) || 0);
+      let tempObj = { ...bookingInputs, BookingDate: dates, price: price };
+      expandDateResult = await bookingModel.updateOne({_id: booking._id}, tempObj, {new: true});
+
       return expandDateResult;
     } catch (err) {
       console.log("error", err);
@@ -209,7 +229,6 @@ class BookingRepository {
     try {
       let criteria: any = { isDeleted: false, status: bookingInputs.status };
 
-      // const findBooking = await bookingModel.find(criteria);
       const findBooking = await bookingModel.aggregate([
         {
           $match: criteria,

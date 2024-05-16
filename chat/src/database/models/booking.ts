@@ -10,8 +10,10 @@ const bookingSchema: Schema = new Schema<Booking>(
             required: true,
         },
         BookingDate: [{
-            type: Date,
-            required: true,
+            date: {
+                type: Date,
+                required: true,
+            }
         }],
         userId: {
             type: mongoose.Schema.Types.ObjectId,

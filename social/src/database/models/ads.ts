@@ -17,22 +17,6 @@ const adsSchema: Schema = new Schema<Ads>(
         description: {
             type: String,
         },
-        min_qty: {
-            type: Number,
-            default: 0,
-        },
-        max_qty: {
-            type: Number,
-            default: 0,
-        },
-        min_price: {
-            type: Number,
-            default: 0,
-        },
-        max_price: {
-            type: Number,
-            default: 0,
-        },
         productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "product",

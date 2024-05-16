@@ -110,16 +110,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
-
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             return { product: element, productBooking };
           } catch (error) {
@@ -217,15 +230,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             return { product: element, productBooking };
           } catch (error) {
@@ -291,9 +318,6 @@ class ProductRepository {
         { _id: productInputs._id },
         { $inc: { viewCount: 1 } }
       );
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Set the time to the beginning of the day
 
       return findProduct;
     } catch (err) {
@@ -385,15 +409,29 @@ class ProductRepository {
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                let productBooking = await Bookings.find({
-                  productId: element._id,
-                  BookingDate: {$elemMatch: { $gte: today }},
-                }).select({
-                  _id: 1,
-                  BookingDate: 1,
-                  quantity: 1,
-                  status: 1,
-                });
+                  const existingBooking = await Bookings.find({
+                    productId: element._id,
+                    BookingDate: { $elemMatch: { date: { $gte: today } } },
+                  }).select({
+                    _id: 1,
+                    "BookingDate.date": 1,
+                    quantity: 1,
+                    status: 1,
+                  });
+                  
+                  let productBooking: any = [];
+                  
+                  if (existingBooking.length > 0) {
+                    existingBooking.forEach((booking) => {
+                      if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                        booking.BookingDate.forEach((item: any) => {
+                          if (item.date) {
+                            productBooking.push(item.date);
+                          }
+                        });
+                      }
+                    });
+                  }
 
                 const wishlistData = await Wishlists.aggregate([
                     {
@@ -536,15 +574,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -658,15 +710,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -783,15 +849,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
-              productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
-            }).select({
-              _id: 1,
-              BookingDate: 1,
-              quantity: 1,
-              status: 1,
-            });
+            const existingBooking = await Bookings.find({
+                    productId: element._id,
+                    BookingDate: { $elemMatch: { date: { $gte: today } } },
+                  }).select({
+                    _id: 1,
+                    "BookingDate.date": 1,
+                    quantity: 1,
+                    status: 1,
+                  });
+                  
+                  let productBooking: any = [];
+                  
+                  if (existingBooking.length > 0) {
+                    existingBooking.forEach((booking) => {
+                      if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                        booking.BookingDate.forEach((item: any) => {
+                          if (item.date) {
+                            productBooking.push(item.date);
+                          }
+                        });
+                      }
+                    });
+                  }
 
             let wishlistData = null;
 
@@ -901,15 +981,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1016,15 +1110,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1131,15 +1239,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1278,15 +1400,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1408,15 +1544,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1537,15 +1687,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 
@@ -1749,15 +1913,29 @@ class ProductRepository {
           try {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            let productBooking = await Bookings.find({
+            const existingBooking = await Bookings.find({
               productId: element._id,
-              BookingDate: {$elemMatch: { $gte: today }},
+              BookingDate: { $elemMatch: { date: { $gte: today } } },
             }).select({
               _id: 1,
-              BookingDate: 1,
+              "BookingDate.date": 1,
               quantity: 1,
               status: 1,
             });
+            
+            let productBooking: any = [];
+            
+            if (existingBooking.length > 0) {
+              existingBooking.forEach((booking) => {
+                if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                  booking.BookingDate.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
+                    }
+                  });
+                }
+              });
+            }
 
             let wishlistData = null;
 

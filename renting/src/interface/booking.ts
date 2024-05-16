@@ -84,7 +84,9 @@ export interface Booking extends Document {
         ansBoolean: boolean;
         image: string;
     }[];
-    BookingDate: Date;
+    BookingDate: {
+        Date: Date,
+    }[];
     userId: Types.ObjectId;
     paymentId?: Types.ObjectId;
     quantity: number;
@@ -137,6 +139,7 @@ export interface expendDate {
     BookingDate: string[];
     userId?: string;
     quantity?: string;
+    price?: string;
 }
 
 export interface bookingRequestWithPayment {
