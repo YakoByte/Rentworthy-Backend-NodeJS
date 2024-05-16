@@ -14,6 +14,14 @@ export default (app: Express) => {
     // API = create new booking
     app.post('/create-booking', UserAuth, upload.array("images", 10), async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+
+            if(!req.body.productId) {
+                return res.status(400).json({ message: "Product ID is required" });
+            }
+            if(!req.body.BookingDate && !Array.isArray(req.body.BookingDate)) {
+                return res.status(400).json({ message: "Booking Date is required" });
+            }
+
             let authUser: any = req.user
             req.body.userId = authUser._id;
             req.body.status = 'Requested'

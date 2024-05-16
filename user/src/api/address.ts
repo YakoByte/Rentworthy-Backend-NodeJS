@@ -9,7 +9,6 @@ export default (app: Express) => {
     app.post('/create-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.body)
         try {
             const data = await service.CreateAddress(req.body);
             return res.json(data);
@@ -22,7 +21,6 @@ export default (app: Express) => {
     app.get('/get-address', UserAuth, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
-        console.log("req.body", req.query)
         try {
             const data = await service.getAddressById(req.query);
             return res.json(data);
@@ -36,7 +34,6 @@ export default (app: Express) => {
         let authUser: any = req.user
         req.body._id = req.query._id
         req.body.userId = authUser._id;
-        console.log("req.body", req.body)
         try {
             const data = await service.updateAddressById(req.body);
             return res.json(data);
@@ -50,8 +47,6 @@ export default (app: Express) => {
         let authUser: any = req.user
         req.body.userId = authUser._id;
         req.body._id = req.query._id
-
-        console.log("req.body", req.body)
         try {
             const data = await service.deleteAddressById(req.body);
             return res.json(data);

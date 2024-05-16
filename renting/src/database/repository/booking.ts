@@ -52,10 +52,10 @@ class BookingRepository {
       await profile?.save();
       
       // Map over the BookingDate array to create an array of Promises
-      const bookingPromises = bookingInputs?.BookingDate?.map(async (date: any) => {
+      const bookingPromises = bookingInputs.BookingDate?.map(async (date: any) => {
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
-          BookingDate: { $elemMatch: date },
+          BookingDate: { $elementMatch: new Date(date) },
           productId: bookingInputs.productId,
         });
   
@@ -76,7 +76,7 @@ class BookingRepository {
       if (bookedMessage) {
         return bookedMessage;
       }
-      
+  
       // check quantity is available or not
       let findAllBooking = await bookingModel.find({
         productId: bookingInputs.productId,

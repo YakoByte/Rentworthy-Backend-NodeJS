@@ -22,3 +22,7 @@ export const AWS_BUCKET_REGION: string | undefined = process.env.AWS_BUCKET_REGI
 export const AWS_BUCKET_NAME: string | undefined = process.env.AWS_BUCKET_NAME || '';
 
 export const GEOLOCATION_API_KEY: string | undefined = process.env.GEOLOCATION_API_KEY || '';
+
+
+
+
