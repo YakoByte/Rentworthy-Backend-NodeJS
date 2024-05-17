@@ -1838,10 +1838,10 @@ class ProductRepository {
         criteria.name = { $regex: productInputs.search, $options: "i" }
       }
       if (productInputs.categoryId) {
-        criteria.categoryId = productInputs.categoryId
+        criteria.categoryId = new Types.ObjectId(productInputs.categoryId)
       }
       if (productInputs.subCategoryId) {
-        criteria.subCategoryId = productInputs.subCategoryId
+        criteria.subCategoryId = new Types.ObjectId(productInputs.subCategoryId)
       }
 
       const findProduct = await productModel.aggregate([
@@ -1956,9 +1956,9 @@ class ProductRepository {
             };
           }
         })
-      );
+      );      
 
-      const countProduct = await productModel.countDocuments({criteria});
+      const countProduct = await productModel.countDocuments(criteria);
 
       if(productInputs._id) {
         await productModel.updateOne(
