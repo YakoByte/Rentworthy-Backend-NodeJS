@@ -406,36 +406,36 @@ class ProductRepository {
                     let newPath = await generatePresignedUrl(img.imageName);
                     img.path = newPath;
                 }));
-
+                
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                  const existingBooking = await Bookings.find({
-                    productId: element._id,
-                    BookingDate: { $elemMatch: { date: { $gte: today } } },
-                  }).select({
-                    _id: 1,
-                    "BookingDate.date": 1,
-                    quantity: 1,
-                    status: 1,
+                const existingBooking = await Bookings.find({
+                  productId: element._id,
+                  BookingDate: { $elemMatch: { date: { $gte: today } } },
+                }).select({
+                  _id: 1,
+                  "BookingDate.date": 1,
+                  quantity: 1,
+                  status: 1,
+                });
+                
+                let productBooking: any = [];
+                
+                if (existingBooking.length > 0) {
+                  existingBooking.forEach((booking) => {
+                    if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
+                      booking.BookingDate.forEach((item: any) => {
+                        if (item.date) {
+                          productBooking.push(item.date);
+                        }
+                      });
+                    }
                   });
-                  
-                  let productBooking: any = [];
-                  
-                  if (existingBooking.length > 0) {
-                    existingBooking.forEach((booking) => {
-                      if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
-                        booking.BookingDate.forEach((item: any) => {
-                          if (item.date) {
-                            productBooking.push(item.date);
-                          }
-                        });
-                      }
-                    });
-                  }
+                }
 
                 const wishlistData = await Wishlists.aggregate([
                     {
-                        $match: { productIds: { $elemMatch: [element._id] } }
+                        $match: { productIds: { $in: [element._id] } }
                     },
                     {
                         $lookup: {
@@ -475,7 +475,7 @@ class ProductRepository {
                     }
                 }));
 
-                return { product: element, wishlistData, productBooking };
+                return { product: element, wishlistData, productBooking, BookingDetail: existingBooking };
             })
         );
 
