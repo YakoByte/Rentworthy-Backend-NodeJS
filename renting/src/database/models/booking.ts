@@ -86,6 +86,24 @@ const bookingSchema: Schema = new Schema<Booking>(
                 ref: "image",
             }],
         }],
+        postRentalScreening: [{
+            question: {
+                type: String,
+                required: true,
+            },
+            answer: {
+                type: String,
+                required: true,
+            },
+            ansBoolean: {
+                type: Boolean,
+                required: true,
+            },
+            images: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "image",
+            }],
+        }],
         statusHistory: [{
             type: String,
             default: "Requested",

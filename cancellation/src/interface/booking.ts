@@ -8,7 +8,13 @@ export interface Booking extends Document {
         question: string;
         answer: string;
         ansBoolean: boolean;
-        image: string;
+        images: string;
+    }[];
+    postRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        images: string;
     }[];
     BookingDate: {
         Date: Date,
@@ -27,7 +33,7 @@ export interface Booking extends Document {
     blockedReason?: string; 
     statusHistory?: string[];
     status?: string;
-    bookingTime: Date;
+    bookingTime?:Date;
     acceptedBy?: string;
     rentalReview?: string;
     ownerReview?: string;

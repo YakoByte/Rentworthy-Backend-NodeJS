@@ -319,6 +319,19 @@ class BookingRepository {
             as: "preRentalScreening.images",
           },
         },
+        { $unwind: {
+          path: "$postRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},     
+        {
+          $lookup: {
+            from: "images",
+            localField: "postRentalScreening.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "postRentalScreening.images",
+          },
+        },
         {
           $group: {
             _id: "$_id",
@@ -337,6 +350,7 @@ class BookingRepository {
             status: { $first: "$status" },
             acceptedBy: { $first: "$acceptedBy" },
             preRentalScreening: { $push: "$preRentalScreening" },
+            postRentalScreening: { $push: "$postRentalScreening" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
             rentalUserDetail: { $first: "$rentalUserDetail" },
@@ -361,6 +375,7 @@ class BookingRepository {
             status: 1,
             acceptedBy: 1,
             preRentalScreening: 1,
+            postRentalScreening: 1,
             createdAt: 1,
             updatedAt: 1,
             rentalUserDetail: 1,
@@ -440,6 +455,15 @@ class BookingRepository {
       
       await Promise.all(findBooking.map(async (booking) => {        
         await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
+      }));
+
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.postRentalScreening.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
             const newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -621,6 +645,19 @@ class BookingRepository {
             as: "preRentalScreening.images",
           },
         },
+        { $unwind: {
+          path: "$postRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},      
+        {
+          $lookup: {
+            from: "images",
+            localField: "postRentalScreening.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "postRentalScreening.images",
+          },
+        },
         {
           $group: {
             _id: "$_id",
@@ -639,6 +676,7 @@ class BookingRepository {
             status: { $first: "$status" },
             acceptedBy: { $first: "$acceptedBy" },
             preRentalScreening: { $push: "$preRentalScreening" },
+            postRentalScreening: { $push: "$postRentalScreening" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
             rentalUserDetail: { $first: "$rentalUserDetail" },
@@ -663,6 +701,7 @@ class BookingRepository {
             status: 1,
             acceptedBy: 1,
             preRentalScreening: 1,
+            postRentalScreening: 1,
             createdAt: 1,
             updatedAt: 1,
             rentalUserDetail: 1,
@@ -743,6 +782,15 @@ class BookingRepository {
       
       await Promise.all(findBooking.map(async (booking) => {        
         await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
+      }));
+
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.postRentalScreening.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
             const newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -895,6 +943,19 @@ class BookingRepository {
               as: "preRentalScreening.images",
             },
           },
+          { $unwind: {
+            path: "$postRentalScreening",
+            preserveNullAndEmptyArrays: true
+          }},     
+          {
+            $lookup: {
+              from: "images",
+              localField: "postRentalScreening.images",
+              foreignField: "_id",
+              pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+              as: "postRentalScreening.images",
+            },
+          },
           {
             $group: {
               _id: "$_id",
@@ -913,6 +974,7 @@ class BookingRepository {
               status: { $first: "$status" },
               acceptedBy: { $first: "$acceptedBy" },
               preRentalScreening: { $push: "$preRentalScreening" },
+              postRentalScreening: { $push: "$postRentalScreening" },
               createdAt: { $first: "$createdAt" },
               updatedAt: { $first: "$updatedAt" },
               rentalUserDetail: { $first: "$rentalUserDetail" },
@@ -937,6 +999,7 @@ class BookingRepository {
               status: 1,
               acceptedBy: 1,
               preRentalScreening: 1,
+              postRentalScreening: 1,
               createdAt: 1,
               updatedAt: 1,
               rentalUserDetail: 1,
@@ -1016,6 +1079,15 @@ class BookingRepository {
         
         await Promise.all(findBooking.map(async (booking) => {        
           await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+            await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+              const newPath = await generatePresignedUrl(element.imageName);
+              element.path = newPath;
+            }));
+          }));
+        }));
+
+        await Promise.all(findBooking.map(async (booking) => {        
+          await Promise.all(booking?.postRentalScreening.map(async (screening: any) => {
             await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
               const newPath = await generatePresignedUrl(element.imageName);
               element.path = newPath;
@@ -1202,6 +1274,19 @@ class BookingRepository {
             as: "preRentalScreening.images",
           },
         },
+        { $unwind: {
+          path: "$postRentalScreening",
+          preserveNullAndEmptyArrays: true
+        }},      
+        {
+          $lookup: {
+            from: "images",
+            localField: "postRentalScreening.images",
+            foreignField: "_id",
+            pipeline: [{ $project: { _id: 1, mimetype: 1, path: 1, imageName: 1, size: 1, userId: 1 } }],
+            as: "postRentalScreening.images",
+          },
+        },
         {
           $group: {
             _id: "$_id",
@@ -1220,6 +1305,7 @@ class BookingRepository {
             status: { $first: "$status" },
             acceptedBy: { $first: "$acceptedBy" },
             preRentalScreening: { $push: "$preRentalScreening" },
+            postRentalScreening: { $push: "$postRentalScreening" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
             rentalUserDetail: { $first: "$rentalUserDetail" },
@@ -1244,6 +1330,7 @@ class BookingRepository {
             status: 1,
             acceptedBy: 1,
             preRentalScreening: 1,
+            postRentalScreening: 1,
             createdAt: 1,
             updatedAt: 1,
             rentalUserDetail: 1,
@@ -1323,6 +1410,15 @@ class BookingRepository {
       
       await Promise.all(findBooking.map(async (booking) => {        
         await Promise.all(booking?.preRentalScreening.map(async (screening: any) => {
+          await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
+            const newPath = await generatePresignedUrl(element.imageName);
+            element.path = newPath;
+          }));
+        }));
+      }));
+
+      await Promise.all(findBooking.map(async (booking) => {        
+        await Promise.all(booking?.postRentalScreening.map(async (screening: any) => {
           await Promise.all(screening?.images.map(async (element: { imageName: string; path: string; }) => {          
             const newPath = await generatePresignedUrl(element.imageName);
             element.path = newPath;
@@ -1421,6 +1517,32 @@ class BookingRepository {
   
   // update preRentalScreening by booking id
   async updatePreRentalScreeningByBookingId(bookingInputs: bookingRequest) {
+    try {
+      const bookingResult = await bookingModel.findOneAndUpdate(
+        { _id: bookingInputs._id, isDeleted: false },
+        { ...bookingInputs },
+        { new: true }
+      );
+      if (bookingResult) {
+        if(bookingInputs.status) {
+          await bookingModel.findByIdAndUpdate(
+            bookingResult._id, 
+            { $push: { statusHistory: bookingInputs.status } }, 
+            { new: true }
+          );
+        } 
+
+        return bookingResult;
+      }
+        return { message: "Booking not found" };
+    } catch (err) {
+      console.log("error", err);
+      throw new Error("Unable to update pre rental screening Booking");
+    }
+  }
+
+  // update postRentalScreening by booking id
+  async updatePostRentalScreeningByBookingId(bookingInputs: bookingRequest) {
     try {
       const bookingResult = await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },

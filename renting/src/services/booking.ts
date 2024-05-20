@@ -163,6 +163,19 @@ class bookingService {
         }
     }
 
+    // update postRentalScreening by id
+    async updatePostRentalScreeningById(bookingInputs: bookingRequest) {
+        try {
+            const existingBooking: any = await this.repository.updatePostRentalScreeningByBookingId(
+                bookingInputs
+            );
+
+            return FormateData(existingBooking);
+        } catch (err: any) {
+            return FormateError({ error: "Failed to update pre rental Screening Booking" });
+        }
+    }
+
     // delete booking by id  (soft delete)
     async deleteBooking(bookingInputs: bookingDeleteRequest) {
         try {

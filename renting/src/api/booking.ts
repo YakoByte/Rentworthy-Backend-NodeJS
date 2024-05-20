@@ -157,36 +157,6 @@ export default (app: Express) => {
         }
     });
 
-    // API = update booking for preRentelScreen
-    // app.put('/update-booking-for-preRentelScreen', UserAuth,
-    //     upload.fields([
-    //         { name: 'preRentalScreening[0][images]', maxCount: 10 },
-    //         { name: 'preRentalScreening[1][images]', maxCount: 10 },
-    //         { name: 'preRentalScreening[2][images]', maxCount: 10 },
-    //     ]),
-    //     async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
-    //         try {
-    //             console.log("req.body", req.files)
-    //             let images = req.files as any;
-    //             for (let i = 0; i < req.body.preRentalScreening.length; i++) {
-    //                 if (images[`preRentalScreening[${i}][images]`]) {
-    //                     req.body.preRentalScreening[i].images = await uploadMultipleImagesWithToken(images[`preRentalScreening[${i}][images]`].map((obj: { path: any; }) => obj.path), req.headers.authorization) as any;
-    //                 } else {
-    //                     return res.status(400).json({ error: "No file provided" });
-    //                 }
-    //             }
-
-    //             // call image upload api
-    //             let authUser: any = req.user
-    //             req.body.userId = authUser._id;
-    //             console.log("req.body", req.body)
-    //             const data = await service.updatePreRentalScreeningById(req.body);
-    //             return res.json(data);
-    //         } catch (err) {
-    //             return FormateData(err);
-    //         }
-    //     });
-
     app.put('/update-booking-for-preRentelScreen', UserAuth,
     upload.fields([
         { name: 'images0', maxCount: 10 },
@@ -227,6 +197,52 @@ export default (app: Express) => {
             }
            
             const data = await service.updatePreRentalScreeningById(req.body);
+            return res.json(data);
+        } catch (err) {
+            return FormateData(err);
+        }
+    });
+
+    app.put('/update-booking-for-postRentelScreen', UserAuth,
+    upload.fields([
+        { name: 'images0', maxCount: 10 },
+        { name: 'images1', maxCount: 10 },
+        { name: 'images2', maxCount: 10 },
+    ]),
+    async (req: postAuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            let authUser: any = req.user;
+            req.body.userId = authUser._id;
+            req.body._id = String(req.query.bookingId);
+
+
+            let images = req.files as any;
+            let body = req.body as any;
+            req.body.postRentalScreening = [];
+
+            for (let i = 0; i < Object.keys(body).length / 3 - 1; i++) {
+                // Create an object for each set of question, answer, and ansBoolean
+                const screeningItem = {
+                    question: body[`question${i}`],
+                    answer: body[`answer${i}`],
+                    ansBoolean: body[`ansBoolean${i}`],
+                    images: [] as string[],
+                };
+
+                // Add the images if available
+                if (images[`images${i}`]) {
+                    const imageData = {
+                        userId: authUser._id,
+                        imageDetails: images[`images${i}`],
+                    }
+
+                    screeningItem.images = await image.CreateImages(imageData) as unknown as string[];
+                }
+
+                req.body.postRentalScreening.push(screeningItem);
+            }
+           
+            const data = await service.updatePostRentalScreeningById(req.body);
             return res.json(data);
         } catch (err) {
             return FormateData(err);

@@ -6,7 +6,13 @@ export interface Booking extends Document {
         question: string;
         answer: string;
         ansBoolean: boolean;
-        image: string;
+        images: string;
+    }[];
+    postRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        images: string;
     }[];
     BookingDate: {
         Date: Date,

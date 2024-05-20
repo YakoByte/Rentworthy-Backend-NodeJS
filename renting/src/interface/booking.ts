@@ -17,6 +17,12 @@ export interface postAuthenticatedRequest extends Request {
             ansBoolean: boolean;
             images: string[];
         }[];
+        postRentalScreening: {
+            question: string;
+            answer: string;
+            ansBoolean: boolean;
+            images: string[];
+        }[];
         BookingDate: string[];
         userId: string;
         quantity: string;
@@ -82,7 +88,13 @@ export interface Booking extends Document {
         question: string;
         answer: string;
         ansBoolean: boolean;
-        image: string;
+        images: string;
+    }[];
+    postRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        images: string;
     }[];
     BookingDate: {
         Date: Date,
@@ -114,6 +126,12 @@ export interface bookingRequest {
     status?: string;
     BookingDate: string[];
     preRentalScreening: {
+        question: string;
+        answer: string;
+        ansBoolean: boolean;
+        images: string[];
+    }[];
+    postRentalScreening: {
         question: string;
         answer: string;
         ansBoolean: boolean;
