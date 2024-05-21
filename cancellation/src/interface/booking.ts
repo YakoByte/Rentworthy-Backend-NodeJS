@@ -33,7 +33,7 @@ export interface Booking extends Document {
     blockedReason?: string; 
     statusHistory?: string[];
     status?: string;
-    bookingTime?:Date;
+    bookingTime:Date;
     acceptedBy?: string;
     rentalReview?: string;
     ownerReview?: string;
