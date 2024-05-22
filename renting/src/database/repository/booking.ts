@@ -56,6 +56,8 @@ class BookingRepository {
         const findSameBooking = await bookingModel.find({
           BookingDate: { $elemMatch: { date: new Date(date) } },
           productId: bookingInputs.productId,
+          isAccepted: true,
+          isDeleted: false,
         }); 
 
         let totalQuantity = 0;
@@ -155,12 +157,14 @@ class BookingRepository {
       }
   
       // Map over the BookingDate array to create an array of Promises
-      const bookingPromises = bookingInputs?.BookingDate.map(async (date: any) => {
+      const bookingPromises = bookingInputs?.BookingDate.map(async (date: any) => {        
         // Find bookings that match the given date and productId
         const findSameBooking = await bookingModel.find({
           BookingDate: { $elemMatch: { date: new Date(date) } },
           productId: bookingInputs.productId,
-        });
+          isAccepted: true,
+          isDeleted: false,
+        }); 
 
         let totalQuantity = 0;
         findSameBooking.forEach((element: any) => {
@@ -188,22 +192,6 @@ class BookingRepository {
       if (bookedMessage) {
         return bookedMessage;
       }
-  
-      // Check quantity available in existing bookings
-      const findAllBooking = await bookingModel.find({
-        productId: bookingInputs.productId,
-        isDeleted: false,
-      });
-  
-      // Calculate total quantity booked
-      let totalQuantity = 0;
-      findAllBooking.forEach((element: any) => {
-        totalQuantity += element.quantity;
-      });
-  
-      if (totalQuantity + Number(bookingInputs.quantity) > Number(product.quantity)) {
-        return { message: "All the Products Are Booked" };
-      }
       
       let dates: any[] = bookingInputs?.BookingDate.map(element => {
         return { date: new Date(element) };
@@ -213,8 +201,9 @@ class BookingRepository {
         dates.push(element)
       });
 
-      const price = booking.price + (Number(bookingInputs?.price) || 0);
-      let tempObj = { ...bookingInputs, BookingDate: dates, price: price };
+      const price = Number(bookingInputs?.price) || 0;
+      delete bookingInputs?.price;
+      let tempObj = { ...bookingInputs, BookingDate: dates, extendedPrice: price, isExtended: true };
       expandDateResult = await bookingModel.updateOne({_id: booking._id}, tempObj, {new: true});
 
       return expandDateResult;
@@ -1654,13 +1643,13 @@ class BookingRepository {
         return { message: "unauthorized user for this product" };
       }
 
-      const bookingResult = await bookingModel.findOneAndUpdate(
+      await bookingModel.findOneAndUpdate(
         { _id: bookingInputs._id, isDeleted: false },
         { 
           isAccepted: false, 
           acceptedBy: bookingInputs.acceptedBy, 
           status: "Rejected", 
-          $push: { statusHistory: "Rejected" } 
+          $push: { statusHistory: "Rejected" },
         },
         { new: true }
       );

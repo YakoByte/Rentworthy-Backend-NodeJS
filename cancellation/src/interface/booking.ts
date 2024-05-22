@@ -1,6 +1,4 @@
-import { Request } from 'express';
-import mongoose, { Schema, Document, Types } from "mongoose";
-
+import { Document, Types } from "mongoose";
 
 export interface Booking extends Document {
     productId: Types.ObjectId;
@@ -37,4 +35,6 @@ export interface Booking extends Document {
     acceptedBy?: string;
     rentalReview?: string;
     ownerReview?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }

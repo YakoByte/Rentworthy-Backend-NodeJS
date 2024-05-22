@@ -35,4 +35,6 @@ export interface Booking extends Document {
     acceptedBy?: string;
     rentalReview?: string;
     ownerReview?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }

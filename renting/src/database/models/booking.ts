@@ -107,12 +107,12 @@ const bookingSchema: Schema = new Schema<Booking>(
         statusHistory: [{
             type: String,
             default: "Requested",
-            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked"]
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked", "Extention Requested", "Extention Confirmed", "Extention Rejected"]
         }],
         status: {
             type: String,
             default: "Requested",
-            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked"]
+            enum: ["Requested", "Confirmed", "Rejected", "Shipped", "Delivered", "Returned", "Cancelled", "Blocked", "UnBlocked", "Extention Requested", "Extention Confirmed", "Extention Rejected"]
         },
         bookingTime: {
             type: Date,
@@ -129,6 +129,14 @@ const bookingSchema: Schema = new Schema<Booking>(
         },
         ownerReview: {
             type: String
+        },
+        isExtended: {
+            type: Boolean,
+            default: false,
+        },
+        extendedPrice: {
+            type: Number,
+            default: 0
         }
     },
     { timestamps: true }

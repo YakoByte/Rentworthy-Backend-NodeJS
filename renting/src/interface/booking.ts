@@ -117,6 +117,8 @@ export interface Booking extends Document {
     acceptedBy?: string;
     rentalReview?: string;
     ownerReview?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 export interface bookingRequest {
@@ -149,6 +151,8 @@ export interface bookingRequest {
     ownerReview?: string;
     page?: string;
     limit?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 export interface expendDate {
@@ -158,6 +162,8 @@ export interface expendDate {
     userId?: string;
     quantity?: string;
     price?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 export interface bookingRequestWithPayment {
@@ -173,6 +179,8 @@ export interface bookingRequestWithPayment {
     price: string;
     totalAmount: string;
     expandId?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 export interface bookingUpdateRequest {
@@ -181,6 +189,8 @@ export interface bookingUpdateRequest {
     acceptedBy?: string,
     rentalReview?: string;
     ownerReview?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 // for get booking
@@ -200,6 +210,8 @@ export interface bookingGetRequest {
     status?: string;     
     rentalReview?: string;
     ownerReview?: string;
+    isExtended?: boolean;
+    extendedPrice?: number;
 }
 
 // for delete booking

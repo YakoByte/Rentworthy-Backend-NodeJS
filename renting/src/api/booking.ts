@@ -70,6 +70,8 @@ export default (app: Express) => {
             if(!Array.isArray(req.body.BookingDate)) {
                 return res.status(400).json({ message: "Booking Date is not Array" });
             }
+
+            req.body.status = 'Extention Requested'
       
             const data = await service.CreateExpandDate(req.body);
             return res.json(data);

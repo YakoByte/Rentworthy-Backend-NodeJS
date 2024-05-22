@@ -56,6 +56,21 @@ export default (app: Express) => {
     });
 
     // API = get profile by id
+    app.get('/get-guest-profile', async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            req.body.userId = req.query.userId;
+            if(!req.body.userId) {
+                return res.json({message: "User Id is required."})
+            }
+            await service.updateUserView(req.body.userId);
+            let data = await service.getProfileByUserId(req.body);
+            return res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // API = get profile by id
     app.get('/get-profile-admin', UserAuth, isAdmin, async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
             if(!req.query.userId) {
