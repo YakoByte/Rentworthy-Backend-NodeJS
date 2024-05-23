@@ -13,6 +13,11 @@ class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
     try {
+      if (productInputs?.notAvailableDates?.length > 0) {
+        let dates: any = productInputs.notAvailableDates.map(date => ({ date: new Date(date) }));
+        productInputs.notAvailableDates = dates;
+      }
+
       const product = new productModel(productInputs);
       const productResult = await product.save();
       const history = new historyModel({
@@ -35,6 +40,78 @@ class ProductRepository {
     } catch (err) {
       console.log("error", err);
       throw new Error("Unable to Create Product");
+    }
+  }
+
+  async AddNoAvailableDates(productInputs: productRequest) {
+    try {
+        let product = await productModel.findOne({ _id: productInputs._id, isDeleted: false });
+        if (!product) {
+            return { message: "Product not found or already deleted" };
+        }
+
+        if (productInputs.notAvailableDates && productInputs.notAvailableDates.length > 0) {
+            // Convert input dates to Date objects
+            let inputDates = productInputs.notAvailableDates.map(date => ({ Date: new Date(date) }));
+
+            // Add new dates to the product's notAvailableDates array if they don't already exist
+            inputDates.forEach(newDate => {
+                if (product && !product.notAvailableDates.some(existingDate => new Date(existingDate.Date).getTime() === new Date(newDate.Date).getTime())) {
+                    product.notAvailableDates.push(newDate);
+                }
+            });
+        }
+
+        // Update the product with the new notAvailableDates array
+        const productResult = await productModel.findOneAndUpdate(
+            { _id: productInputs._id, isDeleted: false },
+            { $set: { notAvailableDates: product.notAvailableDates } },
+            { new: true }
+        );
+
+        return productResult;
+    } catch (err) {
+        console.log("error", err);
+        throw new Error("Unable to update Product");
+    }
+  }
+
+  async RemoveNoAvailableDates(productInputs: productRequest) {
+    try {
+        // Fetch the product by ID and ensure it's not deleted
+        let product: any = await productModel.findOne({ _id: productInputs._id, isDeleted: false });
+        if (!product) {
+            return { message: "Product not found or already deleted" };
+        }
+
+        if (productInputs.notAvailableDates && productInputs.notAvailableDates.length > 0) {
+            // Convert input dates to timestamps for easy comparison
+            const inputDatesTimestamps = new Set(productInputs.notAvailableDates.map(date => new Date(date).getTime()));
+
+            // Filter out the input dates that match any of the product's not available dates
+            productInputs.notAvailableDates = productInputs.notAvailableDates.filter(inputDate => {
+                const inputDateTimestamp = new Date(inputDate).getTime();
+                return !product.notAvailableDates.some((productDate: any) => new Date(productDate.Date).getTime() === inputDateTimestamp);
+            });
+
+            // Filter out product's not available dates that match any of the input dates
+            product.notAvailableDates = product.notAvailableDates.filter((productDate: any) => {
+                const productDateTimestamp = new Date(productDate.Date).getTime();
+                return !inputDatesTimestamps.has(productDateTimestamp);
+            });
+        }
+
+        // Update the product's notAvailableDates in the database
+        const productResult = await productModel.findOneAndUpdate(
+            { _id: productInputs._id, isDeleted: false },
+            { $set: { notAvailableDates: product.notAvailableDates } },
+            { new: true }
+        );
+
+        return productResult;
+    } catch (err) {
+        console.error("error", err);
+        throw new Error("Unable to update Product");
     }
   }
 

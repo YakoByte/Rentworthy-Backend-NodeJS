@@ -11,6 +11,9 @@ export interface AuthenticatedRequest extends Request {
 export interface Product extends Document {
     name: string;
     images: [Types.ObjectId];
+    notAvailableDates: {
+        Date: Date,
+    }[];
     description: string;
     isActive?: boolean;
     brand: string;

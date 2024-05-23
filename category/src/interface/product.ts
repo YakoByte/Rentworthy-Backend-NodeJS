@@ -4,6 +4,9 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 export interface Product extends Document {
     name: string;
     images: [Types.ObjectId];
+    notAvailableDates: {
+        Date: Date,
+    }[];
     description: string;
     isActive?: boolean;
     brand: string;

@@ -13,6 +13,12 @@ const productSchema: Schema = new Schema<Product>(
         ref: "image",
       },
     ],
+    notAvailableDates: [{
+      date: {
+          type: Date,
+          required: true,
+      }
+  }],
     description: {
       type: String,
     },

@@ -30,6 +30,34 @@ class productService {
     }
   }
 
+  // create product
+  async AddNoAvailableDates(productInputs: productRequest) {
+    try {
+      const existingProduct: any = await this.repository.AddNoAvailableDates(
+        productInputs
+      );
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log(err)
+      return FormateError({ error: "Data not Created" });
+    }
+  }
+
+  // create product
+  async RemoveNoAvailableDates(productInputs: productRequest) {
+    try {
+      const existingProduct: any = await this.repository.RemoveNoAvailableDates(
+        productInputs
+      );
+
+      return FormateData(existingProduct);
+    } catch (err: any) {
+      console.log(err)
+      return FormateError({ error: "Data not Created" });
+    }
+  }
+
   // get product by id , search or all product
   async getAdminProduct(productInputs: productGetRequest) {
     try {            

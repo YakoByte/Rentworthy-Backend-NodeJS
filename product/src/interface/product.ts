@@ -11,6 +11,9 @@ export interface AuthenticatedRequest extends Request {
 export interface Product extends Document {
     name: string;
     images: [Types.ObjectId];
+    notAvailableDates: {
+        Date: Date,
+    }[];
     description: string;
     isActive?: boolean;
     brand: string;
@@ -55,6 +58,7 @@ export interface productRequest {
         type: string;
         coordinates: number[];
     }
+    notAvailableDates: string[];
     isDeliverable?: boolean;
     Distance?: number; 
     link: string;
@@ -79,6 +83,7 @@ export interface productUpdateRequest {
         type?: string;
         coordinates?: number[];
     }
+    notAvailableDates?: string[];
     isDeliverable?: boolean;
     Distance?: number; 
     link?: string;
@@ -110,6 +115,7 @@ export interface productGetRequest {
     long?: string;
     sort?: string;
     price?: string;
+    notAvailableDates?: string[];
     cancellationTimeLimit?: number;
     rejectionReason?: string;
     isVerified?: boolean;
@@ -128,6 +134,7 @@ export interface productSorting {
     skip: number;
     limit: number;
     _id?: string
+    notAvailableDates?: string[];
     search?: string;
     categoryId?: string;
     subCategoryId?: string;

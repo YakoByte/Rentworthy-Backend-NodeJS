@@ -29,6 +29,10 @@ export default (app: Express) => {
                 delete req.body.Distance;
             }
             
+            if(Array.isArray(req.body.notAvailableDates)) {
+                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
+            }
+            
             delete req.body.startDate
             delete req.body.endDate
 
@@ -40,6 +44,70 @@ export default (app: Express) => {
             req.body.images = await image.CreateImages(imageData);
             
             const data = await service.CreateProduct(req.body);
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went like this-----', err)
+            return res.status(err.STATUS_CODE).json(err);
+            // next(err);
+        }
+    });
+
+    app.patch('/add-noavailable-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {       
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
+            
+            if(Array.isArray(req.body.notAvailableDates)) {
+                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
+            }
+
+            if(!req.body._id) {
+                return res.status(400).json({ message: "_id is required" });
+            }
+
+            if(!req.body.notAvailableDates) {
+                return res.status(400).json({ message: "not Available Date is required" });
+            }
+
+            req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates)
+            
+            if(!Array.isArray(req.body.notAvailableDates)) {
+                return res.status(400).json({ message: "not Available Date is not Array" });
+            }
+
+            const data = await service.AddNoAvailableDates(req.body);
+            return res.status(200).json(data);
+        } catch (err: any) {
+            console.log('went like this-----', err)
+            return res.status(err.STATUS_CODE).json(err);
+            // next(err);
+        }
+    });
+
+    app.patch('/remove-noavailable-product', UserAuth, upload.array('images', 10), async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {       
+            let authUser: any = req.user
+            req.body.userId = authUser._id;
+            
+            if(Array.isArray(req.body.notAvailableDates)) {
+                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
+            }
+
+            if(!req.body._id) {
+                return res.status(400).json({ message: "_id is required" });
+            }
+
+            if(!req.body.notAvailableDates) {
+                return res.status(400).json({ message: "not Available Date is required" });
+            }
+
+            req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates)
+            
+            if(!Array.isArray(req.body.notAvailableDates)) {
+                return res.status(400).json({ message: "not Available Date is not Array" });
+            }
+
+            const data = await service.RemoveNoAvailableDates(req.body);
             return res.status(200).json(data);
         } catch (err: any) {
             console.log('went like this-----', err)
