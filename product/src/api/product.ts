@@ -201,6 +201,10 @@ export default (app: Express) => {
     
                 req.body.images = await image.CreateImages(imageData);
             }
+
+            if(Array.isArray(req.body.notAvailableDates)) {
+                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
+            }
             
             const data = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });
             return res.json(data);

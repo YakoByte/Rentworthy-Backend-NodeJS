@@ -1826,7 +1826,12 @@ class ProductRepository {
 
   //update product name, description, isActive, isShow, image
   async updateProduct(productInputs: productUpdateRequest) {
-    try {      
+    try {  
+      if (productInputs?.notAvailableDates && productInputs?.notAvailableDates?.length > 0) {
+        let dates: any = productInputs.notAvailableDates.map(date => ({ date: new Date(date) }));
+        productInputs.notAvailableDates = dates;
+      }
+
       const productResult = await productModel.findOneAndUpdate(
         { _id: productInputs._id, isDeleted: false },
         productInputs,
