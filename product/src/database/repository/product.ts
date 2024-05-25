@@ -12,7 +12,7 @@ import { generatePresignedUrl } from "../../utils/aws";
 class ProductRepository {
   //create product
   async CreateProduct(productInputs: productRequest) {
-    try {
+    try {      
       if (productInputs?.notAvailableDates?.length > 0) {
         let dates: any = productInputs.notAvailableDates.map(date => ({ date: new Date(date) }));
         productInputs.notAvailableDates = dates;
@@ -117,7 +117,7 @@ class ProductRepository {
 
   //get all unverified product
   async getProductToApprove(productInputs: { skip: number; limit: number }) {    
-    try {
+    try {      
       const findProduct = await productModel.aggregate([
         { $match: { isVerified: "pending", isDeleted: false, isActive: true } },
         { $skip: productInputs.skip },
@@ -199,7 +199,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -207,6 +207,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -319,7 +327,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -327,6 +335,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -498,7 +514,7 @@ class ProductRepository {
                 
                 let productBooking: any = [];
                 
-                if (existingBooking.length > 0) {
+                if (existingBooking && existingBooking.length > 0) {
                   existingBooking.forEach((booking) => {
                     if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                       booking.BookingDate.forEach((item: any) => {
@@ -506,6 +522,14 @@ class ProductRepository {
                           productBooking.push(item.date);
                         }
                       });
+                    }
+                  });
+                }
+    
+                if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+                  element.notAvailableDates.forEach((item: any) => {
+                    if (item.date) {
+                      productBooking.push(item.date);
                     }
                   });
                 }
@@ -663,7 +687,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -671,6 +695,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -799,7 +831,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -807,6 +839,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -938,7 +978,7 @@ class ProductRepository {
                   
                   let productBooking: any = [];
                   
-                  if (existingBooking.length > 0) {
+                  if (existingBooking && existingBooking.length > 0) {
                     existingBooking.forEach((booking) => {
                       if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                         booking.BookingDate.forEach((item: any) => {
@@ -946,6 +986,14 @@ class ProductRepository {
                             productBooking.push(item.date);
                           }
                         });
+                      }
+                    });
+                  }
+      
+                  if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+                    element.notAvailableDates.forEach((item: any) => {
+                      if (item.date) {
+                        productBooking.push(item.date);
                       }
                     });
                   }
@@ -990,7 +1038,7 @@ class ProductRepository {
   async getAllProduct(productInputs: { skip: number; limit: number; userId: string}) {    
     try {
       const findProduct = await productModel.aggregate([
-        { $match: { isVerified: "approved", isDeleted: false, isActive: true } },
+        { $match: { isDeleted: false } },
         { $skip: productInputs.skip },
         { $limit: productInputs.limit },
         {
@@ -1070,7 +1118,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1078,6 +1126,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -1103,7 +1159,7 @@ class ProductRepository {
         })
       );
 
-      const countProduct = await productModel.countDocuments({isVerified: "approved", isDeleted: false, isActive: true});
+      const countProduct = await productModel.countDocuments({isDeleted: false});
 
       return {
         data: await Promise.all(wishlistPromises),
@@ -1199,7 +1255,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1207,6 +1263,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -1328,7 +1392,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1336,6 +1400,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -1489,7 +1561,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1497,6 +1569,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -1633,7 +1713,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1641,6 +1721,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -1776,7 +1864,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -1784,6 +1872,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }
@@ -2007,7 +2103,7 @@ class ProductRepository {
             
             let productBooking: any = [];
             
-            if (existingBooking.length > 0) {
+            if (existingBooking && existingBooking.length > 0) {
               existingBooking.forEach((booking) => {
                 if (booking.BookingDate && Array.isArray(booking.BookingDate)) {
                   booking.BookingDate.forEach((item: any) => {
@@ -2015,6 +2111,14 @@ class ProductRepository {
                       productBooking.push(item.date);
                     }
                   });
+                }
+              });
+            }
+
+            if(element.notAvailableDates && element.notAvailableDates.length > 0) {
+              element.notAvailableDates.forEach((item: any) => {
+                if (item.date) {
+                  productBooking.push(item.date);
                 }
               });
             }

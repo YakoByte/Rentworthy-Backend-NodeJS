@@ -62,31 +62,61 @@ async function updateProfilePointsAndLevel(userId: any) {
   return profile;
 }
 
-async function checkBookingDate(bookingInputs: any, date: any) {
+async function checkBookingDate(productId: any, quantity: any, date: any) {    
   const product = await productModel.findOneAndUpdate(
     {
-      _id: bookingInputs.productId,
-      quantity: { $gte: bookingInputs.quantity },
-      notAvailableDates: { $elemMatch: { date: new Date(date) } },
+      _id: productId,
+      quantity: { $gte: quantity },
+      notAvailableDates: { $not: { $elemMatch: { date: new Date(date) } } },
       isDeleted: false,
     },
     { $inc: { numberOfBooking: 1 } },
     { new: true }
-  );
+  );  
 
   const sameBooking = await bookingModel.find({
     BookingDate: { $elemMatch: { date: new Date(date) } },
-    productId: bookingInputs.productId,
+    productId: productId,
     isAccepted: true,
     isDeleted: false,
-  });
+  });  
 
   const totalQuantity = sameBooking.reduce((total, booking) => total + booking.quantity, 0);
-  if (totalQuantity + bookingInputs.quantity > (product?.quantity || 1)) {
+  if (totalQuantity + quantity > (product?.quantity || 1)) {
     return { message: "All the products are booked for the entered date" };
   }
 
-  if (sameBooking.length > 0) {
+  if (!product || sameBooking.length > 0) {
+    return { message: `Product already booked on ${date}` };
+  }
+
+  return null;
+}
+
+async function checkExtendedBookingDate(productId: any, quantity: any, date: any) {    
+  const product = await productModel.findOneAndUpdate(
+    {
+      _id: productId,
+      quantity: { $gte: quantity },
+      notAvailableDates: { $not: { $elemMatch: { date: new Date(date) } } },
+      isDeleted: false,
+    },
+    { $inc: { numberOfBooking: 1 } },
+    { new: true }
+  );  
+
+  const sameBooking = await bookingModel.find({
+    BookingDate: { $elemMatch: { date: new Date(date) } },
+    productId: productId,
+    isDeleted: false,
+  });  
+
+  const totalQuantity = sameBooking.reduce((total, booking) => total + booking.quantity, 0);
+  if (totalQuantity + quantity > (product?.quantity || 1)) {
+    return { message: "All the products are booked for the entered date" };
+  }
+
+  if (!product || sameBooking.length > 0) {
     return { message: `Product already booked on ${date}` };
   }
 
@@ -97,6 +127,18 @@ async function saveBooking(tempObj: any, status: any) {
   const booking = new bookingModel(tempObj);
   const bookingResult = await booking.save();
   if (status) {
+    await bookingModel.findByIdAndUpdate(
+      bookingResult._id,
+      { $push: { statusHistory: status } },
+      { new: true }
+    );
+  }
+  return bookingResult;
+}
+
+async function updateBooking(_id: any, tempObj: any, status: any) {
+  const bookingResult = await bookingModel.findByIdAndUpdate(_id, tempObj,{ new: true });
+  if (status && bookingResult) {
     await bookingModel.findByIdAndUpdate(
       bookingResult._id,
       { $push: { statusHistory: status } },
@@ -117,9 +159,14 @@ async function sendBookingEmailNotification(bookingId: any) {
         as: "userId",
       },
     },
-  ]);
+    { $unwind: {
+      path: "$userId",
+      preserveNullAndEmptyArrays: true
+    }},
+  ]);  
 
   const userEmail = findUser[0]?.userId?.email;
+  
   if (userEmail) {
     const emailOptions = {
       toUser: userEmail,
@@ -130,46 +177,39 @@ async function sendBookingEmailNotification(bookingId: any) {
   }
 }
 
-async function validateBookingDates(bookingInputs: any, product: any) {
-  return await Promise.all(
-    bookingInputs.BookingDate.map(async (date: any) => {
-      const findSameBooking = await bookingModel.find({
-        BookingDate: { $elemMatch: { date: new Date(date) } },
-        productId: bookingInputs.productId,
-        isAccepted: true,
-        isDeleted: false,
-      });
+async function sendExtensionBookingEmailNotification(bookingId: any) {
+  const findUser = await bookingModel.aggregate([
+    { $match: { _id: new ObjectId(bookingId), isDeleted: false } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userId",
+      },
+    },
+    { $unwind: {
+      path: "$userId",
+      preserveNullAndEmptyArrays: true
+    }},
+  ]);  
 
-      const totalQuantity = findSameBooking.reduce((total, booking) => total + booking.quantity, 0);
-      if (totalQuantity + bookingInputs.quantity > product.quantity) {
-        return { message: "All the products are booked for the entered date" };
-      }
-
-      if (findSameBooking.length > 0) {
-        return { message: `Product already booked on ${date}` };
-      }
-
-      return null;
-    })
-  );
+  const userEmail = findUser[0]?.userId?.email;
+  
+  if (userEmail) {
+    const emailOptions = {
+      toUser: userEmail,
+      subject: "Booking Extension Initiated",
+      templateVariables: { action: "Booking Extension Initiated" },
+    };
+    sendEmail(emailOptions);
+  }
 }
 
 function combineBookingDates(existingDates: any, newDates: any) {
   const datesSet = new Set(existingDates.map((date: any) => date.date.toISOString()));
   newDates.forEach((date: any) => datesSet.add(new Date(date).toISOString()));
   return Array.from(datesSet).map((date: any) => ({ date: new Date(date) }));
-}
-
-function prepareUpdatedBookingData(bookingInputs: any, updatedDates: any) {
-  const price = Number(bookingInputs?.price) || 0;
-  const updatedBookingData = {
-    ...bookingInputs,
-    BookingDate: updatedDates,
-    extendedPrice: price,
-    isExtended: true,
-  };
-  delete updatedBookingData.price;
-  return updatedBookingData;
 }
 
 
@@ -186,13 +226,13 @@ class BookingRepository {
       }
   
       // Update profile points and levels
-      const profile = await updateProfilePointsAndLevel(product.userId);
+      await updateProfilePointsAndLevel(product.userId);
   
       // Check each booking date for availability
       const bookingResults = await Promise.all(
-        bookingInputs.BookingDate.map(date => checkBookingDate(bookingInputs, date))
+        bookingInputs.BookingDate.map(async (date) => await checkBookingDate(bookingInputs.productId, bookingInputs.quantity, date))
       );
-  
+
       const bookedMessage = bookingResults.find(result => result !== null);
       if (bookedMessage) {
         return bookedMessage;
@@ -200,7 +240,7 @@ class BookingRepository {
   
       // Create and save booking
       const dates = bookingInputs.BookingDate.map(date => ({ date: new Date(date) }));
-      const tempObj = { ...bookingInputs, BookingDate: dates };
+      const tempObj = { ...bookingInputs, BookingDate: dates, status: "Requested" };
       bookingResult = await saveBooking(tempObj, bookingInputs.status);
   
       // Send email notification
@@ -214,40 +254,47 @@ class BookingRepository {
   }
 
   async CreateExpandDate(bookingInputs: expendDate) {
-    let expandDateResult;
+    let bookingResult;
     try {
       // Retrieve the existing booking
       const booking = await findBooking(bookingInputs._id);
       if (!booking) {
         return { message: "Booking not found with the given ID" };
       }
-  
-      // Check if the product is available
-      const product = await findProduct(bookingInputs.productId, bookingInputs.quantity);
+
+      // Check product's availability and update booking count
+      const product = await findProduct(bookingInputs._id, bookingInputs.quantity);
       if (!product) {
-        return { message: "Product not available for the requested date" };
+        return { message: "Product not available for this date" };
       }
   
-      // Validate the new booking dates
-      const bookingResults = await validateBookingDates(bookingInputs, product);
+      // Check each booking date for availability
+      const bookingResults = await Promise.all(
+        bookingInputs.BookingDate.map(async (date) => await checkExtendedBookingDate(bookingInputs.productId, bookingInputs.quantity, date))
+      );
+
       const bookedMessage = bookingResults.find(result => result !== null);
       if (bookedMessage) {
         return bookedMessage;
       }
   
-      // Combine existing and new booking dates
-      const updatedDates = combineBookingDates(booking.BookingDate, bookingInputs.BookingDate);
+      // Create and save booking
+      const dates = combineBookingDates(
+        (booking?.BookingDate || []).map(date => ({ date: new Date(date?.Date) })),
+        (bookingInputs.BookingDate || []).map(date => ({ date: new Date(date) }))
+      );      
+      const tempObj = { ...bookingInputs, BookingDate: dates, status: "Extention Requested" };
+      bookingResult = await updateBooking(booking._id, tempObj, "Extention Requested");
   
-      // Prepare the update object
-      const updatedBookingData = prepareUpdatedBookingData(bookingInputs, updatedDates);
+      if(bookingResult) {
+        // Send email notification
+        await sendExtensionBookingEmailNotification(bookingResult._id);
+      }
   
-      // Update the booking
-      expandDateResult = await bookingModel.updateOne({ _id: booking._id }, updatedBookingData, { new: true });
-  
-      return expandDateResult;
+      return bookingResult;
     } catch (err) {
-      console.error("Error creating expand date", err);
-      throw new Error("Unable to create expand date");
+      console.error("Error creating booking", err);
+      throw new Error("Unable to create booking");
     }
   }
 
