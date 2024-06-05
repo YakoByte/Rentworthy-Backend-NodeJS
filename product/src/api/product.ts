@@ -29,7 +29,7 @@ export default (app: Express) => {
                 delete req.body.Distance;
             }
             
-            if(Array.isArray(req.body.notAvailableDates)) {
+            if(req.body.notAvailableDates) {
                 req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
             }
             
@@ -57,10 +57,6 @@ export default (app: Express) => {
             let authUser: any = req.user
             req.body.userId = authUser._id;
             
-            if(Array.isArray(req.body.notAvailableDates)) {
-                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
-            }
-
             if(!req.body._id) {
                 return res.status(400).json({ message: "_id is required" });
             }
@@ -88,10 +84,6 @@ export default (app: Express) => {
         try {       
             let authUser: any = req.user
             req.body.userId = authUser._id;
-            
-            if(Array.isArray(req.body.notAvailableDates)) {
-                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
-            }
 
             if(!req.body._id) {
                 return res.status(400).json({ message: "_id is required" });
@@ -200,6 +192,10 @@ export default (app: Express) => {
                 }
     
                 req.body.images = await image.CreateImages(imageData);
+            }
+
+            if(req.body.notAvailableDates) {
+                req.body.notAvailableDates = JSON.parse(req.body.notAvailableDates);
             }
             
             const data = await service.updateProduct({ ...req.body, userId: authUser._id, _id: req.query._id });

@@ -26,7 +26,7 @@ class AddressService {
         }
     }
 
-    //get address by user id
+    //get address by user _id
     async getAddressByUserId(addressInputs: getAddressRequest) {
         try {
             const existingAddress: any = await this.repository.getAddressByUserId(

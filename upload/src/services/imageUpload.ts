@@ -105,9 +105,9 @@ class imageService {
   }
 
   // delete image
-  async DeleteImage(id: string) {
+  async DeleteImage(_id: string) {
     try {
-      const existingImage: any = await this.repository.DeleteImageById(id);
+      const existingImage: any = await this.repository.DeleteImageById(_id);
       const ImageKey = existingImage.imageName;
       await deleteS3File(ImageKey);
       return FormateData(existingImage);

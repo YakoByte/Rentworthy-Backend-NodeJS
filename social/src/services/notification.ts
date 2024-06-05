@@ -76,7 +76,7 @@ class NotificationService {
   // get all Notificationes
   async getNotifications(req: Request, res: Response) {
     try {
-      let { id, receiverId, pageNo, limit } = req.query;
+      let { _id, receiverId, pageNo, limit } = req.query;
 
       pageNo = pageNo !== undefined ? String(pageNo) : "-1";
       limit = limit !== undefined ? String(limit) : "-1";
@@ -86,8 +86,8 @@ class NotificationService {
 
       let Notification;
 
-      if(id){
-        Notification = await notificationRepository.getNotificationById(String(id));
+      if(_id){
+        Notification = await notificationRepository.getNotificationById(String(_id));
       }
 
       else if(receiverId) {

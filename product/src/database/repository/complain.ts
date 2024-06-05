@@ -18,7 +18,7 @@ class ComplainRepository {
       });
 
       if (findComplain) {
-        return { id: findComplain._id, name: findComplain.name };
+        return { _id: findComplain._id, name: findComplain.name };
       }
 
       const Complain = new ComplainModel(ComplainInputs);

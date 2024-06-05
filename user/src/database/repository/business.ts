@@ -41,14 +41,14 @@ class AdminRepository {
   async ApproveRejectBusiness(businessInputs: BusinessAppRequest) {
     try {
       let findRec: any = await businessModel
-        .findOne({_id: businessInputs.id}).lean();
+        .findOne({_id: businessInputs._id}).lean();
       if (!findRec) {
         return false
       }
 
       let returnVal = await businessModel.findOneAndUpdate(
         {
-          _id: businessInputs.id,
+          _id: businessInputs._id,
         },
         {
           $set: {
@@ -83,8 +83,8 @@ class AdminRepository {
       let returnVal;
       let criteria: any = { isDeleted: false };
 
-      if (businessInputs.id) {
-        criteria._id = new Types.ObjectId(businessInputs.id);
+      if (businessInputs._id) {
+        criteria._id = new Types.ObjectId(businessInputs._id);
       }
       if (businessInputs.name) {
         criteria.businessName = new RegExp(businessInputs.name, "i");

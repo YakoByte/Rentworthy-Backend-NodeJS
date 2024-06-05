@@ -29,11 +29,11 @@ export interface BusinessRequest {
   einId?: string;
 }
 export interface BusinessAppRequest {
-  id: string;
+  _id: string;
   status: string;
 }
 export interface BusinessGetRequest {
-    id?: string;
+    _id?: string;
     status?: string;
     name?:string
     userId?:string

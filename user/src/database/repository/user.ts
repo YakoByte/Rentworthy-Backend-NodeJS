@@ -233,7 +233,7 @@ class AdminRepository {
       }
 
       const data = {
-        id: findRole._id,
+        _id: findRole._id,
         name: findRole.name,
       };
 

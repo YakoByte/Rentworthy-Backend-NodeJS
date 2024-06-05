@@ -32,7 +32,7 @@ class NotificationRepository {
       );
 
       if (!updateNotification) {
-        throw new Error(`Notification with id ${data._id} not found`);
+        throw new Error(`Notification with _id ${data._id} not found`);
       }
 
       return updateNotification.toObject() as IGetNotifications;
@@ -43,12 +43,12 @@ class NotificationRepository {
   }
 
   // delete Notification by id
-  async deleteNotification(id: string): Promise<Boolean> {
+  async deleteNotification(_id: string): Promise<Boolean> {
     try {
-      const notification = await Notification.findByIdAndUpdate(id, { isDeleted: true, isActive: false }, { new: true });
+      const notification = await Notification.findByIdAndUpdate(_id, { isDeleted: true, isActive: false }, { new: true });
 
       if (!notification) {
-        throw new Error(`Notification with id ${id} not found`);
+        throw new Error(`Notification with _id ${_id} not found`);
       }
 
       return true;

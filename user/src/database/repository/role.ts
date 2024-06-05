@@ -8,7 +8,7 @@ class RoleRepository {
       console.log("findRole", findRole);
       if (findRole) {
         const data = {
-          id: findRole._id,
+          _id: findRole._id,
           name: findRole.name,
         };
 
@@ -44,7 +44,7 @@ class RoleRepository {
       console.log("findRole", findRole);
       if (findRole) {
         const data = {
-          id: findRole._id,
+          _id: findRole._id,
           name: findRole.name,
         };
 

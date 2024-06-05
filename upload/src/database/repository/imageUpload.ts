@@ -64,10 +64,10 @@ class ImageRepository {
   }
 
   // delete image
-  async DeleteImageById(id: string) {
+  async DeleteImageById(_id: string) {
     try {
       // Find the image
-      const image = await imageModel.findById(id);
+      const image = await imageModel.findById(_id);
 
       // If the image doesn't exist, throw an error
       if (!image) {
@@ -94,7 +94,7 @@ class ImageRepository {
       await history.save();
 
       // Delete the image
-      await imageModel.findByIdAndDelete(id);
+      await imageModel.findByIdAndDelete(_id);
 
       // Return the deleted image
       return image;
